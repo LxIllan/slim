@@ -9,32 +9,39 @@ use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-    $app->post('/branches', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
-        $branch = BranchController::create($body['name'], $body['location'], $body['phone_number']);
-        $response->getBody()->write(json_encode($branch));
-        return $response->withHeader('Content-Type', 'application/json');
-    });
-
+    /**
+     * @api /branches
+     * @method GET
+     * @description Get branches
+     */
     $app->get('/branches', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
-
-        if (isset($body['id'])) {
-            $branches = BranchController::get($body['id']);
-        } else {
-            $branches = BranchController::getAll();
-        }
-
+        $branchController = new BranchController();
+        $branches = $branchController->getBranches();
         $response->getBody()->write(json_encode($branches));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
-    $app->put('/branches', function (Request $request, Response $response, $args) {
-        $body = $request->getParsedBody();
+    /**
+     * @api /branches/{id}
+     * @method GET
+     * @description Get branch by id
+     */
+    $app->get('/branches/{id}', function (Request $request, Response $response, $args) {
+        $branchController = new BranchController();
+        $branches = $branchController->getById(intval($args['id']));
+        $response->getBody()->write(json_encode($branches));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
 
-        $category = BranchController::update(intval($body['id']), $body['category']);
-
-        $response->getBody()->write(json_encode($category));
+    /**
+     * @api /get-ticket/{id}
+     * @method GET
+     * @description Get branch by id
+     */
+    $app->get('/branches/get-ticket/{id}', function (Request $request, Response $response, $args) {
+        $branchController = new BranchController();
+        $branches = $branchController->getNumTicket(intval($args['id']));
+        $response->getBody()->write(json_encode($branches));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };

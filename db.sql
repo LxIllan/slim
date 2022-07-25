@@ -72,9 +72,9 @@ CREATE TABLE dish (
     description VARCHAR(100) NULL,
     is_showed_in_sales BOOLEAN NULL DEFAULT 1,
     is_combo BOOLEAN NULL DEFAULT 0,
-    created_at TIMESTAMP NULL DEFAULT NULL,
-    updated_at TIMESTAMP NULL DEFAULT NULL,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     food_id SMALLINT(5) UNSIGNED NOT NULL,
         FOREIGN KEY (food_id)
             REFERENCES food (id)
@@ -90,9 +90,9 @@ INSERT INTO dish (id, name, price, portion, description, is_showed_in_sales, is_
 CREATE TABLE dishes_in_combo (
     combo_id SMALLINT(5) UNSIGNED NOT NULL,
     dish_id SMALLINT(5) UNSIGNED NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT NULL,
-    updated_at TIMESTAMP NULL DEFAULT NULL,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (combo_id)
         REFERENCES dish (id) 
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -113,19 +113,19 @@ CREATE TABLE product (
     quantity_notif TINYINT(3) UNSIGNED NULL DEFAULT 0,
     is_notif_sent BOOLEAN NULL DEFAULT 0,
     cost FLOAT(6,2) NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT NULL,
-    updated_at TIMESTAMP NULL DEFAULT NULL,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT NULL,
     branch_id TINYINT(3) UNSIGNED NOT NULL,
     FOREIGN KEY (branch_id)
     REFERENCES branch (id) 
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO product (id, name, quantity, quantity_notif, is_notif_sent, cost, branch_id) VALUES
-    (1, 'Carbón', 25, 5, 0, 60, 1),
-    (2, 'Rollo ticket', 10, 2, 0, 10, 1),
-    (3, 'Charola', 10, 3, 0, 20, 1);
+INSERT INTO product (id, name, quantity, quantity_notif, cost, branch_id) VALUES
+    (1, 'Carbón', 25, 5, 60, 1),
+    (2, 'Rollo ticket', 10, 2, 10, 1),
+    (3, 'Charola', 10, 3, 20, 1);
 
 CREATE TABLE user (
     id TINYINT(3) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -137,9 +137,9 @@ CREATE TABLE user (
     hash VARCHAR(255) NOT NULL,
     photo_path VARCHAR(100) NOT NULL,
     root BOOLEAN NULL DEFAULT 0,
-    created_at TIMESTAMP NULL DEFAULT NULL,
-    updated_at TIMESTAMP NULL DEFAULT NULL,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     branch_id TINYINT(3) UNSIGNED NOT NULL,
     FOREIGN KEY (branch_id)
         REFERENCES branch (id) 
@@ -149,7 +149,7 @@ CREATE TABLE user (
 CREATE TABLE expense (
     id SMALLINT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     amount FLOAT(7,2) NOT NULL,
-    date TIMESTAMP NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     reason VARCHAR(100) NOT NULL,
     branch_id TINYINT(3) UNSIGNED NOT NULL,
     user_id TINYINT(3) UNSIGNED NOT NULL,
@@ -165,7 +165,7 @@ CREATE TABLE used_product (
     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     product_id SMALLINT(5) UNSIGNED NOT NULL,
     quantity TINYINT(3) UNSIGNED NOT NULL,
-    date TIMESTAMP NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id TINYINT(3) UNSIGNED NOT NULL,
     branch_id TINYINT(3) UNSIGNED NOT NULL,
     FOREIGN KEY (product_id)

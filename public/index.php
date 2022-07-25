@@ -68,6 +68,9 @@ $app->add(new JwtAuthentication([
 ]));
 
 // Register routes
+$routes = require __DIR__ . '/../app/routes/auth.php';
+$routes($app);
+
 $routes = require __DIR__ . '/../app/routes/user.php';
 $routes($app);
 
@@ -75,6 +78,21 @@ $routes = require __DIR__ . '/../app/routes/category.php';
 $routes($app);
 
 $routes = require __DIR__ . '/../app/routes/branch.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/food.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/dish.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/history.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/combo.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/product.php';
 $routes($app);
 
 /** @var SettingsInterface $settings */

@@ -27,6 +27,7 @@
         "illuminate/database": "^9.18",
         "monolog/monolog": "^2.6",
         "php-di/php-di": "^6.4",
+        "rbdwllr/psr-jwt": "^2.0",
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
         "tuupola/slim-jwt-auth": "^3.6",

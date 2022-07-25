@@ -4,24 +4,54 @@ declare(strict_types=1);
 
 namespace App\Application\Controller;
 
+use App\Application\DAO\BranchDAO;
 use App\Application\Model\Branch;
-use Illuminate\Database\Eloquent\Collection;
 
 class BranchController
 {
-    public static function create(string $name, string $location, string $phoneNumber)
+    /**
+     * @var BranchDAO $branchDAO
+     */
+    private BranchDAO $branchDAO;
+
+    public function __construct()
     {
-        $branch = Branch::create(['name' => $name, 'location' => $location, 'phone_number' => $phoneNumber]);
-        return $branch;
+        $this->branchDAO = new BranchDAO();
     }
 
-    public static function getAll(): Collection
+    /**
+     * @param int $id
+     * @return Branch
+     */
+    public function getById(int $id): Branch
     {
-        return Branch::all();
+        return $this->branchDAO->getById($id);
     }
 
-    public static function get(int $id): Branch
+    /**
+     * @return Branch[]
+     */
+    public function getBranches(): array
     {
-        return Branch::findOrFail($id);
+        return $this->branchDAO->getBranches();
+    }
+
+    /**
+     * @param int $id
+     * @param array $data
+     * @return Branch|null
+     */
+    public function edit(int $id, array $data): Branch|null
+    {
+        return $this->branchDAO->edit($id, $data);
+    }
+
+    /**
+     * @param int $branchId
+     * @return int
+     */
+    public function getNumTicket(int $branchId): int
+    {
+        return $this->branchDAO->getNumTicket($branchId);
     }
 }
