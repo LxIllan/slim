@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
-<<<<<<< HEAD
 use App\Application\Helper\Connection;
-=======
-use App\Application\Helper\Conexion;
->>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
 use \StdClass;
 
 class HistoryDAO
 {
     /**
-<<<<<<< HEAD
      * @var Connection
      */
     private Connection $connection;
@@ -22,15 +17,6 @@ class HistoryDAO
     public function __construct()
     {
         $this->connection = new Connection();
-=======
-     * @var Conexion
-     */
-    private Conexion $connection;
-
-    public function __construct()
-    {
-        $this->connection = new Conexion();
->>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
     }
 
     /**
@@ -44,11 +30,7 @@ class HistoryDAO
     {
         $suppliedFood = new StdClass();
         $result = $this->connection->select("SELECT alimentos_surtidos.idalimento_surtido, alimentos_surtidos.fecha, alimento.nombre, "
-<<<<<<< HEAD
             . "alimentos_surtidos.cantidad, alimentos_surtidos.nueva_cantidad, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre "
-=======
-            . "alimentos_surtidos.cantidad, alimentos_surtidos.cantidad_actual, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre "
->>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
             . "FROM alimentos_surtidos, alimento, usuario "
             . "WHERE alimentos_surtidos.idusuario = usuario.idusuario AND alimentos_surtidos.idalimento = alimento.idalimento "
             . "AND alimentos_surtidos.idsucursal = '$branchId' AND alimento.nombre LIKE '%$name%'"
@@ -78,11 +60,7 @@ class HistoryDAO
     {
         $alteredFood = new StdClass();
         $result = $this->connection->select("SELECT alimentos_alterados.idalimento_alterado, alimentos_alterados.fecha, alimento.nombre, "
-<<<<<<< HEAD
             . "alimentos_alterados.cantidad, alimentos_alterados.justificacion, alimentos_alterados.nueva_cantidad, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre "
-=======
-            . "alimentos_alterados.cantidad, alimentos_alterados.justificacion, alimentos_alterados.cantidad_actual, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre "
->>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
             . "FROM alimentos_alterados, alimento, usuario "
             . "WHERE alimentos_alterados.idusuario = usuario.idusuario AND alimentos_alterados.idalimento = alimento.idalimento "
             . "AND alimentos_alterados.idsucursal = '$branchId' AND alimento.nombre LIKE '%$name%'"
@@ -192,7 +170,6 @@ class HistoryDAO
             return $expenses;
         }
 
-<<<<<<< HEAD
         $query = "SELECT gasto.id, gasto.fecha, gasto.cantidad, gasto.concepto, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre FROM gasto, usuario WHERE gasto.idusuario = usuario.id AND gasto.idsucursal = 1 AND gasto.fecha >= '2022-01-01' AND DATE(gasto.fecha) <= '2022-01-10' ORDER BY fecha DESC";
 
         $query = <<<EOF
@@ -205,15 +182,6 @@ class HistoryDAO
 
 
         $result = $this->connection->select($query);
-=======
-        $result = $this->connection->select("SELECT gasto.idgasto, gasto.fecha, gasto.cantidad, "
-            . "gasto.concepto, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre "
-            . "FROM gasto, usuario "
-            . "WHERE gasto.idusuario = usuario.idusuario "
-            . "AND gasto.idsucursal = '$branchId' "
-            . "AND gasto.concepto LIKE '%$reason%'"
-            . "AND gasto.fecha >= '$startDate' AND gasto.fecha <= '$endDate' ORDER BY fecha DESC");
->>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
         $expenses->qty = $result->num_rows;
         while ($row = $result->fetch_array()) {
             $expense = new StdClass();
