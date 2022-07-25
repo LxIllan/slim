@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
+<<<<<<< HEAD
 use App\Application\Helper\Connection;
+=======
+use App\Application\Helper\Conexion;
+>>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
 use App\Application\Helper\Util;
 use App\Application\Model\Usuario;
 
@@ -13,7 +17,11 @@ class UsuarioDAO {
     private $_conexion;
 
     function __construct() {
+<<<<<<< HEAD
         $this->_conexion = new Connection();
+=======
+        $this->_conexion = new Conexion();
+>>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
     }
 
     public function agregarUsuario(Usuario $usuario): bool {

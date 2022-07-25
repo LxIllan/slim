@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
+<<<<<<< HEAD
 use App\Application\Controller\DishController;
+=======
+use App\Application\Controller\AlimentoController;
+>>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -13,6 +17,7 @@ return function (App $app) {
     $app->get('/dishes', function (Request $request, Response $response) {
         $body = $request->getParsedBody();
         
+<<<<<<< HEAD
         $dishController = new DishController();
         $dishes = [];
 
@@ -81,10 +86,32 @@ return function (App $app) {
         $dishController = new DishController();
 
         $dishes = $dishController->getDishesByFood(intval($args['id']));
+=======
+        $alimentoController = new AlimentoController();
+        $dishes = [];
+        
+        if (isset($body['id'])) {
+            $dishes = $alimentoController->consultarPlatillo(intval($body['id']));
+        }
+
+        if (isset($body['foodId'])) {
+            $dishes = $alimentoController->listarPlatillos(intval($body['foodId']));
+        }
+
+        if ((isset($body['categoryId'])) && (isset($body['branchId']))) {
+            $foods = $alimentoController->listarPlatillosCategoria(intval($body['categoryId']), intval($body['branchId']));
+        }
+
+        if (isset($body['comboId'])) {
+            $foods = $alimentoController->listarPlatillosPaquete(intval($body['comboId']));
+        }
+
+>>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
         $response->getBody()->write(json_encode($dishes));
 
         return $response->withHeader('Content-Type', 'application/json');
     });
+<<<<<<< HEAD
 
     /**
      * @api /dishes/{id}
@@ -116,4 +143,6 @@ return function (App $app) {
 
         return $response->withHeader('Content-Type', 'application/json');
     });
+=======
+>>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
 };

@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
+<<<<<<< HEAD
 use App\Application\Controller\FoodController;
 use App\Application\Controller\DishController;
+=======
+use App\Application\Controller\AlimentoController;
+>>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -11,6 +15,7 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
 
+<<<<<<< HEAD
     /**
      * @api /dishes
      * @method POST
@@ -42,11 +47,27 @@ return function (App $app) {
         if (isset($body['branchId'])) {
             $foods = $foodController->getFoodByBranch(intval($body['branchId']));
         }
+=======
+    $app->get('/foods', function (Request $request, Response $response) {
+        $body = $request->getParsedBody();
+        
+        $alimentoController = new AlimentoController();
+        $foods = [];
+        
+        if (isset($body['id'])) {
+            $foods = $alimentoController->consultarAlimento(intval($body['id']));
+        }
+
+        if (isset($body['branchId'])) {
+            $foods = $alimentoController->listarAlimentos(intval($body['branchId']));
+        }        
+>>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
         
         $response->getBody()->write(json_encode($foods));
 
         return $response->withHeader('Content-Type', 'application/json');
     });
+<<<<<<< HEAD
 
     /**
      * @api /foods/{id}
@@ -100,4 +121,7 @@ return function (App $app) {
         return $response->withHeader('Content-Type', 'application/json');
     });
 
+=======
+    
+>>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
 };

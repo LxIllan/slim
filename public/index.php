@@ -92,9 +92,12 @@ $routes($app);
 $routes = require __DIR__ . '/../app/routes/combo.php';
 $routes($app);
 
+<<<<<<< HEAD
 $routes = require __DIR__ . '/../app/routes/product.php';
 $routes($app);
 
+=======
+>>>>>>> f7d660f5f61ad7a92dcc705f5a1fbc2f8802ad4b
 /** @var SettingsInterface $settings */
 $settings = $container->get(SettingsInterface::class);
 
