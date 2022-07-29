@@ -7,10 +7,10 @@ use \mysqli;
 class Connection
 {
 
-    const SERVER = "82.180.172.52";
-    const USER = "u775772700_pollos";
-    const PASSWORD = "Bv4MROKO6";
-    const DATABASE = "u775772700_pollos";
+    private const SERVER = "82.180.172.52";
+    private const USER = "u775772700_pollos";
+    private const PASSWORD = "Bv4MROKO6";
+    private const DATABASE = "u775772700_pollos";
 //    const USUARIO = "u775772700_plrey";
 //    const PASSWORD = "pollo4Rey";
 //    const BASE_DE_DATOS = "u775772700_plrey";
@@ -18,7 +18,8 @@ class Connection
 
     private $mysqli;
 
-    function __construct() {
+    function __construct()
+    {
         date_default_timezone_set('America/Mexico_City');
         setlocale(LC_MONETARY, 'en_ES');
 
@@ -30,7 +31,8 @@ class Connection
         }
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->mysqli->close();
     }
 
@@ -38,7 +40,8 @@ class Connection
      * @param string $query
      * @return \mysqli_result|bool
      */
-    public function select(string $query): \mysqli_result | bool {
+    public function select(string $query): \mysqli_result|bool
+    {
         return $this->sentence($query);
     }
 
@@ -81,7 +84,7 @@ class Connection
      * @param string $query
      * @return bool|\mysqli_result
      */
-    private function sentence(string $query)
+    private function sentence(string $query): bool|\mysqli_result
     {
         return $this->mysqli->query($query);
     }

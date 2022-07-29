@@ -25,7 +25,7 @@ class DishController
      */
     public function createDish(array $data): Dish|null
     {
-        return $this->dishDAO->createDish($data);
+        return $this->dishDAO->create($data);
     }
 
     /**
@@ -34,12 +34,12 @@ class DishController
      */
     public function getDishById(int $id): Dish|null
     {
-        return $this->dishDAO->getDishById($id);
+        return $this->dishDAO->getById($id);
     }
 
     /**
      * @param int $foodId
-     * @return array
+     * @return Dish[]
      */
     public function getDishesByFood(int $foodId)
     {
@@ -49,7 +49,7 @@ class DishController
     /**
      * @param int $categoryId
      * @param int $branchId
-     * @return array
+     * @return Dish[]
      */
     public function getDishesByCategory(int $categoryId, int $branchId): array
     {
@@ -75,5 +75,31 @@ class DishController
         return $this->dishDAO->deleteDish($id);
     }
 
+    /**
+     * @param int $branchId
+     * @return Dish[]
+     */
+    public function getCombosByBranch(int $branchId): array
+    {
+        return $this->dishDAO->getCombosByBranch($branchId);
+    }
 
+    /**
+     * @param int $comboId
+     * @return Dish[]
+     */
+    public function getDishesByCombo(int $comboId): array
+    {
+        return $this->dishDAO->getDishesByCombo($comboId);
+    }
+
+    /**
+     * @param int $comboId
+     * @param int $dishId
+     * @return bool
+     */
+    public function addDishToCombo(int $comboId, int $dishId): bool
+    {
+        return $this->dishDAO->addDishToCombo($comboId, $dishId);
+    }
 }

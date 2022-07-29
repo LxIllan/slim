@@ -10,7 +10,7 @@ use App\Application\Helper\Util;
 
 class BranchDAO
 {
-    private const TABLE_NAME = 'sucursal';
+    private const TABLE_NAME = 'branch';
 
     /**
      * @var Connection $connection
@@ -28,7 +28,7 @@ class BranchDAO
      */
     public function getById(int $id): Branch
     {
-        return $this->connection->select("SELECT * FROM sucursal WHERE id = $id")->fetch_object('App\Application\Model\Branch');
+        return $this->connection->select("SELECT * FROM branch WHERE id = $id")->fetch_object('App\Application\Model\Branch');
     }
 
     /**
@@ -37,7 +37,7 @@ class BranchDAO
     public function getBranches(): array
     {
         $branches = [];
-        $result = $this->connection->select("SELECT id FROM sucursal");
+        $result = $this->connection->select("SELECT id FROM branch");
                 
         while ($row = $result->fetch_assoc()) {
             $branches[] = $this->getById(intval($row['id']));
@@ -62,8 +62,8 @@ class BranchDAO
      */
     public function getNumTicket(int $branchId): int
     {
-        $num_ticket = intval($this->connection->select("SELECT num_ticket FROM sucursal WHERE id = $branchId")->fetch_array()[0]);
-        $this->connection->update("UPDATE sucursal SET num_ticket = ($num_ticket + 1) WHERE id = $branchId");
+        $num_ticket = intval($this->connection->select("SELECT num_ticket FROM branch WHERE id = $branchId")->fetch_array()[0]);
+        $this->connection->update("UPDATE branch SET num_ticket = ($num_ticket + 1) WHERE id = $branchId");
         return $num_ticket;
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\DAO;
 
 use App\Application\Helper\Connection;
-use \StdClass;
+use StdClass;
 
 class HistoryDAO
 {
@@ -20,180 +20,172 @@ class HistoryDAO
     }
 
     /**
+     * @param int $branchId
      * @param string $startDate
      * @param string $endDate
-     * @param string $name
-     * @param int $branchId
-     * @return StdClass
+     * @return array
      */
-    public function getSuppliedFood(string $startDate, string $endDate, string $name, int $branchId): StdClass
+    public function getSuppliedFood(int $branchId, string $startDate, string $endDate): array
     {
-        $suppliedFood = new StdClass();
-        $result = $this->connection->select("SELECT alimentos_surtidos.idalimento_surtido, alimentos_surtidos.fecha, alimento.nombre, "
-            . "alimentos_surtidos.cantidad, alimentos_surtidos.nueva_cantidad, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre "
-            . "FROM alimentos_surtidos, alimento, usuario "
-            . "WHERE alimentos_surtidos.idusuario = usuario.idusuario AND alimentos_surtidos.idalimento = alimento.idalimento "
-            . "AND alimentos_surtidos.idsucursal = '$branchId' AND alimento.nombre LIKE '%$name%'"
-            . "AND alimentos_surtidos.fecha >= '$startDate' AND alimentos_surtidos.fecha <= '$endDate' ORDER BY fecha ASC");
-        $suppliedFood->qty = $result->num_rows;
-        while ($row = $result->fetch_array()) {
-            $food = new StdClass();
-            $food->id = $row[0]; // idalimento_surtido
-            $food->date = $row[1]; // fecha
-            $food->food = $row[2]; // alimento
-            $food->quantity = $row[3]; // cantidad
-            $food->newQuantity = $row[4]; // nueva cantidad
-            $food->cashier = $row[5]; // nombre cajero
-            $suppliedFood->suppliedFood[] = $food;
+        $suppliedFood = [];
+
+        $result = $this->connection->select("SELECT supplied_food.id, supplied_food.date, food.name, "
+            . "supplied_food.quantity, supplied_food.new_quantity, CONCAT(user.name, ' ' ,user.last_name) AS cashier "
+            . "FROM supplied_food, food, user "
+            . "WHERE supplied_food.user_id = user.id AND supplied_food.food_id = food.id "
+            . "AND supplied_food.branch_id = '$branchId' "
+            . "AND DATE(supplied_food.date) >= '$startDate' AND DATE(supplied_food.date) <= '$endDate' ORDER BY date ASC");
+
+        while ($row = $result->fetch_assoc()) {
+            $suppliedFood[] = $row;
         }
         return $suppliedFood;
     }
 
     /**
+     * @param int $branchId
      * @param string $startDate
      * @param string $endDate
-     * @param string $name
-     * @param int $branchId
-     * @return StdClass
+     * @return array
      */
-    public function getAlteredFood(string $startDate, string $endDate, string $name, int $branchId): StdClass
+    public function getAlteredFood(int $branchId, string $startDate, string $endDate): array
     {
-        $alteredFood = new StdClass();
-        $result = $this->connection->select("SELECT alimentos_alterados.idalimento_alterado, alimentos_alterados.fecha, alimento.nombre, "
-            . "alimentos_alterados.cantidad, alimentos_alterados.justificacion, alimentos_alterados.nueva_cantidad, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre "
-            . "FROM alimentos_alterados, alimento, usuario "
-            . "WHERE alimentos_alterados.idusuario = usuario.idusuario AND alimentos_alterados.idalimento = alimento.idalimento "
-            . "AND alimentos_alterados.idsucursal = '$branchId' AND alimento.nombre LIKE '%$name%'"
-            . "AND alimentos_alterados.fecha >= '$startDate' AND alimentos_alterados.fecha <= '$endDate' ORDER BY fecha ASC");
-        $alteredFood->qty = $result->num_rows;
-        while ($row = $result->fetch_array()) {
-            $food = new \StdClass();
-            $food->id = $row[0]; // idalimento_surtido
-            $food->date = $row[1]; // fecha
-            $food->food = $row[2]; // alimento
-            $food->quantity = $row[3]; // cantidad
-            $food->reason = $row[4]; // justificacion
-            $food->newQuantity = $row[5]; // nueva cantidad
-            $food->cashier = $row[6]; // nombre cajero
-            $alteredFood->alteredFood[] = $food;
+        $alteredFood = [];
+
+        $result = $this->connection->select("SELECT altered_food.id, altered_food.date, food.name, "
+            . "altered_food.quantity, altered_food.reason, altered_food.new_quantity, CONCAT(user.name, ' ' ,user.last_name) AS cashier "
+            . "FROM altered_food, food, user "
+            . "WHERE altered_food.user_id = user.id AND altered_food.food_id = food.id "
+            . "AND altered_food.branch_id = '$branchId' "
+            . "AND DATE(altered_food.date) >= '$startDate' AND DATE(altered_food.date) <= '$endDate' ORDER BY date ASC");
+
+        while ($row = $result->fetch_assoc()) {
+            $alteredFood[] = $row;
         }
         return $alteredFood;
     }
 
     /**
+     * @param int $branchId
      * @param string $startDate
      * @param string $endDate
-     * @param int $branchId
      * @return StdClass
      */
-    public function getSales(string $startDate, string $endDate, int $branchId): StdClass
+    public function getSales(int $branchId, string $startDate, string $endDate): StdClass
     {
         $sales = new StdClass();
+        $sales->amount = $this->getSumFromTable('price', 'sale', $branchId, $startDate, $endDate);
 
-        $sales->total = $this->getSumFromTable('precio','venta', $branchId, $startDate, $endDate);
-        if ($sales->total == 0) {
+        if ($sales->amount == 0) {
             $sales->sales = [];
             return $sales;
         }
 
-        $result = $this->connection->select("SELECT venta.idventa, venta.fecha, platillo.nombre, venta.precio, "
-            . "venta.cantidad, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre "
-            . "FROM venta, platillo, usuario "
-            . "WHERE venta.idusuario = usuario.idusuario AND venta.idplatillo = platillo.idplatillo "
-            . "AND venta.idsucursal = '$branchId' "
-            . "AND venta.fecha >= '$startDate' AND venta.fecha <= '$endDate' ORDER BY fecha DESC");
+        $result = $this->connection->select("SELECT sale.id, sale.date, dish.name, sale.price, "
+            . "sale.quantity, CONCAT(user.name, ' ' ,user.last_name) AS cashier "
+            . "FROM sale, dish, user "
+            . "WHERE sale.user_id = user.id AND sale.dish_id = dish.id "
+            . "AND sale.branch_id = '$branchId' "
+            . "AND DATE(sale.date) >= '$startDate' AND DATE(sale.date) <= '$endDate' ORDER BY date DESC");
+
         $sales->qty = $result->num_rows;
-        while ($row = $result->fetch_array()) {
-            $sale = new StdClass();
-            $sale->id = $row[0]; // id
-            $sale->date = $row[1]; // date
-            $sale->dish = $row[2]; // dish
-            $sale->price = $row[3]; // price
-            $sale->quantity = $row[4]; // cantidad
-            $sale->cashier = $row[5]; // cajero
-            $sales->sales[] = $sale;
+        while ($row = $result->fetch_assoc()) {
+            $sales->sales[] = $row;
         }
         return $sales;
     }
 
     /**
+     * @param int $branchId
      * @param string $startDate
      * @param string $endDate
-     * @param int $branchId
      * @return StdClass
      */
-    public function getCourtesies(string $startDate, string $endDate, int $branchId) : StdClass
+    public function getCourtesies(int $branchId, string $startDate, string $endDate): StdClass
     {
         $courtesies = new StdClass();
+        $courtesies->amount = $this->getSumFromTable('price', 'courtesy', $branchId, $startDate, $endDate);
 
-        $courtesies->total = $this->getSumFromTable('precio','cortesia', $branchId, $startDate, $endDate);
-        if ($courtesies->total == 0) {
+        if ($courtesies->amount == 0) {
             $courtesies->courtesies = [];
             return $courtesies;
         }
 
-        $result = $this->connection->select("SELECT cortesia.idcortesia, cortesia.fecha, platillo.nombre, cortesia.precio, "
-            . "cortesia.cantidad, cortesia.concepto, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre "
-            . "FROM cortesia, platillo, usuario "
-            . "WHERE cortesia.idusuario = usuario.idusuario AND cortesia.idplatillo = platillo.idplatillo "
-            . "AND cortesia.idsucursal = '$branchId' "
-            . "AND cortesia.fecha >= '$startDate' AND cortesia.fecha <= '$endDate' ORDER BY fecha DESC");
+        $result = $this->connection->select("SELECT courtesy.id, courtesy.date, dish.name, courtesy.price, "
+            . "courtesy.quantity, courtesy.reason, CONCAT(user.name, ' ' ,user.last_name) AS cashier "
+            . "FROM courtesy, dish, user "
+            . "WHERE courtesy.user_id = user.id AND courtesy.dish_id = dish.id "
+            . "AND courtesy.branch_id = '$branchId' "
+            . "AND DATE(courtesy.date) >= '$startDate' AND DATE(courtesy.date) <= '$endDate' ORDER BY date DESC");
+
         $courtesies->qty = $result->num_rows;
-        while ($row = $result->fetch_array()) {
-            $courtesy = new StdClass();
-            $courtesy->id = $row[0]; // id
-            $courtesy->date = $row[1]; // date
-            $courtesy->dish = $row[2]; // dish
-            $courtesy->price = $row[3]; // price
-            $courtesy->quantity = $row[4]; // cantidad
-            $courtesy->reason = $row[5]; // reason
-            $courtesy->cashier = $row[6]; // cajero
-            $courtesies->courtesies[] = $courtesy;
+        while ($row = $result->fetch_assoc()) {
+            $courtesies->courtesies[] = $row;
         }
         return $courtesies;
     }
 
     /**
+     * @param int $branchId
      * @param string $startDate
      * @param string $endDate
      * @param string $reason
-     * @param int $branchId
      * @return StdClass
      */
-    public function getExpenses(string $startDate, string $endDate, string $reason, int $branchId) : StdClass
+    public function getExpenses(int $branchId, string $startDate, string $endDate, string $reason): StdClass
     {
         $expenses = new StdClass();
+        $expenses->amount = $this->getSumFromTable('amount', 'expense', $branchId, $startDate, $endDate);
 
-        $expenses->total = $this->getSumFromTable('cantidad','gasto', $branchId, $startDate, $endDate);
-        if ($expenses->total == 0) {
+        if ($expenses->amount == 0) {
             $expenses->expenses = [];
             return $expenses;
         }
 
-        $query = "SELECT gasto.id, gasto.fecha, gasto.cantidad, gasto.concepto, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre FROM gasto, usuario WHERE gasto.idusuario = usuario.id AND gasto.idsucursal = 1 AND gasto.fecha >= '2022-01-01' AND DATE(gasto.fecha) <= '2022-01-10' ORDER BY fecha DESC";
-
         $query = <<<EOF
-            SELECT 
-            gasto.id, gasto.fecha, gasto.cantidad, gasto.concepto, CONCAT(usuario.nombre_pila, ' ' ,usuario.apellido1) AS nombre
-            FROM gasto
-            JOIN usuario ON gasto.idusuario = usuario.id
-            WHERE gasto.idsucursal = $branchId AND gasto.fecha >= '$startDate' AND DATE(gasto.fecha) <= '$endDate' ORDER BY fecha DESC
+            SELECT expense.id, expense.date, expense.amount, expense.reason, 
+                   CONCAT(user.name, ' ' ,user.last_name) AS cashier
+            FROM expense
+            JOIN user ON expense.user_id = user.id
+            WHERE expense.branch_id = $branchId 
+              AND DATE(expense.date) >= '$startDate' 
+              AND DATE(expense.date) <= '$endDate' 
+            ORDER BY date DESC
         EOF;
-
 
         $result = $this->connection->select($query);
         $expenses->qty = $result->num_rows;
-        while ($row = $result->fetch_array()) {
-            $expense = new StdClass();
-            $expense->id = $row[0]; // id
-            $expense->date = $row[1]; // date
-            $expense->amount = $row[2]; // cantidad
-            $expense->reason = $row[3]; // reason
-            $expense->cashier = $row[4]; // cajero
-            $expenses->expenses[] = $expense;
-        }
 
+        while ($row = $result->fetch_assoc()) {
+            $expenses->expenses[] = $row;
+        }
         return $expenses;
+    }
+
+    /**
+     * @param int $branchId
+     * @param string $startDate
+     * @param string $endDate
+     * @return array
+     */
+    public function getUsedProducts(int $branchId, string $startDate, string $endDate): array
+    {
+        $usedProducts = [];
+        $query = <<<EOF
+            SELECT used_product.id, used_product.date, product.name, 
+                used_product.quantity, CONCAT(user.name, ' ' , user.last_name) AS cashier 
+            FROM used_product, product, user 
+            WHERE used_product.user_id = user.id AND used_product.product_id = product.id 
+                AND used_product.branch_id = $branchId
+                AND DATE(used_product.date) >= '$startDate' AND DATE(used_product.date) <= '$endDate' ORDER BY date DESC
+        EOF;
+
+        $result = $this->connection->select($query);
+
+        while ($row = $result->fetch_assoc()) {
+            $usedProducts[] = $row;
+        }
+        return $usedProducts;
     }
 
     /**
@@ -206,9 +198,14 @@ class HistoryDAO
      */
     private function getSumFromTable(string $column, string $table, int $branchId, string $startDate, string $endDate): float
     {
-        $row = $this->connection->select("SELECT SUM({$column}) FROM {$table} "
-            . "WHERE fecha >= '{$startDate}' AND fecha <= '{$endDate}' "
-            . "AND idsucursal = {$branchId}")->fetch_array();
+        $query = <<<EOF
+            SELECT SUM($column) 
+            FROM $table 
+            WHERE DATE(date) >= '$startDate' 
+              AND DATE(date) <= '$endDate' 
+              AND branch_id = $branchId
+        EOF;
+        $row = $this->connection->select($query)->fetch_array();
         return floatval($row[0]);
     }
 }

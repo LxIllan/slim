@@ -28,7 +28,7 @@ class FoodController
      * @param array $data
      * @return array
      */
-    public function createFood(array $data) : array
+    public function createFood(array $data): array
     {
         $food = $this->foodDAO->createFood($data);
         if ($food == null) {
@@ -36,11 +36,11 @@ class FoodController
         }
 
         $dishData = [
-            "nombre" => $food->name,
-            "precio" => $food->cost,
-            "idalimento" => $food->id,
-            "idcategoria" => $food->category_id,
-            "idsucursal" => $food->branch_id
+            "name" => $food->name,
+            "price" => $food->cost,
+            "food_id" => $food->id,
+            "category_id" => $food->category_id,
+            "branch_id" => $food->branch_id
         ];
 
         $dishController = new DishController();
@@ -66,7 +66,7 @@ class FoodController
 
     /**
      * @param int $branchId
-     * @return array
+     * @return Food[]
      */
     public function getFoodByBranch(int $branchId): array
     {
@@ -78,18 +78,43 @@ class FoodController
      * @param array $data
      * @return Food|null
      */
-    public function editFood(int $id, array $data) : Food|null
+    public function editFood(int $id, array $data): Food|null
     {
         return $this->foodDAO->editFood($id, $data);
     }
 
     /**
-     * @param int $idAlimento
+     * @param int $id
      * @return bool
      */
-    public function deleteFood(int $id)
+    public function deleteFood(int $id): bool
     {
         return $this->foodDAO->deleteFood($id);
+    }
+
+    /**
+     * @param int $foodId
+     * @param float $quantity
+     * @param int $userId
+     * @param int $branchId
+     * @return Food
+     */
+    public function supply(int $foodId, float $quantity, int $userId, int $branchId): Food
+    {
+        return $this->foodDAO->supply($foodId, $quantity, $userId, $branchId);
+    }
+
+    /**
+     * @param int $foodId
+     * @param float $quantity
+     * @param string $reason
+     * @param int $userId
+     * @param int $branchId
+     * @return Food
+     */
+    public function alter(int $foodId, float $quantity, string $reason, int $userId, int $branchId): Food
+    {
+        return $this->foodDAO->alter($foodId, $quantity, $reason, $userId, $branchId);
     }
 
     public function agregarPaquete($nombre, $precio, $descripcion, $idSucursal) : bool
@@ -101,19 +126,6 @@ class FoodController
         $cantidadVendida = 0;
         $verEnVenta = 1;
         $idCategoria = Util::ID_PAQUETE;
-        return $this->foodDAO->createDish(new Platillo(
-            $idPlatillo,
-            $nombre,
-            $precio,
-            $porcion,
-            $descripcion,
-            $paquete,
-            $cantidadVendida,
-            $verEnVenta,
-            $idAlimento,
-            $idCategoria,
-            $idSucursal
-        ));
     }
 
     public function agregarPlatilloAPaquete(int $idPaquete, int $idPlatillo)
@@ -121,32 +133,6 @@ class FoodController
         return $this->foodDAO->agregarPlatilloAPaquete($idPaquete, $idPlatillo);
     }
 
-    public function usarProducto(int $idAlimento, int $cantidad, int $idCajero, int $idSucursal)
-    {
-        return $this->foodDAO->usarProducto($idAlimento, $cantidad, $idCajero, $idSucursal);
-    }
-
-    public function listarProductosUsados(?string $fecha_inicio, ?string $fecha_fin, int $idSucursal) : ?array {
-        if (!isset($fecha_inicio)) {
-            $fecha_inicio = date('Y-m-j');
-        }
-        if (!isset($fecha_fin)) {
-            $fecha_fin = date('Y-m-j 23:59:59');
-        } else {
-            $fecha_fin = date('Y-m-j 23:59:59', strtotime($fecha_fin));
-        }
-        return $this->foodDAO->listarProductosUsados($fecha_inicio, $fecha_fin, $idSucursal);
-    }
-
-    public function surtirAlimento(int $idAlimento, float $cantidad, float $cantidadActual, float $costo, int $idCajaero, int $idSucursal)
-    {
-        return $this->foodDAO->surtirAlimento($idAlimento, $cantidad, $cantidadActual, $costo, $idCajaero, $idSucursal);
-    }
-
-    public function alterarAlimento(int $idAlimento, float $cantidad, string $justificacion, float $cantidadActual, float $costo, int $idCajaero, int $idSucursal)
-    {
-        return $this->foodDAO->alterarAlimento($idAlimento, $cantidad, $justificacion, $cantidadActual, $costo, $idCajaero, $idSucursal);
-    }
 
     public function eliminarPlatilloDePaquete(int $idPaquete, int $idPlatillo)
     {
@@ -156,21 +142,6 @@ class FoodController
     public function listarAlimentosInicio(int $idSucursal)
     {            
         return $this->foodDAO->dameAlimentosInicio($idSucursal);
-    }
-
-    public function listarPlatillosCategoria(int $idCategoria, int $idSucursal)
-    {
-        return $this->foodDAO->damePlatillosCategoria($idCategoria, $idSucursal);
-    }
-
-    public function listarPlatillosPaquete(int $idPaquete)
-    {
-        return $this->foodDAO->damePlatillosDePaquete($idPaquete);
-    }
-
-    public function listarPaquetes(int $idSucursal)
-    {
-        return $this->foodDAO->damePaquetes($idSucursal);
     }
 
     /* Venta actual y regalias */
@@ -207,15 +178,6 @@ class FoodController
     public function listarPlatillosSucursal(int $idSucursal)
     {
         return $this->foodDAO->damePlatillosSucursal($idSucursal);
-    }
-
-    public function getNumTicket(int $idSucursal): int {            
-        return $this->foodDAO->getNumTicket($idSucursal);
-    }
-
-    public function registrarCantidadesVendidas(int $idSucursal)
-    {
-        return $this->foodDAO->registrarCantidadesVendidas($idSucursal);
     }
 
     public function resetCantidadesVendidas()

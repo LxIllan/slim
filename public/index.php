@@ -11,16 +11,12 @@ use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
 use Tuupola\Middleware\JwtAuthentication;
 use Dotenv\Dotenv;
-use App\Application\Model\Database;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 //Initialize Dotenv
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
-
-//Initialize Illuminate Database Connection
-new Database();
 
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();

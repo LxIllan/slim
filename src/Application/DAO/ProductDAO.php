@@ -101,8 +101,8 @@ class ProductDAO
             $data = [
                 "foodName" => $product->name,
                 "quantity" => $newQuantity,
-                "branchName" => $branch->nombre,
-                "branchLocation" => $branch->ubicacion
+                "branchName" => $branch->name,
+                "branchLocation" => $branch->location
             ];
             if (Util::sendNotificationToAdmin($data)) {
                 $dataToUpdateProduct = [

@@ -3,14 +3,11 @@
 declare(strict_types=1);
 
 use App\Application\Controller\FoodController;
-use App\Application\Controller\DishController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-
     /**
      * @api /dishes
      * @method POST
@@ -18,13 +15,9 @@ return function (App $app) {
      */
     $app->post('/foods', function (Request $request, Response $response) {
         $body = $request->getParsedBody();
-
         $foodController = new FoodController();
-
-        $dish = $foodController->createFood($body);
-
-        $response->getBody()->write(json_encode($dish));
-
+        $result = $foodController->createFood($body);
+        $response->getBody()->write(json_encode($result));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -35,16 +28,9 @@ return function (App $app) {
      */
     $app->get('/foods', function (Request $request, Response $response) {
         $body = $request->getParsedBody();
-
         $foodController = new FoodController();
-        $foods = [];
-
-        if (isset($body['branchId'])) {
-            $foods = $foodController->getFoodByBranch(intval($body['branchId']));
-        }
-        
+        $foods = $foodController->getFoodByBranch(intval($body['branch_id']));
         $response->getBody()->write(json_encode($foods));
-
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -55,14 +41,8 @@ return function (App $app) {
      */
     $app->get('/foods/{id}', function (Request $request, Response $response, $args) {
         $foodController = new FoodController();
-        $food = null;
-
-        if (isset($args['id'])) {
-            $food = $foodController->getFoodById(intval($args['id']));
-        }
-
+        $food = $foodController->getFoodById(intval($args['id']));
         $response->getBody()->write(json_encode($food));
-
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -73,13 +53,9 @@ return function (App $app) {
      */
     $app->put('/foods/{id}', function (Request $request, Response $response, $args) {
         $body = $request->getParsedBody();
-
         $foodController = new FoodController();
-
         $food = $foodController->editFood(intval($args['id']), $body);
-
         $response->getBody()->write(json_encode($food));
-
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -90,14 +66,35 @@ return function (App $app) {
      */
     $app->delete('/foods/{id}', function (Request $request, Response $response, $args) {
         $body = $request->getParsedBody();
-
         $foodController = new FoodController();
-
         $food = $foodController->deleteFood(intval($args['id']));
-
         $response->getBody()->write(json_encode($food));
-
         return $response->withHeader('Content-Type', 'application/json');
     });
 
+    /**
+     * @api /foods/{id}/supply
+     * @method PUT
+     * @description Delete food
+     */
+    $app->put('/foods/{id}/supply', function (Request $request, Response $response, $args) {
+        $body = $request->getParsedBody();
+        $foodController = new FoodController();
+        $food = $foodController->supply(intval($args['id']), floatval($body['quantity']), intval($body['user_id']), intval($body['branch_id']));
+        $response->getBody()->write(json_encode($food));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
+     * @api /foods/{id}/alter
+     * @method PUT
+     * @description Delete food
+     */
+    $app->put('/foods/{id}/alter', function (Request $request, Response $response, $args) {
+        $body = $request->getParsedBody();
+        $foodController = new FoodController();
+        $food = $foodController->alter(intval($args['id']), floatval($body['quantity']), $body['reason'], intval($body['user_id']), intval($body['branch_id']));
+        $response->getBody()->write(json_encode($food));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
 };

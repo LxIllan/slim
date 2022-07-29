@@ -4,12 +4,10 @@ namespace App\Application\Helper;
 
 class Util
 {
-    public const ID_FER = 3;
-
     public const FOTO_PRODUCTO = 0;
     public const FOTO_USUARIO = 1;
-    public const STR_FOOTER = 'Copyright © Pollo Rey 2022';    
-    public const CATEGORIAS = ['Platillos', 'Paquete', 'Bebidas', 'Cerveza', 'Extras'];        
+    public const STR_FOOTER = 'Copyright © Pollo Rey 2022';
+    public const CATEGORIAS = ['Platillos', 'Paquete', 'Bebidas', 'Cerveza', 'Extras'];
             
     public const ID_PLATILLOS = 1;
     public const ID_PAQUETE = 2;
@@ -56,7 +54,7 @@ class Util
      * @param string $table
      * @return string
      */
-    public static function prepareUpdateQuery(int $id, array $data, string $table) : string
+    public static function prepareUpdateQuery(int $id, array $data, string $table): string
     {
         $query = "UPDATE $table SET";
 
@@ -80,7 +78,7 @@ class Util
      * @param string $table
      * @return string
      */
-    public static function prepareDeleteQuery(int $id, string $table) : string
+    public static function prepareDeleteQuery(int $id, string $table): string
     {
         return "DELETE FROM $table WHERE id = $id";
     }

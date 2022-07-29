@@ -10,7 +10,7 @@ use App\Application\Model\Food;
 
 class FoodDAO
 {
-    private const TABLE_NAME = 'alimento';
+    private const TABLE_NAME = 'food';
 
     /**
      * @var Connection $connection
@@ -26,7 +26,7 @@ class FoodDAO
      * @param array $data
      * @return Food|null
      */
-    public function createFood(array $data) : Food|null
+    public function createFood(array $data): Food|null
     {
         $query = Util::prepareInsertQuery($data, self::TABLE_NAME);
         return ($this->connection->update($query)) ? $this->getFoodById($this->connection->getLastId()) : null;
@@ -38,17 +38,17 @@ class FoodDAO
      */
     public function getFoodById(int $id): Food
     {
-        return $this->connection->select("SELECT * FROM alimento WHERE id = $id")->fetch_object('App\Application\Model\Food');
+        return $this->connection->select("SELECT * FROM food WHERE id = $id")->fetch_object('App\Application\Model\Food');
     }
 
     /**
      * @param int $branchId
-     * @return array
+     * @return Food[]
      */
     public function getFoodByBranch(int $branchId): array
     {
         $food = [];
-        $result = $this->connection->select("SELECT id FROM alimento WHERE branch_id = $branchId "
+        $result = $this->connection->select("SELECT id FROM food WHERE branch_id = $branchId "
             . "AND category_id <= " . Util::ID_EXTRAS . " ORDER BY name");
         while ($row = $result->fetch_array()) {
             $food[] = self::getFoodById(intval($row['id']));
@@ -58,12 +58,12 @@ class FoodDAO
 
     /**
      * @param int $idSucursal
-     * @return array
+     * @return Food[]
      */
-    public function getFoodToDashboard(int $branchId)
+    public function getFoodToDashboard(int $branchId): array
     {
         $food = [];
-        $result = $this->connection->select("SELECT id FROM alimento WHERE branch_id = $branchId "
+        $result = $this->connection->select("SELECT id FROM food WHERE branch_id = $branchId "
             . "AND is_showed_in_index = 1 ORDER BY name");
         while ($row = $result->fetch_array()) {
             $food[] = $this->getFoodById(intval($row['id']));
@@ -76,7 +76,7 @@ class FoodDAO
      * @param array $data
      * @return Food|null
      */
-    public function editFood(int $id, array $data) : Food|null
+    public function editFood(int $id, array $data): Food|null
     {
         $query = Util::prepareUpdateQuery($id, $data, self::TABLE_NAME);
         return ($this->connection->update($query)) ? $this->getFoodById($id) : null;
@@ -86,43 +86,72 @@ class FoodDAO
      * @param int $id
      * @return bool
      */
-    public function deleteFood(int $id) : bool
+    public function deleteFood(int $id): bool
     {
         $query = Util::prepareDeleteQuery($id, self::TABLE_NAME);
         return $this->connection->delete($query);
     }
 
-    public function getNumTicket(int $idSucursal): int {
-        $num_ticket = $this->connection->select("SELECT num_ticket FROM sucursal WHERE idsucursal = $idSucursal")->fetch_array()[0];
-        $this->connection->update("UPDATE sucursal SET num_ticket = " . ($num_ticket + 1) . " WHERE idsucursal = $idSucursal");
-        return $num_ticket;
+    /**
+     * @param int $foodId
+     * @param float $quantity
+     * @param int $userId
+     * @param int $branchId
+     * @return Food
+     */
+    public function supply(int $foodId, float $quantity, int $userId, int $branchId): Food
+    {
+        $food = $this->getFoodById($foodId);
+        $newQuantity = $food->quantity + $quantity;
+        $cost = $food->cost * $quantity;
+
+        $dataToInsert = [
+            "food_id" => $foodId,
+            "quantity" => $quantity,
+            "new_quantity" => $newQuantity,
+            "cost" => $cost,
+            "user_id" => $userId,
+            "branch_id" => $branchId
+        ];
+
+        $this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'supplied_food'));
+
+        $dataToUpdate = [
+            "quantity" => $newQuantity
+        ];
+        return $this->editFood($foodId, $dataToUpdate);
     }
 
-    public function surtirAlimento(int $idAlimento, float $cantidad, float $cantidadActual, float $costo, int $idCajero, int $idSucursal)
+    /**
+     * @param int $foodId
+     * @param float $quantity
+     * @param string $reason
+     * @param int $userId
+     * @param int $branchId
+     * @return Food
+     */
+    public function alter(int $foodId, float $quantity, string $reason, int $userId, int $branchId): Food
     {
-        return $this->connection->update("UPDATE alimento SET cantidad = $cantidadActual WHERE idalimento = $idAlimento") &&
-        $this->connection->insert("INSERT INTO alimentos_surtidos(idalimento, cantidad, nueva_cantidad, costo, fecha, idusuario, idsucursal) VALUES ("
-                . $idAlimento . ", "
-                . $cantidad . ", "
-                . $cantidadActual . ", "
-                . $costo . ", '"
-                . date('Y-m-d H:i:s') . "', "
-                . $idCajero . ", "
-                . $idSucursal . ")");
-    }
+        $food = $this->getFoodById($foodId);
+        $newQuantity = $food->quantity + $quantity;
+        $cost = $food->cost * $quantity;
 
-    public function alterarAlimento(int $idAlimento, float $cantidad, string $justificacion, float $cantidadActual, float $costo, int $idCajero, int $idSucursal)
-    {
-        return $this->connection->update("UPDATE alimento SET cantidad = $cantidadActual WHERE idalimento = $idAlimento") &&
-        $this->connection->insert("INSERT INTO alimentos_alterados(idalimento, cantidad, justificacion, nueva_cantidad, costo, fecha, idusuario, idsucursal) VALUES ("
-                . $idAlimento . ", "
-                . $cantidad . ", "
-                . "'" . $justificacion . "', "
-                . $cantidadActual . ", "
-                . $costo . ", "
-                . "'" . date('Y-m-d H:i:s') . "', "
-                . $idCajero . ", "
-                . $idSucursal . ")");
+        $dataToInsert = [
+            "food_id" => $foodId,
+            "quantity" => $quantity,
+            "reason" => $reason,
+            "new_quantity" => $newQuantity,
+            "cost" => $cost,
+            "user_id" => $userId,
+            "branch_id" => $branchId
+        ];
+
+        $this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'altered_food'));
+
+        $dataToUpdate = [
+            "quantity" => $newQuantity
+        ];
+        return $this->editFood($foodId, $dataToUpdate);
     }
 
     public function venderPlatillos(int $idCajero, int $idSucursal, string $concepto, bool $regalo = false)
@@ -530,8 +559,6 @@ class FoodDAO
 
     public function resetCantidadesVendidas()
     {
-        return $this->connection->update("UPDATE alimento SET cantidad_vendida = 0") &&
-        $this->connection->update("UPDATE platillo SET cantidad_vendida = 0") &&
         $this->connection->update("UPDATE alimento SET notif_enviada = 0");
     }
 
@@ -561,8 +588,6 @@ class FoodDAO
         }
         return $platillos;
     }
-
-
 
     public function cancelarAlimentoAlterado(int $idalimento_alterado) {
         return $this->connection->delete("DELETE FROM alimentos_alterados WHERE idalimento_alterado = $idalimento_alterado");

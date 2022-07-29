@@ -18,80 +18,11 @@ class AlimentoDAO
         $this->conexion = new Conexion();
     }
 
-    public function agregarAlimento(Alimento $alimento) : bool
-    {            
-        return $this->conexion->insert("INSERT INTO alimento(nombre, cantidad, cantidad_vendida, cantidad_notif, notif_enviada, costo, ver_en_inicio, idcategoria, idsucursal) "
-            . "VALUES ('" . $alimento->getNombre() . "', "
-            . $alimento->getCantidad() . ", "
-            . $alimento->getCantidadVendida() . ", "
-            . $alimento->getCantidadNotif() . ", "
-            . $alimento->getNotifEnviada() . ", "
-            . $alimento->getCosto() . ", "
-            . $alimento->getVerEnInicio() . ", "
-            . $alimento->getIdCategoria() . ", "
-            . $alimento->getIdSucursal() . ")");
-    }
-
-    public function agregarPlatillo(Platillo $platillo) : bool
-    {
-        return $this->conexion->insert("INSERT INTO platillo(nombre, precio, "
-            . "porcion, descripcion, paquete, cantidad_vendida, ver_en_venta, idalimento, idsucursal, idcategoria) "
-            . "VALUES ('" . $platillo->getNombre() . "', "
-            . $platillo->getPrecio() . ", "
-            . $platillo->getPorcion() . ", '"
-            . $platillo->getDescripcion() . "', "                
-            . $platillo->getPaquete() . ", "
-            . $platillo->getCantidadVendida() . ", "
-            . $platillo->getVerEnVenta() . ", "
-            . $platillo->getIdAlimento() . ", "
-            . $platillo->getIdSucursal() . ", "
-            . $platillo->getIdCategoria() . ")");
-    }
-
     public function getSiguienteId(): int {            ;            
         $tupla = $this->conexion->select("SELECT AUTO_INCREMENT FROM "
             . "INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'alimento'")->fetch_array();            
         return $tupla[0];
     }
-
-    public function getNumTicket(int $idSucursal): int {
-        $num_ticket = $this->conexion->select("SELECT num_ticket FROM sucursal WHERE idsucursal = $idSucursal")->fetch_array()[0];            
-        $this->conexion->update("UPDATE sucursal SET num_ticket = " . ($num_ticket + 1) . " WHERE idsucursal = $idSucursal");
-        return $num_ticket;
-    }
-
-    public function editarPlatillo(Platillo $platillo) : bool
-    {            
-        return $this->conexion->update("UPDATE platillo SET "
-            . "nombre = '" . $platillo->getNombre() . "', "
-            . "precio = " . $platillo->getPrecio() . ", "
-            . "porcion = " . $platillo->getPorcion() . ", "
-            . "ver_en_venta = " . $platillo->getVerEnVenta() . ", "
-            . "descripcion = '" . $platillo->getDescripcion() . "', "
-            . "idcategoria = " . $platillo->getIdCategoria() . " "
-            . "WHERE idplatillo = " . $platillo->getIdPlatillo());
-    }
-
-    public function editarAlimento(Alimento $alimento) : bool
-    {
-        return $this->conexion->update("UPDATE alimento SET "
-            . "nombre = '" . $alimento->getNombre() . "', "
-            . "costo = " . $alimento->getCosto() . ", "
-            . "ver_en_inicio = " . $alimento->getVerEnInicio() . ", "
-            . "cantidad_notif = " . $alimento->getCantidadNotif() . ", "
-            . "idcategoria = " . $alimento->getIdCategoria() . " "
-            . "WHERE idalimento = " . $alimento->getIdAlimento());
-    }
-
-    public function eliminarPlatillo(int $idPlatillo) : bool
-    {
-        return $this->conexion->delete("DELETE FROM platillo WHERE idplatillo = " . $idPlatillo);
-    }
-
-    public function eliminarAlimento(int $idAlimento) : bool
-    {
-        return $this->conexion->delete("DELETE FROM alimento WHERE idalimento = " . $idAlimento);
-    }        
 
     public function surtirAlimento(int $idAlimento, float $cantidad, float $cantidadActual, float $costo, int $idCajero, int $idSucursal)
     {
