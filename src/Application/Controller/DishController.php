@@ -102,4 +102,25 @@ class DishController
     {
         return $this->dishDAO->addDishToCombo($comboId, $dishId);
     }
+
+    /**
+     * @param int $comboId
+     * @param int $dishId
+     * @return bool
+     */
+    public function deleteDishFromCombo(int $comboId, int $dishId): bool
+    {
+        return $this->dishDAO->deleteDishFromCombo($comboId, $dishId);
+    }
+
+    /**
+     * @param array $items
+     * @param int $userId
+     * @param int $branchId
+     * @return mixed
+     */
+    public function sell(array $items, int $userId, int $branchId): mixed
+    {
+        return $this->dishDAO->sell($items, $userId, $branchId);
+    }
 }

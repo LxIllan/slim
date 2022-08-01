@@ -71,4 +71,17 @@ return function (App $app) {
         $response->getBody()->write(json_encode($result));
         return $response->withHeader('Content-Type', 'application/json');
     });
+
+    /**
+     * @api /combos/{id}/delete-dish
+     * @method DELETE
+     * @description Delete dish from combo
+     */
+    $app->delete('/combos/{id}/delete-dish', function (Request $request, Response $response, $args) {
+        $body = $request->getParsedBody();
+        $dishController = new DishController();
+        $result = $dishController->deleteDishFromCombo(intval($args['id']), intval($body['dish_id']));
+        $response->getBody()->write(json_encode($result));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
 };

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "b9e05b1a-c27e-4fd2-a05c-69b29312ceb8",
+		"_postman_id": "764666c6-c900-49c7-bad6-338b2fed4c7c",
 		"name": "Slim",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "20470085"
+		"_exporter_id": "18225211"
 	},
 	"item": [
 		{
@@ -159,7 +159,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{    \n    \"dish_id\": 279\n}",
+									"raw": "{    \n    \"dish_id\": 266\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -167,7 +167,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/combos/281/add-dish",
+									"raw": "http://localhost:8080/combos/269/add-dish",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -175,8 +175,38 @@
 									"port": "8080",
 									"path": [
 										"combos",
-										"281",
+										"269",
 										"add-dish"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete dish from combo",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{    \n    \"dish_id\": 268\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/combos/269/delete-dish",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"combos",
+										"269",
+										"delete-dish"
 									]
 								}
 							},
@@ -200,7 +230,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/combos/281/dishes",
+									"raw": "http://localhost:8080/combos/269/dishes",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -208,7 +238,7 @@
 									"port": "8080",
 									"path": [
 										"combos",
-										"281",
+										"269",
 										"dishes"
 									]
 								}
@@ -320,7 +350,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/foods/155/dishes",
+							"raw": "http://localhost:8080/foods/150/dishes",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -328,7 +358,7 @@
 							"port": "8080",
 							"path": [
 								"foods",
-								"155",
+								"150",
 								"dishes"
 							]
 						}
@@ -363,6 +393,34 @@
 								"category",
 								"1",
 								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sell dishes",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\" : 3,\n    \"branch_id\" : 8,\n    \"items\" : [\n        {\n            \"dish_id\" : 269,\n            \"quantity\" : 1\n        },\n        {\n            \"dish_id\" : 266,\n            \"quantity\" : 2\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/sell",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"sell"
 							]
 						}
 					},
@@ -573,7 +631,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"branchId\": 8\n}",
+							"raw": "{\n    \"branch_id\": 8\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -670,7 +728,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/foods/155",
+							"raw": "http://localhost:8080/foods/150",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -678,7 +736,7 @@
 							"port": "8080",
 							"path": [
 								"foods",
-								"155"
+								"150"
 							]
 						}
 					},
@@ -769,7 +827,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-06-01\",\r\n    \"branch_id\" : 1\r\n}",
+							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-08-01\",\r\n    \"branch_id\" : 8\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1004,130 +1062,163 @@
 			]
 		},
 		{
-			"name": "Get branches",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-							"type": "string"
+			"name": "Branches",
+			"item": [
+				{
+					"name": "Get branches",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/branches",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"branches"
+							]
 						}
-					]
+					},
+					"response": []
 				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "Get branch by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/branches/8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"branches",
+								"8"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/branches",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"branches"
-					]
+				{
+					"name": "Get num ticket id branch",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/branches/get-ticket/8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"branches",
+								"get-ticket",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create branch",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"Other test\",\n    \"location\": \"Other\",\n    \"photo_path\" : \"\",\n    \"phone\" : \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/branches",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"branches"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get branch by id",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/branches/8",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"branches",
-						"8"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get num ticket id branch",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/branches/get-ticket/8",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"branches",
-						"get-ticket",
-						"8"
-					]
-				}
-			},
-			"response": []
+			]
 		}
 	],
 	"auth": {

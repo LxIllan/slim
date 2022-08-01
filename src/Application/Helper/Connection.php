@@ -23,12 +23,12 @@ class Connection
         date_default_timezone_set('America/Mexico_City');
         setlocale(LC_MONETARY, 'en_ES');
 
-        $this->mysqli = new mysqli(self::SERVER, self::USER,
-                self::PASSWORD, self::DATABASE);
+        $this->mysqli = new mysqli(self::SERVER, self::USER, self::PASSWORD, self::DATABASE);
         if ($this->mysqli->connect_errno) {
             echo 'Conexión Fallida : ' . $this->mysqli->connect_error;
             exit();
         }
+        $this->mysqli->query("SET time_zone = '-05:00'");
     }
 
     public function __destruct()

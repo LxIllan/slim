@@ -20,6 +20,15 @@ class BranchController
     }
 
     /**
+     * @param array $data
+     * @return Branch|null
+     */
+    public function create(array $data): Branch|null
+    {
+        return $this->branchDAO->create($data);
+    }
+
+    /**
      * @param int $id
      * @return Branch
      */

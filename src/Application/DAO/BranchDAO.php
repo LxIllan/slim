@@ -23,6 +23,16 @@ class BranchDAO
     }
 
     /**
+     * @param array $data
+     * @return Branch|null
+     */
+    public function create(array $data): Branch|null
+    {
+        $query = Util::prepareInsertQuery($data, self::TABLE_NAME);
+        return ($this->connection->insert($query)) ? $this->getById($this->connection->getLastId()) : null;
+    }
+
+    /**
      * @param int $id
      * @return Branch
      */

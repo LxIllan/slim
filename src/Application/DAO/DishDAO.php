@@ -7,6 +7,7 @@ namespace App\Application\DAO;
 use App\Application\Helper\Connection;
 use App\Application\Helper\Util;
 use App\Application\Model\Dish;
+use App\Application\Controller\FoodController;
 
 class DishDAO
 {
@@ -150,5 +151,77 @@ class DishDAO
         ];
 
         return $this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'dishes_in_combo'));
+    }
+
+    /**
+     * @param int $comboId
+     * @param int $dishId
+     * @return bool
+     */
+    public function deleteDishFromCombo(int $comboId, int $dishId): bool
+    {
+        $query = <<<EOF
+        DELETE FROM dishes_in_combo 
+        WHERE combo_id = $comboId 
+          AND dish_id = $dishId
+        LIMIT 1
+        EOF;
+
+        return $this->connection->delete($query);
+    }
+
+    /**
+     * @param array $items
+     * @param int $userId
+     * @param int $branchId
+     * @return mixed
+     */
+    public function sell(array $items, int $userId, int $branchId): mixed
+    {
+        $result = false;
+        foreach ($items as $item) {
+            $dishToSell = $this->getById($item['dish_id']);
+            $result = $this->registerSell(intval($dishToSell->id), intval($item['quantity']), floatval($dishToSell->price), $userId, $branchId);
+
+            if ($dishToSell->is_combo) {
+                $dishes = $this->getDishesByCombo(intval($dishToSell->id));
+                foreach ($dishes as $dish) {
+                    $portion = $dish->portion * $item['quantity'];
+                    $this->subtractFood(intval($dish->food_id), $portion);
+                }
+            } else {
+                $portion = $dishToSell->portion * $item['quantity'];
+                $this->subtractFood(intval($dishToSell->food_id), $portion);
+            }
+        }
+        return $result;
+    }
+
+    private function registerSell(int $dishId, int $quantity, float $price, int $userId, int $branchId): bool
+    {
+        $dataToInsert = [
+            "dish_id" => $dishId,
+            "quantity" => $quantity,
+            "price" => $price,
+            "user_id" => $userId,
+            "branch_id" => $branchId
+        ];
+        $query = Util::prepareInsertQuery($dataToInsert, 'sale');
+        return $this->connection->insert($query);
+    }
+
+    /**
+     * @param int $foodId
+     * @param float $quantity
+     * @return bool
+     */
+    private function subtractFood(int $foodId, float $quantity): bool
+    {
+        $foodController = new FoodController();
+        $food = $foodController->getFoodById($foodId);
+        $dataToUpdate = [
+            "quantity" => ($food->quantity - $quantity)
+        ];
+        return !is_null($this->connection->update(Util::prepareUpdateQuery($foodId, $dataToUpdate, 'food')));
     }
 }

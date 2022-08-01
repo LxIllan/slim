@@ -3,13 +3,24 @@
 declare(strict_types=1);
 
 use App\Application\Controller\BranchController;
-use App\Application\Controller\SucursalController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
+    /**
+     * @api /branches
+     * @method POST
+     * @description Create a new branch
+     */
+    $app->post('/branches', function (Request $request, Response $response) {
+        $body = $request->getParsedBody();
+        $branchController = new BranchController();
+        $branch = $branchController->create($body);
+        $response->getBody()->write(json_encode($branch));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
     /**
      * @api /branches
      * @method GET

@@ -83,4 +83,17 @@ return function (App $app) {
         $response->getBody()->write(json_encode($wasDeleted));
         return $response->withHeader('Content-Type', 'application/json');
     });
+
+    /**
+     * @api /sell
+     * @method POST
+     * @description Sell dishes
+     */
+    $app->post('/sell', function (Request $request, Response $response) {
+        $body = $request->getParsedBody();
+        $dishController = new DishController();
+        $result = $dishController->sell($body['items'], intval($body['user_id']), intval($body['branch_id']));
+        $response->getBody()->write(json_encode($result));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
 };
