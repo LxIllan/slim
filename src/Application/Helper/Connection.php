@@ -6,24 +6,17 @@ use \mysqli;
 
 class Connection
 {
+    /**
+     * @var \mysqli
+     */
+    private mysqli $mysqli;
 
-    private const SERVER = "82.180.172.52";
-    private const USER = "u775772700_pollos";
-    private const PASSWORD = "Bv4MROKO6";
-    private const DATABASE = "u775772700_pollos";
-//    const USUARIO = "u775772700_plrey";
-//    const PASSWORD = "pollo4Rey";
-//    const BASE_DE_DATOS = "u775772700_plrey";
-
-
-    private $mysqli;
-
-    function __construct()
+    public function __construct()
     {
         date_default_timezone_set('America/Mexico_City');
         setlocale(LC_MONETARY, 'en_ES');
 
-        $this->mysqli = new mysqli(self::SERVER, self::USER, self::PASSWORD, self::DATABASE);
+        $this->mysqli = new mysqli($_ENV['HOST_DB'], $_ENV['USER_DB'], $_ENV['PASS_DB'], $_ENV['DATABASE']);
         if ($this->mysqli->connect_errno) {
             echo 'Conexión Fallida : ' . $this->mysqli->connect_error;
             exit();

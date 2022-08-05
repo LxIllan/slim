@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "764666c6-c900-49c7-bad6-338b2fed4c7c",
+		"_postman_id": "756377b3-aa21-4fb1-ab5e-e234cffd99ec",
 		"name": "Slim",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "18225211"
+		"_exporter_id": "20470085"
 	},
 	"item": [
 		{
@@ -27,12 +27,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/combos",
-									"protocol": "http",
+									"raw": "{{Host}}/combos",
 									"host": [
-										"localhost"
+										"{{Host}}"
 									],
-									"port": "8080",
 									"path": [
 										"combos"
 									]
@@ -55,12 +53,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/dishes/281",
-									"protocol": "http",
+									"raw": "{{Host}}/dishes/281",
 									"host": [
-										"localhost"
+										"{{Host}}"
 									],
-									"port": "8080",
 									"path": [
 										"dishes",
 										"281"
@@ -75,12 +71,10 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/dishes/272",
-									"protocol": "http",
+									"raw": "{{Host}}/dishes/272",
 									"host": [
-										"localhost"
+										"{{Host}}"
 									],
-									"port": "8080",
 									"path": [
 										"dishes",
 										"272"
@@ -107,12 +101,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/combos",
-									"protocol": "http",
+									"raw": "{{Host}}/combos",
 									"host": [
-										"localhost"
+										"{{Host}}"
 									],
-									"port": "8080",
 									"path": [
 										"combos"
 									]
@@ -138,12 +130,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/combos/281",
-									"protocol": "http",
+									"raw": "{{Host}}/combos/281",
 									"host": [
-										"localhost"
+										"{{Host}}"
 									],
-									"port": "8080",
 									"path": [
 										"combos",
 										"281"
@@ -159,7 +149,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{    \n    \"dish_id\": 266\n}",
+									"raw": "{    \n    \"dish_id\": 279\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -167,46 +157,14 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/combos/269/add-dish",
-									"protocol": "http",
+									"raw": "{{Host}}/combos/281/add-dish",
 									"host": [
-										"localhost"
+										"{{Host}}"
 									],
-									"port": "8080",
 									"path": [
 										"combos",
-										"269",
+										"281",
 										"add-dish"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Delete dish from combo",
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{    \n    \"dish_id\": 268\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:8080/combos/269/delete-dish",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"combos",
-										"269",
-										"delete-dish"
 									]
 								}
 							},
@@ -230,15 +188,13 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/combos/269/dishes",
-									"protocol": "http",
+									"raw": "{{Host}}/combos/281/dishes",
 									"host": [
-										"localhost"
+										"{{Host}}"
 									],
-									"port": "8080",
 									"path": [
 										"combos",
-										"269",
+										"281",
 										"dishes"
 									]
 								}
@@ -262,12 +218,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/dishes",
-							"protocol": "http",
+							"raw": "{{Host}}/dishes",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"dishes"
 							]
@@ -290,12 +244,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/dishes/272",
-							"protocol": "http",
+							"raw": "{{Host}}/dishes/272",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"dishes",
 								"272"
@@ -310,12 +262,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/dishes/272",
-							"protocol": "http",
+							"raw": "{{Host}}/dishes/272",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"dishes",
 								"272"
@@ -330,12 +280,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/dishes/268",
-							"protocol": "http",
+							"raw": "{{Host}}/dishes/268",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"dishes",
 								"268"
@@ -350,15 +298,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/foods/150/dishes",
-							"protocol": "http",
+							"raw": "{{Host}}/foods/155/dishes",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"foods",
-								"150",
+								"155",
 								"dishes"
 							]
 						}
@@ -383,44 +329,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/category/1/dishes",
-							"protocol": "http",
+							"raw": "{{Host}}/category/1/dishes",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"category",
 								"1",
 								"dishes"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Sell dishes",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"user_id\" : 3,\n    \"branch_id\" : 8,\n    \"items\" : [\n        {\n            \"dish_id\" : 269,\n            \"quantity\" : 1\n        },\n        {\n            \"dish_id\" : 266,\n            \"quantity\" : 2\n        }\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/sell",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"sell"
 							]
 						}
 					},
@@ -446,12 +362,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/products",
-							"protocol": "http",
+							"raw": "{{Host}}/products",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"products"
 							]
@@ -474,12 +388,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/products/4",
-							"protocol": "http",
+							"raw": "{{Host}}/products/4",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"products",
 								"4"
@@ -494,12 +406,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/products/5",
-							"protocol": "http",
+							"raw": "{{Host}}/products/5",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"products",
 								"5"
@@ -514,12 +424,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/products/4",
-							"protocol": "http",
+							"raw": "{{Host}}/products/4",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"products",
 								"4"
@@ -546,12 +454,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/products",
-							"protocol": "http",
+							"raw": "{{Host}}/products",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"products"
 							]
@@ -574,12 +480,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/use-product/4",
-							"protocol": "http",
+							"raw": "{{Host}}/use-product/4",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"use-product",
 								"4"
@@ -608,12 +512,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/foods",
-							"protocol": "http",
+							"raw": "{{Host}}/foods",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"foods"
 							]
@@ -639,12 +541,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/foods",
-							"protocol": "http",
+							"raw": "{{Host}}/foods",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"foods"
 							]
@@ -667,12 +567,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/foods/154",
-							"protocol": "http",
+							"raw": "{{Host}}/foods/154",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"foods",
 								"154"
@@ -696,12 +594,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/foods/163",
-							"protocol": "http",
+							"raw": "{{Host}}/foods/163",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"foods",
 								"163"
@@ -728,15 +624,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/foods/150",
-							"protocol": "http",
+							"raw": "{{Host}}/foods/155",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"foods",
-								"150"
+								"155"
 							]
 						}
 					},
@@ -757,12 +651,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/foods/155/supply",
-							"protocol": "http",
+							"raw": "{{Host}}/foods/155/supply",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"foods",
 								"155",
@@ -787,12 +679,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/foods/155/alter",
-							"protocol": "http",
+							"raw": "{{Host}}/foods/155/alter",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"foods",
 								"155",
@@ -827,7 +717,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-08-01\",\r\n    \"branch_id\" : 8\r\n}",
+							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-06-01\",\r\n    \"branch_id\" : 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -835,12 +725,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/history/sales",
-							"protocol": "http",
+							"raw": "{{Host}}/history/sales",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"history",
 								"sales"
@@ -877,12 +765,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/history/courtesies",
-							"protocol": "http",
+							"raw": "{{Host}}/history/courtesies",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"history",
 								"courtesies"
@@ -919,12 +805,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/history/expenses",
-							"protocol": "http",
+							"raw": "{{Host}}/history/expenses",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"history",
 								"expenses"
@@ -961,12 +845,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/history/supplied-food",
-							"protocol": "http",
+							"raw": "{{Host}}/history/supplied-food",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"history",
 								"supplied-food"
@@ -1003,12 +885,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/history/altered-food",
-							"protocol": "http",
+							"raw": "{{Host}}/history/altered-food",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"history",
 								"altered-food"
@@ -1045,12 +925,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/history/used-products",
-							"protocol": "http",
+							"raw": "{{Host}}/history/used-products",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"history",
 								"used-products"
@@ -1062,163 +940,124 @@
 			]
 		},
 		{
-			"name": "Branches",
-			"item": [
-				{
-					"name": "Get branches",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/branches",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"branches"
-							]
+			"name": "Get branches",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
+							"type": "string"
 						}
-					},
-					"response": []
+					]
 				},
-				{
-					"name": "Get branch by id",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/branches/8",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"branches",
-								"8"
-							]
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					},
-					"response": []
+					}
 				},
-				{
-					"name": "Get num ticket id branch",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/branches/get-ticket/8",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"branches",
-								"get-ticket",
-								"8"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create branch",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\" : \"Other test\",\n    \"location\": \"Other\",\n    \"photo_path\" : \"\",\n    \"phone\" : \"\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/branches",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"branches"
-							]
-						}
-					},
-					"response": []
+				"url": {
+					"raw": "{{Host}}/branches",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches"
+					]
 				}
-			]
+			},
+			"response": []
+		},
+		{
+			"name": "Get branch by id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/branches/8",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches",
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get num ticket id branch",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/branches/get-ticket/8",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches",
+						"get-ticket",
+						"8"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
@@ -1249,6 +1088,12 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Host",
+			"value": "http://localhost:8080"
 		}
 	]
 }
