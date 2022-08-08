@@ -80,7 +80,6 @@ class ProductDAO
      * @param int $productId
      * @param int $quantity
      * @param int $userId
-     * @param int $branchId
      * @return Product|null
      */
     public function useProduct(int $productId, int $quantity, int $userId): Product|null
@@ -99,10 +98,11 @@ class ProductDAO
             $branchController = new \App\Application\Controller\BranchController();
             $branch = $branchController->getById($product->branch_id);
             $data = [
-                "foodName" => $product->name,
+                "food_name" => $product->name,
                 "quantity" => $newQuantity,
-                "branchName" => $branch->name,
-                "branchLocation" => $branch->location
+                "branch_name" => $branch->name,
+                "branch_location" => $branch->location,
+                "email" => $branch->email
             ];
             if (Util::sendNotificationToAdmin($data)) {
                 $dataToUpdateProduct = [

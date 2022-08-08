@@ -24,33 +24,6 @@ class AlimentoDAO
         return $tupla[0];
     }
 
-    public function surtirAlimento(int $idAlimento, float $cantidad, float $cantidadActual, float $costo, int $idCajero, int $idSucursal)
-    {
-        return $this->conexion->update("UPDATE alimento SET cantidad = $cantidadActual WHERE idalimento = $idAlimento") && 
-        $this->conexion->insert("INSERT INTO alimentos_surtidos(idalimento, cantidad, cantidad_actual, costo, fecha, idusuario, idsucursal) VALUES ("
-                . $idAlimento . ", "
-                . $cantidad . ", "
-                . $cantidadActual . ", "
-                . $costo . ", '"
-                . date('Y-m-d H:i:s') . "', "
-                . $idCajero . ", "
-                . $idSucursal . ")");
-    }
-
-    public function alterarAlimento(int $idAlimento, float $cantidad, string $justificacion, float $cantidadActual, float $costo, int $idCajero, int $idSucursal)
-    {
-        return $this->conexion->update("UPDATE alimento SET cantidad = $cantidadActual WHERE idalimento = $idAlimento") && 
-        $this->conexion->insert("INSERT INTO alimentos_alterados(idalimento, cantidad, justificacion, cantidad_actual, costo, fecha, idusuario, idsucursal) VALUES ("
-                . $idAlimento . ", "
-                . $cantidad . ", "
-                . "'" . $justificacion . "', "
-                . $cantidadActual . ", "
-                . $costo . ", "
-                . "'" . date('Y-m-d H:i:s') . "', "
-                . $idCajero . ", "
-                . $idSucursal . ")");
-    }
-
     public function venderPlatillos(int $idCajero, int $idSucursal, string $concepto, bool $regalo = false)
     {            
         $id_cantidades = self::dameIdCantidadVentaActual($idSucursal);

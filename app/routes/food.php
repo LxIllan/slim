@@ -24,7 +24,7 @@ return function (App $app) {
     /**
      * @api /foods
      * @method GET
-     * @description Create all foods from a branch
+     * @description Get all foods from a branch
      */
     $app->get('/foods', function (Request $request, Response $response) {
         $body = $request->getParsedBody();

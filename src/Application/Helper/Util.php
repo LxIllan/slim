@@ -89,9 +89,8 @@ class Util
      */
     public static function sendNotificationToAdmin(array $data): bool
     {
-        // Email
-        $to      =  'Fernando.Illan@syss.tech';
-        $subject    =  'Notification from: ' . $data["branchName"];
+        $to = $data["email"];
+        $subject = "Notification from: {$data["branchName"]}";
         $headers = "From: pollorey@syss.tech\r\n" .
             'Reply-To: pollorey@syss.tech' . "\r\n" .
             'X-Mailer: PHP/' . phpversion() . "\r\n" .
@@ -145,36 +144,38 @@ class Util
         return (file_exists($nombreFoto)) ? $nombreFoto : $fotosDefault[$tipoRegistro];
     }
 
-    public static function generarClave(int $numChars = 8) : string
+    /**
+     * @param int $lenPassword
+     * @return string
+     */
+    public static function generatePassword(int $lenPassword = 8): string
     {
-        $str = "0123456789abcdefghijklmnopqrstuvwxyz0123456789"
-        . "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        $lenStr = strlen($str);
-        $clave = '';
+        $characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        $lenCharacters = strlen($characters);
+        $password = '';
         $i = 0;
-        while ($i++ < $numChars) {
-            $clave .= $str[rand(0, $lenStr)];
+        while ($i++ < $lenPassword) {
+            $password .= $characters[rand(0, $lenCharacters)];
         }
-        return $clave;
-    }
-    
-    /* Limpia una cadena para que sea reconocida en un post */
-    public static function str_to_post(string $str) : string
-    {
-        $str = str_replace(' ', '_', $str);
-        $str = str_replace('.', '_', $str);
-        $str = str_replace(',', '_', $str);
-        return $str;
+        return $password;
     }
 
-    public static function validarEmail($email) : bool
+    /**
+     * @param string $email
+     * @return bool
+     */
+    public static function validateEmail(string $email): bool
     {
-        return (filter_var($email, FILTER_VALIDATE_EMAIL));
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
     }
 
-    public static function isArrayOfFloats(array $arr) : bool
+    /**
+     * @param array $items
+     * @return bool
+     */
+    public static function isArrayOfFloats(array $items) : bool
     {
-        foreach ($arr as $item) {
+        foreach ($items as $item) {
             if (!is_numeric($item)) {
                 return false;
             }

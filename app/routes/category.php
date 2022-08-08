@@ -9,6 +9,11 @@ use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
+    /**
+     * @api /categories
+     * @method POST
+     * @description Create a new category
+     */
     $app->post('/categories', function (Request $request, Response $response) {
         $body = $request->getParsedBody();
         $category = CategoryController::create($body['category']);

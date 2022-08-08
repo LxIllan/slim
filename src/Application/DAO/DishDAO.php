@@ -161,10 +161,10 @@ class DishDAO
     public function deleteDishFromCombo(int $comboId, int $dishId): bool
     {
         $query = <<<EOF
-        DELETE FROM dishes_in_combo 
-        WHERE combo_id = $comboId 
-          AND dish_id = $dishId
-        LIMIT 1
+            DELETE FROM dishes_in_combo 
+            WHERE combo_id = $comboId 
+            AND dish_id = $dishId
+            LIMIT 1
         EOF;
 
         return $this->connection->delete($query);

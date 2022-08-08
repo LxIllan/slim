@@ -154,54 +154,6 @@ class FoodDAO
         return $this->editFood($foodId, $dataToUpdate);
     }
 
-    public function venderPlatillos(int $idCajero, int $idSucursal, string $concepto, bool $regalo = false)
-    {            
-        $id_cantidades = self::dameIdCantidadVentaActual($idSucursal);
-        
-        if (isset($id_cantidades))
-        {
-            foreach ($id_cantidades as $id_cantidad) {
-                $platillo = self::getDishById($id_cantidad->idPlatillo);
-                if ($regalo) {
-                    self::regalarPlatillo($platillo->getIdPlatillo(), $id_cantidad->cantidad, $concepto, $idCajero, $idSucursal);
-                } else {
-                    self::venderPlatillo($platillo->getIdPlatillo(), $id_cantidad->cantidad, $idCajero, $idSucursal);
-                }
-
-                if ($platillo->getPaquete() == 1) {
-                    $platillos_paquete = self::damePlatillosDePaquete($platillo->getIdPlatillo());                        
-                    if (isset($platillos_paquete)) {
-                        $cantidadVendida = $platillo->getCantidadVendida();
-                        $this->connection->update("UPDATE platillo SET cantidad_vendida = " . ($cantidadVendida + $id_cantidad->cantidad) . " WHERE idplatillo = " . $platillo->getIdPlatillo());
-                        for ($j = 0; $j < $platillos_paquete->size(); $j++) {
-                            self::descontarPlatillo($platillos_paquete->get($j)->getIdPlatillo(), $id_cantidad->cantidad, true);
-                        }
-                    }                       
-                } else {
-                    self::descontarPlatillo($platillo->getIdPlatillo(), $id_cantidad->cantidad, false);
-                }
-            }
-        }            
-        self::limpiarVentaActual($idSucursal);
-    }
-    
-
-    public function descontarPlatillo(int $idPlatillo, int $cantidad, bool $esPaquete)
-    {            
-        $platillo = self::getDishById($idPlatillo);
-        if (!$esPaquete) {
-            $cantidadVendida = $platillo->getCantidadVendida();
-            $this->connection->update("UPDATE platillo SET cantidad_vendida = " . ($cantidadVendida + $cantidad) . " WHERE idplatillo = " . $idPlatillo);
-        }
-        $idAlimento = $platillo->getIdAlimento();
-        $alimento = self::getFoodById($idAlimento);
-        $porcion = $platillo->getPorcion();            
-        $cantidadTotal = ($porcion * $cantidad);
-        $cantidadVendida = $alimento->getCantidadVendida();
-        return self::descontarAlimento($idAlimento, $cantidadTotal) && 
-            $this->connection->update("UPDATE alimento SET cantidad_vendida = " . ($cantidadVendida + ($cantidadTotal)) . " WHERE idalimento = " . $idAlimento);
-    }
-
     private function descontarAlimento(int $idAlimento, float $cantidad): bool {
         $alimento = self::getFoodById($idAlimento);
         $existencias = $alimento->getCantidad();
