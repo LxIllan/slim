@@ -6,84 +6,89 @@ use App\Application\Controller\HistoryController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
     /**
-     * @api /history/expenses
+     * @api /histories/expenses
      * @method GET
      * @description Get history expenses
      */
-    $app->get('/history/expenses', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
+    $app->get('/histories/expenses', function (Request $request, Response $response) {
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
         $historyController = new HistoryController();
-        $expenses = $historyController->getExpenses(intval($body['branch_id']), $body['start_date'], $body['end_date'], $body['reason']);
-        $response->getBody()->write(json_encode($expenses));
+        $expenses = $historyController->getExpenses($jwt['branch_id'], $params['from'], $params['to'], $params['reason'] ?? null);
+        $response->getBody()->write(json_encode(["statusCode" => 200, "data" => $expenses]));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
     /**
-     * @api /history/sales
+     * @api /histories/sales
      * @method GET
      * @description Get history sales
      */
-    $app->get('/history/sales', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
+    $app->get('/histories/sales', function (Request $request, Response $response) {
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
         $historyController = new HistoryController();
-        $sales = $historyController->getSales(intval($body['branch_id']), $body['start_date'], $body['end_date']);
-        $response->getBody()->write(json_encode($sales));
+        $sales = $historyController->getSales($jwt['branch_id'], $params['from'], $params['to']);
+        $response->getBody()->write(json_encode(["statusCode" => 200, "data" => $sales]));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
     /**
-     * @api /history/courtesies
+     * @api /histories/courtesies
      * @method GET
      * @description Get history courtesies
      */
-    $app->get('/history/courtesies', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
+    $app->get('/histories/courtesies', function (Request $request, Response $response) {
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
         $historyController = new HistoryController();
-        $courtesies = $historyController->getCourtesies(intval($body['branch_id']), $body['start_date'], $body['end_date']);
-        $response->getBody()->write(json_encode($courtesies));
+        $courtesies = $historyController->getCourtesies($jwt['branch_id'], $params['from'], $params['to']);
+        $response->getBody()->write(json_encode(["statusCode" => 200, "data" => $courtesies]));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
     /**
-     * @api /history/supplied-food
+     * @api /histories/supplied-food
      * @method GET
      * @description Get history supplied food
      */
-    $app->get('/history/supplied-food', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
+    $app->get('/histories/supplied-food', function (Request $request, Response $response) {
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
         $historyController = new HistoryController();
-        $foods = $historyController->getSuppliedFood(intval($body['branch_id']), $body['start_date'], $body['end_date']);
-        $response->getBody()->write(json_encode($foods));
+        $foods = $historyController->getSuppliedFood($jwt['branch_id'], $params['from'], $params['to']);
+        $response->getBody()->write(json_encode(["statusCode" => 200, "data" => $foods]));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
     /**
-     * @api /history/altered-food
+     * @api /histories/altered-food
      * @method GET
      * @description Get history altered food
      */
-    $app->get('/history/altered-food', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
+    $app->get('/histories/altered-food', function (Request $request, Response $response) {
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
         $historyController = new HistoryController();
-        $foods = $historyController->getAlteredFood(intval($body['branch_id']), $body['start_date'], $body['end_date']);
-        $response->getBody()->write(json_encode($foods));
+        $foods = $historyController->getAlteredFood($jwt['branch_id'], $params['from'], $params['to']);
+        $response->getBody()->write(json_encode(["statusCode" => 200, "data" => $foods]));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
     /**
-     * @api /history/used-products
+     * @api /histories/used-products
      * @method GET
      * @description Get history used products
      */
-    $app->get('/history/used-products', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
+    $app->get('/histories/used-products', function (Request $request, Response $response) {
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
         $historyController = new HistoryController();
-        $products = $historyController->getUsedProducts(intval($body['branch_id']), $body['start_date'], $body['end_date']);
-        $response->getBody()->write(json_encode($products));
+        $products = $historyController->getUsedProducts($jwt['branch_id'], $params['from'], $params['to']);
+        $response->getBody()->write(json_encode(["statusCode" => 200, "data" => $products]));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };

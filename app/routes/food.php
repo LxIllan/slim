@@ -27,9 +27,9 @@ return function (App $app) {
      * @description Get all foods from a branch
      */
     $app->get('/foods', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
+        $jwt = $request->getAttribute("token");
         $foodController = new FoodController();
-        $foods = $foodController->getFoodByBranch(intval($body['branch_id']));
+        $foods = $foodController->getFoodByBranch($jwt['branch_id']);
         $response->getBody()->write(json_encode($foods));
         return $response->withHeader('Content-Type', 'application/json');
     });

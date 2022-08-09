@@ -7,6 +7,37 @@
 	},
 	"item": [
 		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"Fernando.Illan@syss.tech\",\r\n    \"password\": \"lfIllan1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/login",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Dishes",
 			"item": [
 				{
@@ -345,156 +376,6 @@
 			]
 		},
 		{
-			"name": "Products",
-			"item": [
-				{
-					"name": "Create product",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\" : \"Bolsa de basura\",\n    \"quantity\" : 10,\n    \"quantity_notif\" : 5,\n    \"cost\" : 30,\n    \"branch_id\" : 8\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{Host}}/products",
-							"host": [
-								"{{Host}}"
-							],
-							"path": [
-								"products"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Edit product",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"cost\" : 35\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{Host}}/products/4",
-							"host": [
-								"{{Host}}"
-							],
-							"path": [
-								"products",
-								"4"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete product",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{Host}}/products/5",
-							"host": [
-								"{{Host}}"
-							],
-							"path": [
-								"products",
-								"5"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get product by id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{Host}}/products/4",
-							"host": [
-								"{{Host}}"
-							],
-							"path": [
-								"products",
-								"4"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get products by branch",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"branchId\": 8\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{Host}}/products",
-							"host": [
-								"{{Host}}"
-							],
-							"path": [
-								"products"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Use product",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"quantity\" : 1,\n    \"userId\" : 3\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{Host}}/use-product/4",
-							"host": [
-								"{{Host}}"
-							],
-							"path": [
-								"use-product",
-								"4"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Foods",
 			"item": [
 				{
@@ -533,7 +414,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"branch_id\": 8\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -703,21 +584,11 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-06-01\",\r\n    \"branch_id\" : 1\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -725,13 +596,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/history/sales",
+							"raw": "{{Host}}/histories/sales?from=2022-05-11&to=2022-11-30",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
-								"history",
+								"histories",
 								"sales"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2022-05-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
 							]
 						}
 					},
@@ -743,21 +624,11 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-06-01\",\r\n    \"branch_id\" : 1\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -765,13 +636,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/history/courtesies",
+							"raw": "{{Host}}/histories/courtesies?from=2022-08-11&to=2022-11-30",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
-								"history",
+								"histories",
 								"courtesies"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2022-08-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
 							]
 						}
 					},
@@ -783,21 +664,11 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-06-01\",\r\n    \"reason\" : \"paga\",\r\n    \"branch_id\" : 1\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -805,13 +676,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/history/expenses",
+							"raw": "{{Host}}/histories/expenses?from=2020-11-11&to=2022-11-30",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
-								"history",
+								"histories",
 								"expenses"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2020-11-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
 							]
 						}
 					},
@@ -823,21 +704,11 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-06-01\",\r\n    \"branch_id\" : 1\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -845,13 +716,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/history/supplied-food",
+							"raw": "{{Host}}/histories/supplied-food?from=2020-11-11&to=2022-11-30",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
-								"history",
+								"histories",
 								"supplied-food"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2020-11-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
 							]
 						}
 					},
@@ -863,21 +744,11 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-06-01\",\r\n    \"reason\" : \"paga\",\r\n    \"branch_id\" : 1\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -885,13 +756,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/history/altered-food",
+							"raw": "{{Host}}/histories/altered-food?from=2020-11-11&to=2022-11-30",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
-								"history",
+								"histories",
 								"altered-food"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2020-11-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
 							]
 						}
 					},
@@ -903,21 +784,11 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"start_date\" : \"2022-05-01\",\r\n    \"end_date\" : \"2022-08-01\",\r\n    \"branch_id\" : 8\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -925,13 +796,173 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/history/used-products",
+							"raw": "{{Host}}/histories/used-products?from=2020-11-11&to=2022-11-30",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
-								"history",
+								"histories",
 								"used-products"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2020-11-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Create product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"Bolsa de basura\",\n    \"quantity\" : 10,\n    \"quantity_notif\" : 5,\n    \"cost\" : 30,\n    \"branch_id\" : 8\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/products",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit product",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cost\" : 35\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/products/4",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/products/5",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get product by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/products/4",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get products by branch",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"branchId\": 8\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/products",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Use product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\" : 1,\n    \"userId\" : 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/use-product/4",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"use-product",
+								"4"
 							]
 						}
 					},
@@ -945,16 +976,6 @@
 				"disableBodyPruning": true
 			},
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -984,16 +1005,6 @@
 				"disableBodyPruning": true
 			},
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -1024,16 +1035,6 @@
 				"disableBodyPruning": true
 			},
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -1046,14 +1047,43 @@
 					}
 				},
 				"url": {
-					"raw": "{{Host}}/branches/get-ticket/8",
+					"raw": "{{Host}}/branches/num-ticket",
 					"host": [
 						"{{Host}}"
 					],
 					"path": [
 						"branches",
-						"get-ticket",
-						"8"
+						"num-ticket"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check JWT",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/branches/check-jwt",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches",
+						"check-jwt"
 					]
 				}
 			},
@@ -1065,7 +1095,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJpZCI6N30.WpqgUuQ237ORbmMH2HiHRqnw--RsbhCqFKF_8g2JJzI",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjAwNzU0NjgsImV4cCI6MTY3MDA3NTQ2NywidXNlcl9pZCI6MywidXNlcm5hbWUiOiJGZXJuYW5kbyBJbGxhbiIsImJyYW5jaF9pZCI6Miwicm9vdCI6IjEifQ.HB6JTuMdV53qARN_sh6a2xEYUyHvjE354RU3iruezdc",
 				"type": "string"
 			}
 		]

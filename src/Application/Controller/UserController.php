@@ -6,7 +6,7 @@ namespace App\Application\Controller;
 
 use App\Application\DAO\UserDAO;
 use App\Application\Model\User;
-
+use App\Application\Helper\Util;
 class UserController
 {
     /**
@@ -71,6 +71,9 @@ class UserController
      */
     public function validateSession(string $email, string $password): array|null
     {
+        if (!Util::validateEmail($email)) {
+            throw new \Exception('Invalid email');
+        }
         return $this->userDAO->validateSession($email, $password);
     }
 

@@ -48,15 +48,15 @@ $callableResolver = $app->getCallableResolver();
 // Register middleware
 $middleware = require __DIR__ . '/../app/middleware.php';
 $middleware($app);
+
+// JWT Authentication
 $app->add(new JwtAuthentication([
-    "secret" => $_ENV['JWT_SECRET'],
-    "path" => ["/branches", "/categories"], /* or ["/api", "/admin"] */
+    "secret" => $_ENV["JWT_SECRET"],
+    "path" => ["/branches", "/histories", "/categories", "/foods"],
 	"error" => function ($response, $arguments) {
         $data["status"] = "error";
         $data["message"] = $arguments["message"];
-
         $response->getBody()->write(json_encode($data));
-
         return $response->withHeader("Content-Type", "application/json");
     },
 	"secure" => true,

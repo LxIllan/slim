@@ -114,6 +114,16 @@ class Util
         return mail($to, $subject, $message, $headers);
     }
 
+    /**
+     * @param array $data
+     * @param int $statusCode
+     * @return string
+     */
+    public static function orderReturnData(mixed $data, int $statusCode = 200): string
+    {
+        return json_encode(["statusCode" => $statusCode, "data" => $data]);
+    }
+
     public static function cargarImagen(?array $foto, int $idRegistro, int $tipoRegistro = 0) : string
     {
         $fotosDefault = ['img/Productos/default.jpg', 'img/Usuarios/default.jpg'];
