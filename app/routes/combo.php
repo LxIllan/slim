@@ -3,35 +3,37 @@
 declare(strict_types=1);
 
 use App\Application\Controller\DishController;
+use App\Application\Helper\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-    /**
-     * @api /combos
-     * @method GET
-     * @description Get combos by branch
-     */
-    $app->get('/combos', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
-        $dishController = new DishController();
-        $dishes = $dishController->getCombosByBranch(intval($body['branch_id']));
-        $response->getBody()->write(json_encode($dishes));
-        return $response->withHeader('Content-Type', 'application/json');
-    });
-
     /**
      * @api /combos
      * @method POST
      * @description Create a new combo
      */
     $app->post('/combos', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
         $dishController = new DishController();
+        $jwt = $request->getAttribute("token");
+        $body = $request->getParsedBody();
+        $body["branch_id"] = $jwt["branch_id"];
         $dish = $dishController->createDish($body);
-        $response->getBody()->write(json_encode($dish));
+        $response->getBody()->write(Util::orderReturnData($dish, "dish", 201));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
+     * @api /combos
+     * @method GET
+     * @description Get combos by branch
+     */
+    $app->get('/combos', function (Request $request, Response $response) {
+        $dishController = new DishController();
+        $jwt = $request->getAttribute("token");
+        $combos = $dishController->getCombosByBranch($jwt['branch_id']);
+        $response->getBody()->write(Util::orderReturnData($combos, "combos"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -42,8 +44,33 @@ return function (App $app) {
      */
     $app->get('/combos/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
-        $dishes = $dishController->getDishById(intval($args['id']));
-        $response->getBody()->write(json_encode($dishes));
+        $combo = $dishController->getDishById(intval($args['id']));
+        $response->getBody()->write(Util::orderReturnData($combo, "combo"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
+     * @api /combos/{id}
+     * @method PUT
+     * @description Edit a combo
+     */
+    $app->put('/combos/{id}', function (Request $request, Response $response, $args) {
+        $dishController = new DishController();
+        $body = $request->getParsedBody();
+        $dish = $dishController->editDish(intval($args['id']), $body);
+        $response->getBody()->write(Util::orderReturnData($dish, "dish"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
+     * @api /combos/{id}
+     * @method DELETE
+     * @description Delete a combo
+     */
+    $app->delete('/combos/{id}', function (Request $request, Response $response, $args) {
+        $dishController = new DishController();
+        $wasDeleted = $dishController->deleteDish(intval($args['id']));
+        $response->getBody()->write(Util::orderReturnData($wasDeleted, "response"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -55,7 +82,7 @@ return function (App $app) {
     $app->get('/combos/{id}/dishes', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $dishes = $dishController->getDishesByCombo(intval($args['id']));
-        $response->getBody()->write(json_encode($dishes));
+        $response->getBody()->write(Util::orderReturnData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -67,8 +94,8 @@ return function (App $app) {
     $app->post('/combos/{id}/add-dish', function (Request $request, Response $response, $args) {
         $body = $request->getParsedBody();
         $dishController = new DishController();
-        $result = $dishController->addDishToCombo(intval($args['id']), intval($body['dish_id']));
-        $response->getBody()->write(json_encode($result));
+        $dishes = $dishController->addDishToCombo(intval($args['id']), intval($body['dish_id']));
+        $response->getBody()->write(Util::orderReturnData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -80,8 +107,8 @@ return function (App $app) {
     $app->delete('/combos/{id}/delete-dish', function (Request $request, Response $response, $args) {
         $body = $request->getParsedBody();
         $dishController = new DishController();
-        $result = $dishController->deleteDishFromCombo(intval($args['id']), intval($body['dish_id']));
-        $response->getBody()->write(json_encode($result));
+        $dishes = $dishController->deleteDishFromCombo(intval($args['id']), intval($body['dish_id']));
+        $response->getBody()->write(Util::orderReturnData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };

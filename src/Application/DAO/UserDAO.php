@@ -37,15 +37,17 @@ class UserDAO
      */
     public function getUserById(int $id): User
     {
-        return $this->connection
+        $user = $this->connection
             ->select("SELECT * FROM user WHERE id = $id")
             ->fetch_object('App\Application\Model\User');
+        unset($user->hash);
+        return $user;
     }
 
     public function getSiguienteId(): int {
-        $tupla = $this->connection->select("SELECT AUTO_INCREMENT FROM "
+        $row = $this->connection->select("SELECT AUTO_INCREMENT FROM "
             . "INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'user'")->fetch_array();
-        return $tupla[0];
+        return $row[0];
     }
 
     /**
@@ -61,11 +63,17 @@ class UserDAO
 
     /**
      * @param int $id
-     * @return bool
+     * @return User|null
      */
-    public function delete(int $id): bool
+    public function delete(int $id): User|null
     {
-        return $this->connection->update("UPDATE user SET enabled = 0 WHERE id = $id");
+        $now = date('Y-m-d H:i:s');
+        $data = [
+            "enabled" => 0,
+            "deleted_at" => $now
+        ];
+        $query = Util::prepareUpdateQuery($id, $data, self::TABLE_NAME);
+        return ($this->connection->update($query)) ? $this->getUserById($id) : null;
     }
 
     /**

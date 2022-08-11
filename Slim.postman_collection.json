@@ -84,12 +84,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{Host}}/dishes/281",
+									"raw": "{{Host}}/combos/281",
 									"host": [
 										"{{Host}}"
 									],
 									"path": [
-										"dishes",
+										"combos",
 										"281"
 									]
 								}
@@ -102,13 +102,13 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{Host}}/dishes/272",
+									"raw": "{{Host}}/combos/281",
 									"host": [
 										"{{Host}}"
 									],
 									"path": [
-										"dishes",
-										"272"
+										"combos",
+										"281"
 									]
 								}
 							},
@@ -124,7 +124,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"branch_id\": 8\r\n}",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -161,13 +161,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{Host}}/combos/281",
+									"raw": "{{Host}}/combos/269",
 									"host": [
 										"{{Host}}"
 									],
 									"path": [
 										"combos",
-										"281"
+										"269"
 									]
 								}
 							},
@@ -352,7 +352,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"branchId\": 8\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -360,14 +360,40 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/category/1/dishes",
+							"raw": "{{Host}}/categories/1/dishes",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
-								"category",
+								"categories",
 								"1",
 								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sell",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [\n        {\n            \"dish_id\" : 269,\n            \"quantity\" : 2\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/sell",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"sell"
 							]
 						}
 					},
@@ -385,7 +411,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\" : \"Test3\",\n    \"quantity\": 50,\n    \"quantity_notif\" : 5,\n    \"cost\" : 50,\n    \"category_id\" : 1,\n    \"branch_id\" : 8\n}",
+							"raw": "{\n    \"name\" : \"Test4\",\n    \"quantity\": 50,\n    \"quantity_notif\" : 5,\n    \"cost\" : 50,\n    \"category_id\" : 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -467,7 +493,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"branchId\": 8\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -497,7 +523,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"branchId\": 8\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -524,7 +550,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"quantity\" : 50,\n    \"user_id\" : 3,\n    \"branch_id\" : 8\n}",
+							"raw": "{\n    \"quantity\" : 10\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -552,7 +578,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"quantity\" : -10,\n    \"reason\" : \"Se rompio\",\n    \"user_id\" : 3,\n    \"branch_id\" : 8\n}",
+							"raw": "{\n    \"quantity\" : -10,\n    \"reason\" : \"Se rompio\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -579,6 +605,46 @@
 			"name": "History",
 			"item": [
 				{
+					"name": "Expenses",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/histories/expenses?from=2020-11-11&to=2022-11-30",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"histories",
+								"expenses"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2020-11-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Sales",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -596,7 +662,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/histories/sales?from=2022-05-11&to=2022-11-30",
+							"raw": "{{Host}}/histories/sales?from=2022-08-01&to=2022-11-30",
 							"host": [
 								"{{Host}}"
 							],
@@ -607,7 +673,7 @@
 							"query": [
 								{
 									"key": "from",
-									"value": "2022-05-11"
+									"value": "2022-08-01"
 								},
 								{
 									"key": "to",
@@ -659,46 +725,6 @@
 					"response": []
 				},
 				{
-					"name": "Expenses",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{Host}}/histories/expenses?from=2020-11-11&to=2022-11-30",
-							"host": [
-								"{{Host}}"
-							],
-							"path": [
-								"histories",
-								"expenses"
-							],
-							"query": [
-								{
-									"key": "from",
-									"value": "2020-11-11"
-								},
-								{
-									"key": "to",
-									"value": "2022-11-30"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Supplied food",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -716,13 +742,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/histories/supplied-food?from=2020-11-11&to=2022-11-30",
+							"raw": "{{Host}}/histories/supplied-foods?from=2020-11-11&to=2022-11-30",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
 								"histories",
-								"supplied-food"
+								"supplied-foods"
 							],
 							"query": [
 								{
@@ -756,13 +782,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/histories/altered-food?from=2020-11-11&to=2022-11-30",
+							"raw": "{{Host}}/histories/altered-foods?from=2020-11-11&to=2022-11-30",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
 								"histories",
-								"altered-food"
+								"altered-foods"
 							],
 							"query": [
 								{
@@ -830,7 +856,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\" : \"Bolsa de basura\",\n    \"quantity\" : 10,\n    \"quantity_notif\" : 5,\n    \"cost\" : 30,\n    \"branch_id\" : 8\n}",
+							"raw": "{\n    \"name\" : \"Bolsa de basura3\",\n    \"quantity\" : 50,\n    \"quantity_notif\" : 5,\n    \"cost\" : 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -856,7 +882,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"cost\" : 35\n}",
+							"raw": "{\n    \"cost\" : 50\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -882,13 +908,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{Host}}/products/5",
+							"raw": "{{Host}}/products/4",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
 								"products",
-								"5"
+								"4"
 							]
 						}
 					},
@@ -922,7 +948,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"branchId\": 8\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -948,7 +974,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"quantity\" : 1,\n    \"userId\" : 3\n}",
+							"raw": "{\n    \"quantity\" : 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -956,13 +982,93 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/use-product/4",
+							"raw": "{{Host}}/products/6/use",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
-								"use-product",
-								"4"
+								"products",
+								"6",
+								"use"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n}"
+						},
+						"url": {
+							"raw": "{{Host}}/users/22",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"22"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get cashier by branch",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Edit user by id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/users/22",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"22"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/users/22",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"22"
 							]
 						}
 					},
@@ -1088,6 +1194,35 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get categories",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/categories",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
@@ -1095,7 +1230,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjAwNzU0NjgsImV4cCI6MTY3MDA3NTQ2NywidXNlcl9pZCI6MywidXNlcm5hbWUiOiJGZXJuYW5kbyBJbGxhbiIsImJyYW5jaF9pZCI6Miwicm9vdCI6IjEifQ.HB6JTuMdV53qARN_sh6a2xEYUyHvjE354RU3iruezdc",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjAxNjk2NzcsImV4cCI6MTY3MDE2OTY3NiwidXNlcl9pZCI6MywidXNlcm5hbWUiOiJGZXJuYW5kbyBJbGxhbiIsImJyYW5jaF9pZCI6Miwicm9vdCI6IjEifQ.bHhqUmwsPbom5QzXADKF6v60pe90_-TzJ2luTMqF8SM",
 				"type": "string"
 			}
 		]

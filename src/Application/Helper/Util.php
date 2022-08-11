@@ -7,14 +7,12 @@ class Util
     public const FOTO_PRODUCTO = 0;
     public const FOTO_USUARIO = 1;
     public const STR_FOOTER = 'Copyright © Pollo Rey 2022';
-    public const CATEGORIAS = ['Platillos', 'Paquete', 'Bebidas', 'Cerveza', 'Extras'];
             
-    public const ID_PLATILLOS = 1;
-    public const ID_PAQUETE = 2;
-    public const ID_BEBIDAS = 3;
-    public const ID_CERVEZA = 4;
-    public const ID_EXTRAS = 5;
-    public const ID_PRODUCTOS = 6;
+    public const DISHES_ID = 1;
+    public const COMBOS_ID = 2;
+    public const DRINKS_ID = 3;
+    public const DESSERTS_D = 4;
+    public const EXTRAS_ID = 5;
 
     /**
      * @param array $data
@@ -116,12 +114,16 @@ class Util
 
     /**
      * @param array $data
+     * @param string $name
      * @param int $statusCode
      * @return string
      */
-    public static function orderReturnData(mixed $data, int $statusCode = 200): string
+    public static function orderReturnData(mixed $data, string $name, int $statusCode = 200): string
     {
-        return json_encode(["statusCode" => $statusCode, "data" => $data]);
+        $std = new \stdClass();
+        $std->statusCode = $statusCode;
+        $std->data = [$name => $data];
+        return json_encode($std);
     }
 
     public static function cargarImagen(?array $foto, int $idRegistro, int $tipoRegistro = 0) : string

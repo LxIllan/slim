@@ -48,9 +48,9 @@ class UserController
 
     /**
      * @param int $id
-     * @return bool
+     * @return User|null
      */
-    public function delete(int $id): bool
+    public function delete(int $id): User|null
     {
         return $this->userDAO->delete($id);
     }

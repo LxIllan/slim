@@ -38,7 +38,9 @@ class BranchDAO
      */
     public function getById(int $id): Branch
     {
-        return $this->connection->select("SELECT * FROM branch WHERE id = $id")->fetch_object('App\Application\Model\Branch');
+        return $this->connection
+            ->select("SELECT * FROM branch WHERE id = $id")
+            ->fetch_object('App\Application\Model\Branch');
     }
 
     /**
@@ -72,8 +74,10 @@ class BranchDAO
      */
     public function getNumTicket(int $branchId): int
     {
-        $num_ticket = intval($this->connection->select("SELECT num_ticket FROM branch WHERE id = $branchId")->fetch_array()[0]);
+        $num_ticket = $this->connection
+            ->select("SELECT num_ticket FROM branch WHERE id = $branchId")
+            ->fetch_assoc()["num_ticket"];
         $this->connection->update("UPDATE branch SET num_ticket = ($num_ticket + 1) WHERE id = $branchId");
-        return $num_ticket;
+        return intval($num_ticket);
     }
 }

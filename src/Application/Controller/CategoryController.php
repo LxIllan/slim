@@ -5,30 +5,25 @@ declare(strict_types=1);
 namespace App\Application\Controller;
 
 use App\Application\Model\Category;
-use Illuminate\Database\Eloquent\Collection;
+use App\Application\DAO\CategoryDAO;
 
 class CategoryController
 {
-    public static function create(string $category): Category
+    /**
+     * @var CategoryDAO $categoryDAO
+     */
+    private CategoryDAO $categoryDAO;
+
+    public function __construct()
     {
-        return Category::create(['category' => $category]);
+        $this->categoryDAO = new CategoryDAO();
     }
 
-    public static function getAll(): Collection
+    /**
+     * @return Category[]
+     */
+    public function getCategories(): array
     {
-        return Category::all();
-    }
-
-    public static function get(int $id): Category
-    {
-        return Category::findOrFail($id);
-    }
-
-    public static function update(int $id, string $newCategory): Category
-    {
-        $category = Category::findOrFail($id);
-        $category->category = $newCategory;
-        $category->save();
-        return $category;
+        return $this->categoryDAO->getCategories();
     }
 }

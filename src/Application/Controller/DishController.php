@@ -96,9 +96,9 @@ class DishController
     /**
      * @param int $comboId
      * @param int $dishId
-     * @return bool
+     * @return Dish[]
      */
-    public function addDishToCombo(int $comboId, int $dishId): bool
+    public function addDishToCombo(int $comboId, int $dishId): array
     {
         return $this->dishDAO->addDishToCombo($comboId, $dishId);
     }
@@ -106,9 +106,9 @@ class DishController
     /**
      * @param int $comboId
      * @param int $dishId
-     * @return bool
+     * @return Dish[]
      */
-    public function deleteDishFromCombo(int $comboId, int $dishId): bool
+    public function deleteDishFromCombo(int $comboId, int $dishId): array
     {
         return $this->dishDAO->deleteDishFromCombo($comboId, $dishId);
     }

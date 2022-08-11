@@ -67,17 +67,16 @@ class DishDAO
     public function getDishesByCategory(int $categoryId, int $branchId): array
     {
         $dishes = [];
-        $query = "SELECT id FROM dish WHERE category_id = $categoryId AND branch_id = $branchId AND is_showed_in_sales = 1 ORDER BY name";
-//        $query = <<<EOF
-//            SELECT
-//                platillo.id, platillo.nombre, platillo.precio, platillo.porcion, platillo.descripcion, platillo.is_combo,
-//                platillo.cantidad_vendida, platillo.is_showed_in_sales
-//            FROM platillo
-//            JOIN alimento ON alimento.id = platillo.idalimento
-//            WHERE alimento.idsucursal = $branchId ORDER BY platillo.nombre
-//        EOF;
+        $query = <<<EOF
+            SELECT id 
+            FROM dish 
+            WHERE category_id = $categoryId 
+                AND branch_id = $branchId 
+                AND is_showed_in_sales = 1 
+                ORDER BY name
+        EOF;
         $result = $this->connection->select($query);
-        while ($row = $result->fetch_array()) {
+        while ($row = $result->fetch_assoc()) {
             $dishes[] = $this->getById(intval($row['id']));
         }
         return $dishes;
@@ -136,9 +135,9 @@ class DishDAO
     /**
      * @param int $comboId
      * @param int $dishId
-     * @return bool
+     * @return Dish[]
      */
-    public function addDishToCombo(int $comboId, int $dishId): bool
+    public function addDishToCombo(int $comboId, int $dishId): array
     {
         $dish = $this->getById($comboId);
         if (!$dish->is_combo) {
@@ -150,15 +149,18 @@ class DishDAO
             "dish_id" => $dishId
         ];
 
-        return $this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'dishes_in_combo'));
+        if ($this->connection->insert(Util::prepareInsertQuery($dataToInsert, "dishes_in_combo"))) {
+            return $this->getDishesByCombo($comboId);
+        }
+        return [];
     }
 
     /**
      * @param int $comboId
      * @param int $dishId
-     * @return bool
+     * @return Dish[]
      */
-    public function deleteDishFromCombo(int $comboId, int $dishId): bool
+    public function deleteDishFromCombo(int $comboId, int $dishId): array
     {
         $query = <<<EOF
             DELETE FROM dishes_in_combo 
@@ -167,7 +169,10 @@ class DishDAO
             LIMIT 1
         EOF;
 
-        return $this->connection->delete($query);
+        if ($this->connection->delete($query)) {
+            return $this->getDishesByCombo($comboId);
+        }
+        return [];
     }
 
     /**

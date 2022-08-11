@@ -21,8 +21,8 @@ $dotenv->safeLoad();
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
-if (false) { // Should be set to true in production
-	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
+if (true) { // Should be set to true in production
+    $containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 
 // Set up settings
@@ -32,10 +32,6 @@ $settings($containerBuilder);
 // Set up dependencies
 $dependencies = require __DIR__ . '/../app/dependencies.php';
 $dependencies($containerBuilder);
-
-// Set up repositories
-$repositories = require __DIR__ . '/../app/repositories.php';
-$repositories($containerBuilder);
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();
@@ -52,14 +48,25 @@ $middleware($app);
 // JWT Authentication
 $app->add(new JwtAuthentication([
     "secret" => $_ENV["JWT_SECRET"],
-    "path" => ["/branches", "/histories", "/categories", "/foods"],
-	"error" => function ($response, $arguments) {
+    "path" => [
+        "/branches",
+        "/categories",
+        "/cashiers",
+        "/combos",
+        "/dishes",
+        "/foods",
+        "/histories",
+        "/products",
+        "/sell",
+        "/users"
+    ],
+    "error" => function ($response, $arguments) {
         $data["status"] = "error";
         $data["message"] = $arguments["message"];
         $response->getBody()->write(json_encode($data));
         return $response->withHeader("Content-Type", "application/json");
     },
-	"secure" => true,
+    "secure" => true,
     "relaxed" => ["localhost", "syss.tech"],
 ]));
 

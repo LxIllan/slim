@@ -38,7 +38,9 @@ class ProductDAO
      */
     public function getById(int $id): Product
     {
-        return $this->connection->select("SELECT * FROM product WHERE id = $id")->fetch_object('App\Application\Model\Product');
+        return $this->connection
+            ->select("SELECT * FROM product WHERE id = $id")
+            ->fetch_object('App\Application\Model\Product');
     }
 
     /**
@@ -48,7 +50,8 @@ class ProductDAO
     public function getByBranch(int $branchId): array
     {
         $dishes = [];
-        $result = $this->connection->select("SELECT id FROM product WHERE branch_id = $branchId ORDER BY name");
+        $result = $this->connection
+            ->select("SELECT id FROM product WHERE branch_id = $branchId ORDER BY name");
         while ($row = $result->fetch_assoc()) {
             $dishes[] = $this->getById(intval($row['id']));
         }

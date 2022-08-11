@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Application\Controller\DishController;
+use App\Application\Helper\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -15,10 +16,12 @@ return function (App $app) {
      * @description Create a new dish
      */
     $app->post('/dishes', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
         $dishController = new DishController();
+        $jwt = $request->getAttribute("token");
+        $body = $request->getParsedBody();
+        $body["branch_id"] = $jwt["branch_id"];
         $dish = $dishController->createDish($body);
-        $response->getBody()->write(json_encode($dish));
+        $response->getBody()->write(Util::orderReturnData($dish, "dish", 201));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -30,7 +33,7 @@ return function (App $app) {
     $app->get('/dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $dish = $dishController->getDishById(intval($args['id']));
-        $response->getBody()->write(json_encode($dish));
+        $response->getBody()->write(Util::orderReturnData($dish, "dish"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -39,11 +42,11 @@ return function (App $app) {
      * @method GET
      * @description Get dish by id
      */
-    $app->get('/category/{id}/dishes', function (Request $request, Response $response, $args) {
-        $body = $request->getParsedBody();
+    $app->get('/categories/{id}/dishes', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
-        $dish = $dishController->getDishesByCategory(intval($args['id']), intval($body['branchId']));
-        $response->getBody()->write(json_encode($dish));
+        $jwt = $request->getAttribute("token");
+        $dishes = $dishController->getDishesByCategory(intval($args['id']), $jwt['branch_id']);
+        $response->getBody()->write(Util::orderReturnData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -55,7 +58,7 @@ return function (App $app) {
     $app->get('/foods/{id}/dishes', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $dishes = $dishController->getDishesByFood(intval($args['id']));
-        $response->getBody()->write(json_encode($dishes));
+        $response->getBody()->write(Util::orderReturnData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -65,10 +68,10 @@ return function (App $app) {
      * @description Edit a dish
      */
     $app->put('/dishes/{id}', function (Request $request, Response $response, $args) {
-        $body = $request->getParsedBody();
         $dishController = new DishController();
+        $body = $request->getParsedBody();
         $dish = $dishController->editDish(intval($args['id']), $body);
-        $response->getBody()->write(json_encode($dish));
+        $response->getBody()->write(Util::orderReturnData($dish, "dish"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -80,7 +83,7 @@ return function (App $app) {
     $app->delete('/dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $wasDeleted = $dishController->deleteDish(intval($args['id']));
-        $response->getBody()->write(json_encode($wasDeleted));
+        $response->getBody()->write(Util::orderReturnData($wasDeleted, "response"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -90,10 +93,11 @@ return function (App $app) {
      * @description Sell dishes
      */
     $app->post('/sell', function (Request $request, Response $response) {
-        $body = $request->getParsedBody();
         $dishController = new DishController();
-        $result = $dishController->sell($body['items'], intval($body['user_id']), intval($body['branch_id']));
-        $response->getBody()->write(json_encode($result));
+        $jwt = $request->getAttribute("token");
+        $body = $request->getParsedBody();
+        $result = $dishController->sell($body['items'], $jwt['user_id'], $jwt['branch_id']);
+        $response->getBody()->write(Util::orderReturnData($result, "response"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };
