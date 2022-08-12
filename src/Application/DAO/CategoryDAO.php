@@ -6,6 +6,7 @@ namespace App\Application\DAO;
 
 use App\Application\Helper\Connection;
 use App\Application\Model\Category;
+use App\Application\Controller\DishController;
 
 class CategoryDAO
 {
@@ -42,6 +43,23 @@ class CategoryDAO
                 
         while ($row = $result->fetch_assoc()) {
             $categories[] = $this->getById(intval($row['id']));
+        }
+        return $categories;
+    }
+
+    /**
+     * @param int $branchId
+     * @return Category[]
+     */
+    public function getCategoriesWithDishes(int $branchId): array
+    {
+        $dishesController = new DishController();
+        $categories = $this->getCategories();
+        foreach ($categories as $key => $category) {
+            $category->dishes = $dishesController->getDishesByCategory(intval($category->id), $branchId);
+//             if (count($dishes) == 0) {
+//                 unset($categories[$key]);
+//             }
         }
         return $categories;
     }

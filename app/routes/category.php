@@ -20,4 +20,17 @@ return function (App $app) {
         $response->getBody()->write(Util::orderReturnData($categories, "categories"));
         return $response->withHeader('Content-Type', 'application/json');
     });
+
+    /**
+     * @api /categories
+     * @method GET
+     * @description Get all categories
+     */
+    $app->get('/categories/dishes', function (Request $request, Response $response) {
+        $categoryController = new CategoryController();
+        $jwt = $request->getAttribute("token");
+        $dishes = $categoryController->getCategoriesWithDishes($jwt['branch_id']);
+        $response->getBody()->write(Util::orderReturnData($dishes, "categories"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
 };

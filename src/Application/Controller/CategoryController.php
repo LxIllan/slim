@@ -26,4 +26,13 @@ class CategoryController
     {
         return $this->categoryDAO->getCategories();
     }
+
+    /**
+     * @param int $branchId
+     * @return Category[]
+     */
+    public function getCategoriesWithDishes(int $branchId): array
+    {
+        return $this->categoryDAO->getCategoriesWithDishes($branchId);
+    }
 }

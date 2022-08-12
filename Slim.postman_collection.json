@@ -12,6 +12,9 @@
 				{
 					"name": "Login",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -24,9 +27,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{Host}}/login",
+							"raw": "https://slim.damsoluciones.com/login",
+							"protocol": "https",
 							"host": [
-								"{{Host}}"
+								"slim",
+								"damsoluciones",
+								"com"
 							],
 							"path": [
 								"login"
@@ -1007,7 +1013,12 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \r\n}"
+							"raw": "{\r\n\t\"name\": \"Fernando\",\r\n\t\"last_name\": \"Illan\",\r\n\t\"email\": \"Fernando.Illan@syss.tech\",\r\n\t\"phone\": \"3861963066\",\r\n\t\"address\": \"687 Agustin St.\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{Host}}/users/22",
@@ -1026,7 +1037,16 @@
 					"name": "Get cashier by branch",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/cashiers",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"cashiers"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1034,7 +1054,17 @@
 					"name": "Get user by id",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/users/22",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"22"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1219,6 +1249,36 @@
 					],
 					"path": [
 						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get categories with dishes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/categories/dishes",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"categories",
+						"dishes"
 					]
 				}
 			},

@@ -13,17 +13,16 @@ use Slim\App;
 return function (App $app) {
     $app->post('/login', function (Request $request, Response $response) {
         $userController = new UserController();
-        $body = $request->getParsedBody();  
+        $body = $request->getParsedBody();
         $user = $userController->validateSession($body['email'], $body['password']);
         if ($user) {
             $payload = [
                 'iat' => time(),
                 'exp' => time() + 9999999,
                 'user_id' => intval($user['id']),
-                'username' => $user['username'],
                 'branch_id' => intval($user['branch_id']),
                 'root' => $user['root']
-            ];            
+            ];
             $secret = $_ENV["JWT_SECRET"];
             $token = Token::customPayload($payload, $secret);
             $response->getBody()->write(Util::orderReturnData($token, "jwt"));

@@ -107,7 +107,7 @@ class UserDAO
     public function validateSession(string $email, string $password): array|null
     {
         $query = <<<EOF
-            SELECT id, CONCAT(name, ' ', last_name) AS username, branch_id, hash, root
+            SELECT id, branch_id, hash, root
             FROM user
             WHERE email LIKE '$email' 
                 AND email = '$email' 
