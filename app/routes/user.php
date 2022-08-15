@@ -25,6 +25,19 @@ return function (App $app) {
     });
 
     /**
+     * @api /users
+     * @method POST
+     * @description Create user
+     */
+    $app->post('/users/exist-email', function (Request $request, Response $response) {
+        $userController = new UserController();
+        $body = $request->getParsedBody();
+        $existEmail = $userController->existEmail($body['email']);
+        $response->getBody()->write(Util::orderReturnData($existEmail, "exist"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
      * @api /cashiers
      * @method GET
      * @description Get all cashiers from a branch

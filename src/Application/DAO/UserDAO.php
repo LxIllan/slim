@@ -27,6 +27,8 @@ class UserDAO
      */
     public function create(array $data): User|null
     {
+        $data["hash"] = password_hash($data["password"], PASSWORD_DEFAULT);
+        unset($data["password"]);
         $query = Util::prepareInsertQuery($data, self::TABLE_NAME);
         return ($this->connection->insert($query)) ? $this->getUserById($this->connection->getLastId()) : null;
     }

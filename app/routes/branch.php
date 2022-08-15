@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Application\Controller\BranchController;
+use App\Application\Helper\Connection;
 use App\Application\Helper\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -55,6 +56,18 @@ return function (App $app) {
     $app->get('/branches/check-jwt', function (Request $request, Response $response) {
         $jwt = $request->getAttribute("token");
         $response->getBody()->write(Util::orderReturnData($jwt, "jwt"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
+     * @api /branches/num-ticket
+     * @method GET
+     * @description Get num ticket by branch id
+     */
+    $app->get('/branches/connection', function (Request $request, Response $response) {
+        // $connection = new Connection();
+        $connectionId = $this->has('Logger');
+        $response->getBody()->write(Util::orderReturnData($connectionId, "connection_id"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 

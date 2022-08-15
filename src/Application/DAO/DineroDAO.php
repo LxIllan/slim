@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\DAO;
 
 use App\Application\Helper\Connection;
-use App\Application\Model\Gasto;
+use App\Application\Model\Expense;
 
 class DineroDAO
 {
@@ -84,7 +84,7 @@ class DineroDAO
         }
     }
 
-    public function realizarGasto(int $idSucursal, Gasto $gasto) : bool
+    public function realizarGasto(int $idSucursal, Expense $gasto) : bool
     {
         if ($this->_conexion->insert("INSERT INTO gasto(cantidad, fecha, concepto, idsucursal, idusuario) "
             . "VALUES(". $gasto->getCantidad() . ", '"
@@ -98,10 +98,10 @@ class DineroDAO
         }
     }
 
-    public function dameGasto(int $idGasto) : ?Gasto
+    public function dameGasto(int $idGasto) : ?Expense
     {
         $tupla = $this->_conexion->select("SELECT idgasto, cantidad, fecha, concepto, idusuario FROM gasto WHERE idgasto = " . $idGasto)->fetch_array();
-        return (isset($tupla)) ? new Gasto($tupla[0], $tupla[1], $tupla[2], $tupla[3], $tupla[4]) : null;
+        return (isset($tupla)) ? new Expense($tupla[0], $tupla[1], $tupla[2], $tupla[3], $tupla[4]) : null;
     }
 
     public function cancelarGasto(int $idGasto) : bool

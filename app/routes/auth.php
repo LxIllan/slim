@@ -18,7 +18,7 @@ return function (App $app) {
         if ($user) {
             $payload = [
                 'iat' => time(),
-                'exp' => time() + 9999999,
+                'exp' => time() + 99999999,
                 'user_id' => intval($user['id']),
                 'branch_id' => intval($user['branch_id']),
                 'root' => $user['root']

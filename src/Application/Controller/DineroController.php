@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controller;
 
-use App\Application\Model\Gasto;
+use App\Application\Model\Expense;
 use App\Application\DAO\DineroDAO;
 
 class AdminDinero {
@@ -16,10 +16,10 @@ class AdminDinero {
     }
 
     public function realizarGasto(int $idSucursal, float $cantidad, string $concepto, int $idUsuario) : ?bool {
-        return $this->_dineroDAO->realizarGasto($idSucursal, new Gasto(1, $cantidad, date('Y-m-d H:i:s'), $concepto, $idUsuario));
+        return $this->_dineroDAO->realizarGasto($idSucursal, new Expense(1, $cantidad, date('Y-m-d H:i:s'), $concepto, $idUsuario));
     }
 
-    public function dameGasto(int $idGasto) : ?Gasto {
+    public function dameGasto(int $idGasto) : ?Expense {
         return $this->_dineroDAO->dameGasto($idGasto);
     }
 

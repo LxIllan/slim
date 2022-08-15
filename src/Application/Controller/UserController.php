@@ -7,6 +7,8 @@ namespace App\Application\Controller;
 use App\Application\DAO\UserDAO;
 use App\Application\Model\User;
 use App\Application\Helper\Util;
+use Exception;
+
 class UserController
 {
     /**
@@ -21,10 +23,28 @@ class UserController
     /**
      * @param array $data
      * @return User|null
+     * @throws Exception
      */
     public function create(array $data): User|null
     {
-        return $this->userDAO->create($data);
+        $password = Util::generatePassword();
+        $data['password'] = $password;
+        $user = $this->userDAO->create($data);
+        if ($user) {
+            $branchController = new \App\Application\Controller\BranchController();
+            $branch = $branchController->getById(intval($data['branch_id']));
+            $dataToSendEmail = [
+                'email', $user->email,
+                'branchName' => $branch->name,
+                'branchLocation' => $branch->location,
+                'password' => $password,
+                'userName' => "$user->name $user->last_name"
+            ];
+            if (!Util::sendPasswordToNewUser($dataToSendEmail)) {
+                throw new Exception('Error to send password to new user.');
+            }
+        }
+        return $user;
     }
 
     /**
@@ -72,7 +92,7 @@ class UserController
     public function validateSession(string $email, string $password): array|null
     {
         if (!Util::validateEmail($email)) {
-            throw new \Exception('Invalid email');
+            throw new Exception('Invalid email');
         }
         return $this->userDAO->validateSession($email, $password);
     }

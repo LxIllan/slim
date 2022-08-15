@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Model;
 
-class User
+class User extends \StdClass
 {
 }

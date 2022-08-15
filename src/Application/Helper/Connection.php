@@ -18,7 +18,7 @@ class Connection
 
         $this->mysqli = new mysqli($_ENV['HOST_DB'], $_ENV['USER_DB'], $_ENV['PASS_DB'], $_ENV['DATABASE']);
         if ($this->mysqli->connect_errno) {
-            echo 'Conexión Fallida : ' . $this->mysqli->connect_error;
+            echo 'Failed connection : ' . $this->mysqli->connect_error;
             exit();
         }
         $this->mysqli->query("SET time_zone = '-05:00'");
@@ -44,6 +44,14 @@ class Connection
     public function getLastId(): int
     {
         return $this->mysqli->insert_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getConnectionId(): int
+    {
+        return $this->mysqli->thread_id;
     }
 
     /**

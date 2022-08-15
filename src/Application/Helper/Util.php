@@ -4,10 +4,6 @@ namespace App\Application\Helper;
 
 class Util
 {
-    public const FOTO_PRODUCTO = 0;
-    public const FOTO_USUARIO = 1;
-    public const STR_FOOTER = 'Copyright © Pollo Rey 2022';
-            
     public const DISHES_ID = 1;
     public const COMBOS_ID = 2;
     public const DRINKS_ID = 3;
@@ -89,12 +85,11 @@ class Util
     {
         $to = $data["email"];
         $subject = "Notification from: {$data["branchName"]}";
-        $headers = "From: pollorey@syss.tech\r\n" .
-            'Reply-To: pollorey@syss.tech' . "\r\n" .
+        $headers = "From: {$_ENV["EMAIL_WEBSITE"]}\r\n" .
+            "Reply-To: {$_ENV["EMAIL_WEBSITE"]}" . "\r\n" .
             'X-Mailer: PHP/' . phpversion() . "\r\n" .
             'MIME-Version: 1.0' . "\r\n" .
             'Content-type: text/html; charset=utf-8' . "\r\n";
-
         $message =  "<html>" .
             "<head>" .
             "<title>{$data["branchName"]}</title>" .
@@ -104,7 +99,45 @@ class Util
             "Quedan <b>{$data["quantity"]}</b> unidades de <b>{$data["foodName"]}</b>" .
             "<br>" .
             "<br>" .
-            "<a href='http://test.syss.tech/pollorey/'>pollorey.syss.tech</a>" .
+            "<a href='{$_ENV["URL_WEBSITE"]}'>pollorey.syss.tech</a>" .
+            "<br>" .
+            "</body>" .
+            "</html>";
+
+        return mail($to, $subject, $message, $headers);
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public static function sendPasswordToNewUser(array $data): bool
+    {
+        $to = $data["email"];
+        $subject = "Bienvenido a {$data["branchName"]}";
+        $headers = "From: {$_ENV["EMAIL_WEBSITE"]}\r\n" .
+            "Reply-To: {$_ENV["EMAIL_WEBSITE"]}" . "\r\n" .
+            'X-Mailer: PHP/' . phpversion() . "\r\n" .
+            'MIME-Version: 1.0' . "\r\n" .
+            'Content-type: text/html; charset=utf-8' . "\r\n";
+
+        $message =  "<html>" .
+            "<head>" .
+            "<title>Bienvenido a la sucursal de {$data["branchLocation"]}</title>" .
+            "</head>" .
+            "<body>" .
+            "<h3>¡Hola {$data["userName"]}!</h3>" .
+            "Ahora eres parte del equipo de <b>{$data["branchName"]}.</b>" .
+            "<br>" .
+            "Se te entrega una contraseña temporal para que puedas ingresar a tu cuenta." .
+            "<br>" .
+            "Password: <b>{$data["password"]}</b>" .
+            "<br>" .
+            "Se recomienda que cambies tu contraseña una vez ingreses a tu cuenta." .
+            "<br>" .
+            "Cualquier duda puedes aclararla con tu superior." .
+            "<br>" .
+            "<a href='{$_ENV["URL_WEBSITE"]}'>Iniciar sesión</a>" .
             "<br>" .
             "</body>" .
             "</html>";
@@ -162,7 +195,7 @@ class Util
      */
     public static function generatePassword(int $lenPassword = 8): string
     {
-        $characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        $characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghilkmnopqrstuvwxyz0123456789";
         $lenCharacters = strlen($characters);
         $password = '';
         $i = 0;

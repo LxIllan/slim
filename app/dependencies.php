@@ -9,6 +9,7 @@ use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use App\Application\Helper\Connection;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -26,5 +27,9 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $logger;
         },
+        Connection::class => function (ContainerInterface $c) {
+            $connection = new Connection();
+            return $connection;
+        }
     ]);
 };
