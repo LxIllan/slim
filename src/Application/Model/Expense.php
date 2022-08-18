@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Models;
+namespace App\Application\Model;
 
 class Expense extends \StdClass
 {

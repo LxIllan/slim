@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Application\DAOs;
+namespace App\Application\DAO;
 
 use App\Application\Helpers\Connection;
 use App\Application\Helpers\Util;
-use App\Application\Models\User;
+use App\Application\Model\User;
 
 class UserDAO
 {

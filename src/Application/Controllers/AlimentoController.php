@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Models\Platillo;
-use App\Application\Models\Alimento;
-use App\Application\DAOs\AlimentoDAO;
+use App\Application\Model\Platillo;
+use App\Application\Model\Alimento;
+use App\Application\DAO\AlimentoDAO;
 use App\Application\Helpers\Util;
 
 class AlimentoController

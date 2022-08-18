@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Models\Expense;
-use App\Application\DAOs\DineroDAO;
+use App\Application\Model\Expense;
+use App\Application\DAO\DineroDAO;
 
 class AdminDinero {
    

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Models\Platillo;
-use App\Application\Models\Alimento;
-use App\Application\DAOs\HistoryDAO;
+use App\Application\Model\Platillo;
+use App\Application\Model\Alimento;
+use App\Application\DAO\HistoryDAO;
 use App\Application\Helpers\Util;
 use \StdClass;
 use function _PHPStan_9a6ded56a\RingCentral\Psr7\str;

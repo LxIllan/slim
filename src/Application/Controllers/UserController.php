@@ -6,8 +6,8 @@ namespace App\Application\Controllers;
 
 use App\Application\Controllers\BranchController;
 use App\Application\Helpers\EmailTemplate;
-use App\Application\DAOs\UserDAO;
-use App\Application\Models\User;
+use App\Application\DAO\UserDAO;
+use App\Application\Model\User;
 use App\Application\Helpers\Util;
 use Exception;
 

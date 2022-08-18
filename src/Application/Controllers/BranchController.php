@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\DAOs\BranchDAO;
-use App\Application\Models\Branch;
+use App\Application\DAO\BranchDAO;
+use App\Application\Model\Branch;
 
 class BranchController
 {

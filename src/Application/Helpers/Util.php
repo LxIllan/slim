@@ -219,7 +219,7 @@ class Util
      */
     public static function validateEmail(string $email): bool
     {
-        return filter_var($email, FILTER_VALIDATE_EMAIL);
+        return is_string(filter_var($email, FILTER_VALIDATE_EMAIL));
     }
 
     /**

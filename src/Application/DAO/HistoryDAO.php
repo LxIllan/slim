@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\DAOs;
+namespace App\Application\DAO;
 
 use App\Application\Helpers\Connection;
 use StdClass;

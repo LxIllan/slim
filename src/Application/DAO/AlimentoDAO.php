@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Application\DAOs;
+namespace App\Application\DAO;
 
 use App\Application\Helpers\Conexion;
 use App\Application\Helpers\Util;
-use App\Application\Models\Platillo;
-use App\Application\Models\Alimento;
+use App\Application\Model\Platillo;
+use App\Application\Model\Alimento;
 
 class AlimentoDAO
 {

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Models\Dish;
-use App\Application\Models\Food;
-use App\Application\Models\Platillo;
-use App\Application\Models\Alimento;
-use App\Application\DAOs\FoodDAO;
+use App\Application\Model\Dish;
+use App\Application\Model\Food;
+use App\Application\Model\Platillo;
+use App\Application\Model\Alimento;
+use App\Application\DAO\FoodDAO;
 use App\Application\Helpers\Util;
 use App\Application\Controllers\DishController;
 

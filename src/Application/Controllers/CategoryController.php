@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Models\Category;
-use App\Application\DAOs\CategoryDAO;
+use App\Application\Model\Category;
+use App\Application\DAO\CategoryDAO;
 
 class CategoryController
 {

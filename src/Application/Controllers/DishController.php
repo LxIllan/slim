@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Models\Dish;
-use App\Application\DAOs\DishDAO;
+use App\Application\Model\Dish;
+use App\Application\DAO\DishDAO;
 
 class DishController
 {

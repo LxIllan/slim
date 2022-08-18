@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\DAOs\SucursalDAO;
+use App\Application\DAO\SucursalDAO;
 
 class SucursalController
 {

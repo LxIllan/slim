@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Application\DAOs;
+namespace App\Application\DAO;
 
 use App\Application\Helpers\Connection;
-use App\Application\Models\Category;
+use App\Application\Model\Category;
 use App\Application\Controllers\DishController;
 
 class CategoryDAO

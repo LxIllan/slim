@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Models\Product;
-use App\Application\DAOs\ProductDAO;
+use App\Application\Model\Product;
+use App\Application\DAO\ProductDAO;
 
 class ProductController
 {
