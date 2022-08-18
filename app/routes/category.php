@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Application\Controller\CategoryController;
-use App\Application\Helper\Util;
+use App\Application\Controllers\CategoryController;
+use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -17,7 +17,7 @@ return function (App $app) {
     $app->get('/categories', function (Request $request, Response $response) {
         $categoryController = new CategoryController();        
         $categories = $categoryController->getCategories();
-        $response->getBody()->write(Util::orderReturnData($categories, "categories"));
+        $response->getBody()->write(Util::encodeData($categories, "categories"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -30,7 +30,7 @@ return function (App $app) {
         $categoryController = new CategoryController();
         $jwt = $request->getAttribute("token");
         $dishes = $categoryController->getCategoriesWithDishes($jwt['branch_id']);
-        $response->getBody()->write(Util::orderReturnData($dishes, "categories"));
+        $response->getBody()->write(Util::encodeData($dishes, "categories"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };

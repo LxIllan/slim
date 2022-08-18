@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Application\Controller\FoodController;
-use App\Application\Helper\Util;
+use App\Application\Controllers\FoodController;
+use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -20,7 +20,7 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $body['branch_id'] = $jwt['branch_id'];
         $food = $foodController->createFood($body);
-        $response->getBody()->write(Util::orderReturnData($food, "food"));
+        $response->getBody()->write(Util::encodeData($food, "food"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -33,7 +33,7 @@ return function (App $app) {
         $foodController = new FoodController();
         $jwt = $request->getAttribute("token");
         $foods = $foodController->getFoodByBranch($jwt['branch_id']);
-        $response->getBody()->write(Util::orderReturnData($foods, "foods"));
+        $response->getBody()->write(Util::encodeData($foods, "foods"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -45,7 +45,7 @@ return function (App $app) {
     $app->get('/foods/{id}', function (Request $request, Response $response, $args) {
         $foodController = new FoodController();
         $food = $foodController->getFoodById(intval($args['id']));
-        $response->getBody()->write(Util::orderReturnData($food, "food"));
+        $response->getBody()->write(Util::encodeData($food, "food"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -58,7 +58,7 @@ return function (App $app) {
         $foodController = new FoodController();
         $body = $request->getParsedBody();
         $food = $foodController->editFood(intval($args['id']), $body);
-        $response->getBody()->write(Util::orderReturnData($food, "food"));
+        $response->getBody()->write(Util::encodeData($food, "food"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -70,7 +70,7 @@ return function (App $app) {
     $app->delete('/foods/{id}', function (Request $request, Response $response, $args) {
         $foodController = new FoodController();
         $wasDeleted = $foodController->deleteFood(intval($args['id']));
-        $response->getBody()->write(Util::orderReturnData($wasDeleted, "response"));
+        $response->getBody()->write(Util::encodeData($wasDeleted, "response"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -84,7 +84,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $body = $request->getParsedBody();
         $food = $foodController->supply(intval($args['id']), floatval($body['quantity']), $jwt['user_id'], $jwt['branch_id']);
-        $response->getBody()->write(Util::orderReturnData($food, "food"));
+        $response->getBody()->write(Util::encodeData($food, "food"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -98,7 +98,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $body = $request->getParsedBody();
         $food = $foodController->alter(intval($args['id']), floatval($body['quantity']), $body['reason'], $jwt['user_id'], $jwt['branch_id']);
-        $response->getBody()->write(Util::orderReturnData($food, "food"));
+        $response->getBody()->write(Util::encodeData($food, "food"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };

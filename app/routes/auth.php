@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Application\Controller\UserController;
-use App\Application\Helper\Util;
+use App\Application\Controllers\UserController;
+use App\Application\Helpers\Util;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use PsrJwt\Factory\JwtMiddleware;
@@ -25,12 +25,11 @@ return function (App $app) {
             ];
             $secret = $_ENV["JWT_SECRET"];
             $token = Token::customPayload($payload, $secret);
-            $response->getBody()->write(Util::orderReturnData($token, "jwt"));
-            return $response->withHeader('Content-Type', 'application/json');
+            $response->getBody()->write(Util::encodeData($token, "jwt"));
         } else {
             $response->getBody()->write(json_encode(['error' => 'Invalid credentials']));
-            return $response->withHeader('Content-Type', 'application/json');
         }
+        return $response->withHeader('Content-Type', 'application/json');
     });
 
     $app->get('/logout', function (Request $request, Response $response) {

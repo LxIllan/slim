@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Application\Controller\HistoryController;
-use App\Application\Helper\Util;
+use App\Application\Controllers\HistoryController;
+use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -19,7 +19,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $expenses = $historyController->getExpenses($jwt['branch_id'], $params['from'], $params['to'], $params['reason'] ?? null);
-        $response->getBody()->write(Util::orderReturnData($expenses, "expenses"));
+        $response->getBody()->write(Util::encodeData($expenses, "expenses"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -33,7 +33,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $sales = $historyController->getSales($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::orderReturnData($sales, "sales"));
+        $response->getBody()->write(Util::encodeData($sales, "sales"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -47,7 +47,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $courtesies = $historyController->getCourtesies($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::orderReturnData($courtesies, "courtesies"));
+        $response->getBody()->write(Util::encodeData($courtesies, "courtesies"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -61,7 +61,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $suppliedFoods = $historyController->getSuppliedFood($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::orderReturnData($suppliedFoods, "supplied-foods"));
+        $response->getBody()->write(Util::encodeData($suppliedFoods, "supplied-foods"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -75,7 +75,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $alteredFoods = $historyController->getAlteredFood($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::orderReturnData($alteredFoods, "altered-foods"));
+        $response->getBody()->write(Util::encodeData($alteredFoods, "altered-foods"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -89,7 +89,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $usedProducts = $historyController->getUsedProducts($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::orderReturnData($usedProducts, "used-products"));
+        $response->getBody()->write(Util::encodeData($usedProducts, "used-products"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };

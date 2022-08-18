@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "756377b3-aa21-4fb1-ab5e-e234cffd99ec",
+		"_postman_id": "5c9f780a-b298-4003-91ab-943fb0425957",
 		"name": "Slim",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "20470085"
+		"_exporter_id": "18225211"
 	},
 	"item": [
 		{
@@ -27,12 +27,9 @@
 							}
 						},
 						"url": {
-							"raw": "https://slim.damsoluciones.com/login",
-							"protocol": "https",
+							"raw": "{{Host}}/login",
 							"host": [
-								"slim",
-								"damsoluciones",
-								"com"
+								"{{Host}}"
 							],
 							"path": [
 								"login"
@@ -1034,6 +1031,33 @@
 					"response": []
 				},
 				{
+					"name": "Exist email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\": \"fernanddo.illan@syss.tech\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/users/exist-email",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"exist-email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get cashier by branch",
 					"request": {
 						"method": "GET",
@@ -1226,6 +1250,36 @@
 			"response": []
 		},
 		{
+			"name": "Check connection",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/branches/connection",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches",
+						"connection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get categories",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -1290,7 +1344,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjAxNjk2NzcsImV4cCI6MTY3MDE2OTY3NiwidXNlcl9pZCI6MywidXNlcm5hbWUiOiJGZXJuYW5kbyBJbGxhbiIsImJyYW5jaF9pZCI6Miwicm9vdCI6IjEifQ.bHhqUmwsPbom5QzXADKF6v60pe90_-TzJ2luTMqF8SM",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjA1MTUyNTgsImV4cCI6MTY3MDUxNTI1NywidXNlcl9pZCI6MywiYnJhbmNoX2lkIjoyLCJyb290IjoiMSJ9.MSDCi4f5ANPk8_cST3GzHZwe7whzVyZaG0sTv78U-nc",
 				"type": "string"
 			}
 		]

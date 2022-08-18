@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Application\Controller\DishController;
-use App\Application\Helper\Util;
+use App\Application\Controllers\DishController;
+use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -20,7 +20,7 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $body["branch_id"] = $jwt["branch_id"];
         $dish = $dishController->createDish($body);
-        $response->getBody()->write(Util::orderReturnData($dish, "dish", 201));
+        $response->getBody()->write(Util::encodeData($dish, "dish", 201));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -33,7 +33,7 @@ return function (App $app) {
         $dishController = new DishController();
         $jwt = $request->getAttribute("token");
         $combos = $dishController->getCombosByBranch($jwt['branch_id']);
-        $response->getBody()->write(Util::orderReturnData($combos, "combos"));
+        $response->getBody()->write(Util::encodeData($combos, "combos"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -45,7 +45,7 @@ return function (App $app) {
     $app->get('/combos/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $combo = $dishController->getDishById(intval($args['id']));
-        $response->getBody()->write(Util::orderReturnData($combo, "combo"));
+        $response->getBody()->write(Util::encodeData($combo, "combo"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -58,7 +58,7 @@ return function (App $app) {
         $dishController = new DishController();
         $body = $request->getParsedBody();
         $dish = $dishController->editDish(intval($args['id']), $body);
-        $response->getBody()->write(Util::orderReturnData($dish, "dish"));
+        $response->getBody()->write(Util::encodeData($dish, "dish"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -70,7 +70,7 @@ return function (App $app) {
     $app->delete('/combos/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $wasDeleted = $dishController->deleteDish(intval($args['id']));
-        $response->getBody()->write(Util::orderReturnData($wasDeleted, "response"));
+        $response->getBody()->write(Util::encodeData($wasDeleted, "response"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -82,7 +82,7 @@ return function (App $app) {
     $app->get('/combos/{id}/dishes', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $dishes = $dishController->getDishesByCombo(intval($args['id']));
-        $response->getBody()->write(Util::orderReturnData($dishes, "dishes"));
+        $response->getBody()->write(Util::encodeData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -95,7 +95,7 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $dishController = new DishController();
         $dishes = $dishController->addDishToCombo(intval($args['id']), intval($body['dish_id']));
-        $response->getBody()->write(Util::orderReturnData($dishes, "dishes"));
+        $response->getBody()->write(Util::encodeData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -108,7 +108,7 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $dishController = new DishController();
         $dishes = $dishController->deleteDishFromCombo(intval($args['id']), intval($body['dish_id']));
-        $response->getBody()->write(Util::orderReturnData($dishes, "dishes"));
+        $response->getBody()->write(Util::encodeData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };
