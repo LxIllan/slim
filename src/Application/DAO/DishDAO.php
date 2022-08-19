@@ -6,8 +6,10 @@ namespace App\Application\DAO;
 
 use App\Application\Helpers\Connection;
 use App\Application\Helpers\Util;
+use App\Application\Helpers\EmailTemplate;
 use App\Application\Model\Dish;
 use App\Application\Controllers\FoodController;
+use Exception;
 
 class DishDAO
 {
@@ -136,12 +138,13 @@ class DishDAO
      * @param int $comboId
      * @param int $dishId
      * @return Dish[]
+     * @throws Exception
      */
     public function addDishToCombo(int $comboId, int $dishId): array
     {
         $dish = $this->getById($comboId);
         if (!$dish->is_combo) {
-            return false;
+            throw new Exception("$dish->name is not a combo.");
         }
 
         $dataToInsert = [
@@ -219,14 +222,36 @@ class DishDAO
      * @param int $foodId
      * @param float $quantity
      * @return bool
+     * @throws Exception
      */
     private function subtractFood(int $foodId, float $quantity): bool
     {
         $foodController = new FoodController();
         $food = $foodController->getFoodById($foodId);
+
+        $newQuantity = $food->quantity - $quantity;
         $dataToUpdate = [
-            "quantity" => ($food->quantity - $quantity)
+            "quantity" => $newQuantity
         ];
-        return !is_null($this->connection->update(Util::prepareUpdateQuery($foodId, $dataToUpdate, 'food')));
+
+        if (($newQuantity <= $food->quantity_notif) && ($food->is_notif_sent == 0)) {
+            $branchController = new \App\Application\Controllers\BranchController();
+            $branch = $branchController->getById(intval($food->branch_id));
+            $data = [
+                'subject' => "Notificación de: $branch->location",
+                'food_name' => $food->name,
+                'quantity' => $newQuantity,
+                'branch_name' => $branch->name,
+                'branch_location' => $branch->location,
+                'email' => $branch->admin_email
+            ];
+            if (Util::sendMail($data, EmailTemplate::NOTIFICATION_TO_ADMIN)) {
+                $dataToUpdate["is_notif_sent"] = true;
+            } else {
+                throw new Exception('Error to send email notification to admin.');
+            }
+        }
+
+        return $this->connection->update(Util::prepareUpdateQuery($foodId, $dataToUpdate, 'food'));
     }
 }

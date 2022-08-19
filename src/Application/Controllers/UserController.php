@@ -39,10 +39,10 @@ class UserController
             $dataToSendEmail = [
                 'subject' => "Bienvenido a $branch->name",
                 'email' => $user->email,
-                'branchName' => $branch->name,
-                'branchLocation' => $branch->location,
+                'branch_name' => $branch->name,
+                'branch_location' => $branch->location,
                 'password' => $password,
-                'userName' => "$user->name $user->last_name"
+                'username' => "$user->name $user->last_name"
             ];
             if (!Util::sendMail($dataToSendEmail, EmailTemplate::PASSWORD_TO_NEW_USER)) {
                 throw new Exception('Error to send password to new user.');
@@ -103,7 +103,6 @@ class UserController
 
     /**
      * @param int $userId
-     * @param string $password
      * @return bool
      * @throws Exception
      */
@@ -117,9 +116,9 @@ class UserController
             $dataToSendEmail = [
                 'subject' => "Restablecer contraseña - $branch->name",
                 'email' => $user->email,
-                'branchName' => $branch->name,
+                'branch_name' => $branch->name,
                 'password' => $password,
-                'userName' => "$user->name"
+                'user_name' => "$user->name"
             ];
             if (!Util::sendMail($dataToSendEmail, EmailTemplate::RESET_PASSWORD)) {
                 throw new Exception('Error to send password to new user.');

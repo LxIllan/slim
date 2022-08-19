@@ -51,7 +51,7 @@ class FoodDAO
     {
         $food = [];
         $result = $this->connection
-            ->select("SELECT id FROM food WHERE branch_id = $branchId AND category_id <= " . Util::EXTRAS_ID . " ORDER BY name");
+            ->select("SELECT id FROM food WHERE branch_id = $branchId ORDER BY name");
         while ($row = $result->fetch_array()) {
             $food[] = self::getFoodById(intval($row['id']));
         }
@@ -59,7 +59,7 @@ class FoodDAO
     }
 
     /**
-     * @param int $idSucursal
+     * @param int $branchId
      * @return Food[]
      */
     public function getFoodToDashboard(int $branchId): array

@@ -102,14 +102,14 @@ class ProductDAO
 
         if (($newQuantity <= $product->quantity_notif) && ($product->is_notif_sent == 0)) {
             $branchController = new \App\Application\Controllers\BranchController();
-            $branch = $branchController->getById($product->branch_id);
+            $branch = $branchController->getById(intval($product->branch_id));
             $data = [
-                'subject'=> "Notificación de: $branch->location",
+                'subject' => "Notificación de: $branch->location",
                 'food_name' => $product->name,
-                'quantity'=> $newQuantity,
+                'quantity' => $newQuantity,
                 'branch_name' => $branch->name,
-                'branch_location'=> $branch->location,
-                'email' => $branch->email
+                'branch_location' => $branch->location,
+                'email' => $branch->admin_email
             ];
             if (Util::sendMail($data, EmailTemplate::NOTIFICATION_TO_ADMIN)) {
                 $dataToUpdateProduct = ["is_notif_sent" => true];

@@ -84,15 +84,16 @@ class Util
      */
     public static function sendMail(array $data, string $template): bool
     {
-        $branchName = $data["branchName"];
+        $branchName = $data["branch_name"];
         $urlWebsite = $_ENV["URL_WEBSITE"];
+        $emailWebsite = $_ENV["EMAIL_WEBSITE"];
         $to = $data["email"];
 
-        $headers = "From: $urlWebsite\r\n" .
-            "Reply-To: $urlWebsite" . "\r\n" .
+        $headers = "From: $emailWebsite\r\n" .
+            "Reply-To: $emailWebsite\r\n" .
             'X-Mailer: PHP/' . phpversion() . "\r\n" .
-            'MIME-Version: 1.0' . "\r\n" .
-            'Content-type: text/html; charset=utf-8' . "\r\n";
+            "MIME-Version: 1.0\r\n" .
+            "Content-type: text/html; charset=utf-8\r\n";
 
         $message = file_get_contents(__DIR__ . "/../EmailTemplates/$template.html");
         if (!$message) {
@@ -104,16 +105,17 @@ class Util
 
         switch ($template) {
             case EmailTemplate::NOTIFICATION_TO_ADMIN:
-                $message = str_replace("{branchLocation}", $data['branchLocation'], $message);
-                $message = str_replace("{quantity}", $data['quantity'], $message);
-                $message = str_replace("{foodName}", $data['foodName'], $message);
+                $message = str_replace("{branchLocation}", $data['branch_location'], $message);
+                $message = str_replace("{quantity}", strval($data['quantity']), $message);
+                $message = str_replace("{foodName}", $data['food_name'], $message);
                 break;
             case EmailTemplate::PASSWORD_TO_NEW_USER:
-                $message = str_replace("{branchLocation}", $data['branchLocation'], $message);
-                $message = str_replace("{userName}", $data['userName'], $message);
+                $message = str_replace("{branchLocation}", $data['branch_location'], $message);
+                $message = str_replace("{userName}", $data['username'], $message);
                 $message = str_replace("{password}", $data['password'], $message);
                 break;
             case EmailTemplate::RESET_PASSWORD:
+                $message = str_replace("{userName}", $data['username'], $message);
                 $message = str_replace("{password}", $data['password'], $message);
                 break;
             default:
@@ -204,7 +206,7 @@ class Util
     public static function generatePassword(int $lenPassword = 8): string
     {
         $characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghilkmnopqrstuvwxyz0123456789";
-        $lenCharacters = strlen($characters);
+        $lenCharacters = strlen($characters) - 1;
         $password = '';
         $i = 0;
         while ($i++ < $lenPassword) {
