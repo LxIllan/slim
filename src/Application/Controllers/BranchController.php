@@ -63,4 +63,6 @@ class BranchController
     {
         return $this->branchDAO->getNumTicket($branchId);
     }
+
+
 }
