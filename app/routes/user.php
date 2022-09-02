@@ -25,6 +25,19 @@ return function (App $app) {
     });
 
     /**
+     * @api /profile
+     * @method GET
+     * @description Get user by id
+     */
+    $app->get('/profile', function (Request $request, Response $response) {
+        $userController = new UserController();
+        $token = $request->getAttribute("token");
+        $user = $userController->getUserById($token['user_id']);
+        $response->getBody()->write(Util::encodeData($user, "user"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
      * @api /users
      * @method POST
      * @description Create user

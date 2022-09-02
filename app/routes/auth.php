@@ -21,7 +21,7 @@ return function (App $app) {
                 'exp' => time() + 99999999,
                 'user_id' => intval($user['id']),
                 'branch_id' => intval($user['branch_id']),
-                'root' => $user['root']
+                'root' => boolval($user['root'])
             ];
             $secret = $_ENV["JWT_SECRET"];
             $token = Token::customPayload($payload, $secret);
