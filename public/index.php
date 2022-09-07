@@ -58,6 +58,7 @@ $app->add(new JwtAuthentication([
         "/foods",
         "/histories",
         "/products",
+        "/profile",
         "/sell",
         "/users"
     ],

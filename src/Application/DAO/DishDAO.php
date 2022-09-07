@@ -182,21 +182,17 @@ class DishDAO
      * @param array $items
      * @param int $userId
      * @param int $branchId
-     * @return mixed
+     * @return bool
+     * @throws Exception
      */
-    public function sell(array $items, int $userId, int $branchId): mixed
+    public function sell(array $items, int $userId, int $branchId): bool
     {
         $result = false;
         foreach ($items as $item) {
             $dishToSell = $this->getById($item['dish_id']);
             $result = $this->registerSell(intval($dishToSell->id), intval($item['quantity']), floatval($dishToSell->price), $userId, $branchId);
-
             if ($dishToSell->is_combo) {
-                $dishes = $this->getDishesByCombo(intval($dishToSell->id));
-                foreach ($dishes as $dish) {
-                    $portion = $dish->portion * $item['quantity'];
-                    $this->subtractFood(intval($dish->food_id), $portion);
-                }
+                $this->extractDishesFromCombo(intval($dishToSell->id), intval($item['quantity']));
             } else {
                 $portion = $dishToSell->portion * $item['quantity'];
                 $this->subtractFood(intval($dishToSell->food_id), $portion);
@@ -205,6 +201,33 @@ class DishDAO
         return $result;
     }
 
+    /**
+     * @param int $comboId
+     * @param int $quantity
+     * @return void
+     * @throws Exception
+     */
+    public function extractDishesFromCombo(int $comboId, int $quantity): void
+    {
+        $dishes = $this->getDishesByCombo($comboId);
+        foreach ($dishes as $dish) {
+            if ($dish->is_combo) {
+                $this->extractDishesFromCombo(intval($dish->id), $quantity);
+            } else {
+                $portion = $dish->portion * $quantity;
+                $this->subtractFood(intval($dish->food_id), $portion);
+            }
+        }
+    }
+
+    /**
+     * @param int $dishId
+     * @param int $quantity
+     * @param float $price
+     * @param int $userId
+     * @param int $branchId
+     * @return bool
+     */
     private function registerSell(int $dishId, int $quantity, float $price, int $userId, int $branchId): bool
     {
         $dataToInsert = [
