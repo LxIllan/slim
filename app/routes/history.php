@@ -92,4 +92,18 @@ return function (App $app) {
         $response->getBody()->write(Util::encodeData($usedProducts, "used-products"));
         return $response->withHeader('Content-Type', 'application/json');
     });
+
+    /**
+     * @api /histories/foods-sold
+     * @method GET
+     * @description Get history foods sold
+     */
+    $app->get('/histories/foods-sold', function (Request $request, Response $response) {
+        $historyController = new HistoryController();
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
+        $usedProducts = $historyController->getFoodsSold($jwt['branch_id'], $params['from'], $params['to']);
+        $response->getBody()->write(Util::encodeData($usedProducts, "foods-sold"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
 };

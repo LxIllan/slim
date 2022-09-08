@@ -23,11 +23,11 @@ class HistoryDAO
      * @param int $branchId
      * @param string $from
      * @param string $to
-     * @return array
+     * @return StdClass
      */
-    public function getSuppliedFood(int $branchId, string $from, string $to): array
+    public function getSuppliedFood(int $branchId, string $from, string $to): StdClass
     {
-        $suppliedFood = [];
+        $suppliedFood = new StdClass();
 
         $result = $this->connection->select("SELECT supplied_food.id, supplied_food.date, food.name, "
             . "supplied_food.quantity, supplied_food.new_quantity, CONCAT(user.name, ' ', user.last_name) AS cashier "
@@ -36,8 +36,9 @@ class HistoryDAO
             . "AND supplied_food.branch_id = '$branchId' "
             . "AND DATE(supplied_food.date) >= '$from' AND DATE(supplied_food.date) <= '$to' ORDER BY date ASC");
 
+        $suppliedFood->length = $result->num_rows;
         while ($row = $result->fetch_assoc()) {
-            $suppliedFood[] = $row;
+            $suppliedFood->items[] = $row;
         }
         return $suppliedFood;
     }
@@ -46,11 +47,11 @@ class HistoryDAO
      * @param int $branchId
      * @param string $from
      * @param string $to
-     * @return array
+     * @return StdClass
      */
-    public function getAlteredFood(int $branchId, string $from, string $to): array
+    public function getAlteredFood(int $branchId, string $from, string $to): StdClass
     {
-        $alteredFood = [];
+        $alteredFood = new StdClass();;
 
         $result = $this->connection->select("SELECT altered_food.id, altered_food.date, food.name, "
             . "altered_food.quantity, altered_food.reason, altered_food.new_quantity, CONCAT(user.name, ' ' ,user.last_name) AS cashier "
@@ -59,8 +60,9 @@ class HistoryDAO
             . "AND altered_food.branch_id = '$branchId' "
             . "AND DATE(altered_food.date) >= '$from' AND DATE(altered_food.date) <= '$to' ORDER BY date ASC");
 
+        $alteredFood->length = $result->num_rows;
         while ($row = $result->fetch_assoc()) {
-            $alteredFood[] = $row;
+            $alteredFood->food[] = $row;
         }
         return $alteredFood;
     }
@@ -91,7 +93,7 @@ class HistoryDAO
 
         $sales->length = $result->num_rows;
         while ($row = $result->fetch_assoc()) {
-            $sales->sales[] = $row;
+            $sales->items[] = $row;
         }
         return $sales;
     }
@@ -122,7 +124,7 @@ class HistoryDAO
 
         $courtesies->length = $result->num_rows;
         while ($row = $result->fetch_assoc()) {
-            $courtesies->courtesies[] = $row;
+            $courtesies->items[] = $row;
         }
         return $courtesies;
     }
@@ -158,9 +160,8 @@ class HistoryDAO
 
         $result = $this->connection->select($query);
         $expenses->length = $result->num_rows;
-
         while ($row = $result->fetch_assoc()) {
-            $expenses->expenses[] = $row;
+            $expenses->items[] = $row;
         }
         return $expenses;
     }
@@ -169,11 +170,11 @@ class HistoryDAO
      * @param int $branchId
      * @param string $from
      * @param string $to
-     * @return array
+     * @return StdClass
      */
-    public function getUsedProducts(int $branchId, string $from, string $to): array
+    public function getUsedProducts(int $branchId, string $from, string $to): StdClass
     {
-        $usedProducts = [];
+        $usedProducts = new StdClass();
         $query = <<<EOF
             SELECT used_product.id, used_product.date, product.name, 
                 used_product.quantity, CONCAT(user.name, ' ' , user.last_name) AS cashier 
@@ -184,11 +185,70 @@ class HistoryDAO
         EOF;
 
         $result = $this->connection->select($query);
-
+        $usedProducts->length = $result->num_rows;
         while ($row = $result->fetch_assoc()) {
-            $usedProducts[] = $row;
+            $usedProducts->items[] = $row;
         }
         return $usedProducts;
+    }
+
+    /**
+     * @param int $branchId
+     * @param string|null $from
+     * @param string|null $to
+     * @return StdClass
+     */
+    public function getFoodsSold(int $branchId, ?string $from, ?string $to): StdClass
+    {
+        $foodController = new \App\Application\Controllers\FoodController();
+        $foods = $foodController->getFoodByBranch($branchId);
+
+        $foodsSold = new StdClass();
+        foreach ($foods as $food) {
+            $foodsSold->items[] = $this->getFoodSold(intval($food->id), $food->name, $from, $to);
+        }
+
+        return $foodsSold;
+    }
+
+    public function  getFoodSold(int $foodId, string $name, string $from, string $to): StdClass
+    {
+        $dishController = new \App\Application\Controllers\DishController();
+
+        $dishes = $dishController->getDishesByFood($foodId);
+
+        $foodSold = new StdClass();
+        $foodSold->name = $name;
+        $foodSold->quantity = 0;
+        $sumFood = 0;
+
+        foreach ($dishes as $dish) {
+            $dishId = $dish->id;
+            $query = <<<EOF
+                SELECT SUM(quantity) AS quantity
+                FROM sale
+                WHERE dish_id = $dishId
+                AND DATE(date) >= '$from' AND DATE(date) <= '$to'
+            EOF;
+
+            $result = $this->connection->select($query);
+            $row = $result->fetch_assoc();
+            if (is_null($row['quantity'])) {
+                continue;
+            }
+            $foodSold->dishes[] = [
+                'name' => $dish->name,
+                'quantity' => $row['quantity']
+            ];
+            $sumFood += $dish->portion * $row['quantity'];
+        }
+        $foodSold->quantity = $sumFood;
+        file_put_contents(__DIR__ . "/../../../logs/system.log", date("[D, d M Y H:i:s]") . " " .
+            '$dish->foodId-> ' . json_encode($foodId) . " " .
+            '$dish->quantity-> ' . json_encode($sumFood) . " " .
+            "file:" . __DIR__ . '/' . basename(__FILE__) . "\r\n", FILE_APPEND);
+
+        return $foodSold;
     }
 
     /**

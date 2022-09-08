@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Model\Platillo;
-use App\Application\Model\Alimento;
 use App\Application\DAO\HistoryDAO;
 use App\Application\Helpers\Util;
 use \StdClass;
-use function _PHPStan_9a6ded56a\RingCentral\Psr7\str;
 
 class HistoryController
 {
@@ -27,9 +24,9 @@ class HistoryController
      * @param int $branchId
      * @param string|null $from
      * @param string|null $to
-     * @return array
+     * @return StdClass
      */
-    public function getSuppliedFood(int $branchId, ?string $from, ?string $to): array
+    public function getSuppliedFood(int $branchId, ?string $from, ?string $to): StdClass
     {
         if ((is_null($from)) && (is_null($to))) {
             $from = date('Y-m-d', strtotime("this week"));
@@ -42,9 +39,9 @@ class HistoryController
      * @param int $branchId
      * @param string|null $from
      * @param string|null $to
-     * @return array
+     * @return StdClass
      */
-    public function getAlteredFood(int $branchId, ?string $from, ?string $to): array
+    public function getAlteredFood(int $branchId, ?string $from, ?string $to): StdClass
     {
         if ((is_null($from)) && (is_null($to))) {
             $from = date('Y-m-d', strtotime("this week"));
@@ -106,14 +103,29 @@ class HistoryController
      * @param int $branchId
      * @param string|null $from
      * @param string|null $to
-     * @return array
+     * @return StdClass
      */
-    public function getUsedProducts(int $branchId, ?string $from, ?string $to): array
+    public function getUsedProducts(int $branchId, ?string $from, ?string $to): StdClass
     {
         if ((is_null($from)) && (is_null($to))) {
             $from = date('Y-m-d', strtotime("this week"));
             $to = date('Y-m-d', strtotime($from . "next Sunday"));
         }
         return $this->historyDAO->getUsedProducts($branchId, $from, $to);
+    }
+
+    /**
+     * @param int $branchId
+     * @param string|null $from
+     * @param string|null $to
+     * @return StdClass
+     */
+    public function getFoodsSold(int $branchId, ?string $from, ?string $to): StdClass
+    {
+        if ((is_null($from)) && (is_null($to))) {
+            $from = date('Y-m-d');
+            $to = date('Y-m-d');
+        }
+        return $this->historyDAO->getFoodsSold($branchId, $from, $to);
     }
 }
