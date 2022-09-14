@@ -117,28 +117,6 @@ class FoodController
         return $this->foodDAO->alter($foodId, $quantity, $reason, $userId, $branchId);
     }
 
-    public function agregarPaquete($nombre, $precio, $descripcion, $idSucursal) : bool
-    {
-        $idPlatillo = 1;
-        $idAlimento = 1;
-        $porcion = 0;
-        $paquete = 1;
-        $cantidadVendida = 0;
-        $verEnVenta = 1;
-        $idCategoria = Util::ID_PAQUETE;
-    }
-
-    public function agregarPlatilloAPaquete(int $idPaquete, int $idPlatillo)
-    {
-        return $this->foodDAO->agregarPlatilloAPaquete($idPaquete, $idPlatillo);
-    }
-
-
-    public function eliminarPlatilloDePaquete(int $idPaquete, int $idPlatillo)
-    {
-        return $this->foodDAO->eliminarPlatilloDePaquete($idPaquete, $idPlatillo);
-    }
-
     public function listarAlimentosInicio(int $idSucursal)
     {            
         return $this->foodDAO->dameAlimentosInicio($idSucursal);

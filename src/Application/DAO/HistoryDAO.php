@@ -240,7 +240,7 @@ class HistoryDAO
                 'name' => $dish->name,
                 'quantity' => $row['quantity']
             ];
-            $sumFood += $dish->portion * $row['quantity'];
+            $sumFood += $dish->serving * $row['quantity'];
         }
         $foodSold->quantity = $sumFood;
         file_put_contents(__DIR__ . "/../../../logs/system.log", date("[D, d M Y H:i:s]") . " " .

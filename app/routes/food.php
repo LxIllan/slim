@@ -20,7 +20,7 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $body['branch_id'] = $jwt['branch_id'];
         $food = $foodController->createFood($body);
-        $response->getBody()->write(Util::encodeData($food, "food"));
+        $response->getBody()->write(Util::encodeData($food, "food", 201));
         return $response->withHeader('Content-Type', 'application/json');
     });
 

@@ -194,8 +194,8 @@ class DishDAO
             if ($dishToSell->is_combo) {
                 $this->extractDishesFromCombo(intval($dishToSell->id), intval($item['quantity']));
             } else {
-                $portion = $dishToSell->portion * $item['quantity'];
-                $this->subtractFood(intval($dishToSell->food_id), $portion);
+                $serving = $dishToSell->serving * $item['quantity'];
+                $this->subtractFood(intval($dishToSell->food_id), $serving);
             }
         }
         return $result;
@@ -214,8 +214,8 @@ class DishDAO
             if ($dish->is_combo) {
                 $this->extractDishesFromCombo(intval($dish->id), $quantity);
             } else {
-                $portion = $dish->portion * $quantity;
-                $this->subtractFood(intval($dish->food_id), $portion);
+                $serving = $dish->serving * $quantity;
+                $this->subtractFood(intval($dish->food_id), $serving);
             }
         }
     }

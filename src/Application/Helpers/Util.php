@@ -39,7 +39,7 @@ class Util
         }
 
         $query = rtrim($query, ", ");
-        $query .= ")";
+        $query .= ");";
         return $query;
     }
 
