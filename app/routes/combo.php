@@ -94,7 +94,7 @@ return function (App $app) {
     $app->post('/combos/{id}/add-dish', function (Request $request, Response $response, $args) {
         $body = $request->getParsedBody();
         $dishController = new DishController();
-        $dishes = $dishController->addDishToCombo(intval($args['id']), intval($body['dish_id']));
+        $dishes = $dishController->addDishToCombo(intval($args['id']), $body['dishes']);
         $response->getBody()->write(Util::encodeData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });

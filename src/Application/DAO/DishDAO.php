@@ -136,26 +136,32 @@ class DishDAO
 
     /**
      * @param int $comboId
-     * @param int $dishId
+     * @param array $dishes
      * @return Dish[]
      * @throws Exception
      */
-    public function addDishToCombo(int $comboId, int $dishId): array
+    public function addDishToCombo(int $comboId, array $dishes): array
     {
-        $dish = $this->getById($comboId);
-        if (!$dish->is_combo) {
-            throw new Exception("$dish->name is not a combo.");
-        }
+        $dishesFailed = "";
+        foreach ($dishes as $dish) {
+            $combo = $this->getById($comboId);
+            if (!$combo->is_combo) {
+                throw new Exception("$combo->name is not a combo.");
+            }
 
-        $dataToInsert = [
-            "combo_id" => $comboId,
-            "dish_id" => $dishId
-        ];
+            $dataToInsert = [
+                "combo_id" => $comboId,
+                "dish_id" => $dish['id']
+            ];
 
-        if ($this->connection->insert(Util::prepareInsertQuery($dataToInsert, "dishes_in_combo"))) {
-            return $this->getDishesByCombo($comboId);
+            if (!$this->connection->insert(Util::prepareInsertQuery($dataToInsert, "dishes_in_combo"))) {
+                $dishesFailed .= "{$dish['id']},";
+            }
         }
-        return [];
+        if (strlen($dishesFailed) > 0) {
+            throw new Exception("Dishes with id: $dishesFailed failed to be added to combo.");
+        }
+        return $this->getDishesByCombo($comboId);
     }
 
     /**

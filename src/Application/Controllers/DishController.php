@@ -95,12 +95,12 @@ class DishController
 
     /**
      * @param int $comboId
-     * @param int $dishId
+     * @param array $dishes
      * @return Dish[]
      */
-    public function addDishToCombo(int $comboId, int $dishId): array
+    public function addDishToCombo(int $comboId, array $dishes): array
     {
-        return $this->dishDAO->addDishToCombo($comboId, $dishId);
+        return $this->dishDAO->addDishToCombo($comboId, $dishes);
     }
 
     /**
