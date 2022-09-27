@@ -85,6 +85,15 @@ class DishController
     }
 
     /**
+     * @param int $branchId
+     * @return Dish[]
+     */
+    public function getPreparedDishesByBranch(int $branchId): array
+    {
+        return $this->dishDAO->getPreparedDishesByBranch($branchId);
+    }
+
+    /**
      * @param int $comboId
      * @return Dish[]
      */

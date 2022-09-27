@@ -74,7 +74,7 @@ class DishDAO
             FROM dish 
             WHERE category_id = $categoryId 
                 AND branch_id = $branchId 
-                AND is_showed_in_sales = 1 
+                AND sell_individually = 1 
                 ORDER BY name
         EOF;
         $result = $this->connection->select($query);
@@ -113,7 +113,22 @@ class DishDAO
     {
         $dishes = [];
         $result = $this->connection
-            ->select("SELECT id FROM dish WHERE branch_id = $branchId AND is_combo = 1 ORDER BY name");
+            ->select("SELECT id FROM dish WHERE branch_id = $branchId AND is_combo = 1 AND is_prepared_dish = 0 ORDER BY name");
+        while ($row = $result->fetch_assoc()) {
+            $dishes[] = $this->getById(intval($row['id']));
+        }
+        return $dishes;
+    }
+
+    /**
+     * @param int $branchId
+     * @return Dish[]
+     */
+    public function getPreparedDishesByBranch(int $branchId): array
+    {
+        $dishes = [];
+        $result = $this->connection
+            ->select("SELECT id FROM dish WHERE branch_id = $branchId AND is_combo = 1 AND is_prepared_dish = 1 ORDER BY name");
         while ($row = $result->fetch_assoc()) {
             $dishes[] = $this->getById(intval($row['id']));
         }

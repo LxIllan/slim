@@ -10,64 +10,64 @@ use Slim\App;
 
 return function (App $app) {
     /**
-     * @api /combos
+     * @api /prepared-dishes
      * @method POST
-     * @description Create a new combo
+     * @description Create a new prepared-dish
      */
-    $app->post('/combos', function (Request $request, Response $response) {
+    $app->post('/prepared-dishes', function (Request $request, Response $response) {
         $dishController = new DishController();
         $jwt = $request->getAttribute("token");
         $body = $request->getParsedBody();
         $body["branch_id"] = $jwt["branch_id"];
         $dish = $dishController->createDish($body);
-        $response->getBody()->write(Util::encodeData($dish, "combo", 201));
+        $response->getBody()->write(Util::encodeData($dish, "prepared-dish", 201));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
     /**
-     * @api /combos
+     * @api /prepared-dishes
      * @method GET
-     * @description Get combos by branch
+     * @description Get prepared-dishes by branch
      */
-    $app->get('/combos', function (Request $request, Response $response) {
+    $app->get('/prepared-dishes', function (Request $request, Response $response) {
         $dishController = new DishController();
         $jwt = $request->getAttribute("token");
-        $combos = $dishController->getCombosByBranch($jwt['branch_id']);
-        $response->getBody()->write(Util::encodeData($combos, "combos"));
+        $combos = $dishController->getPreparedDishesByBranch($jwt['branch_id']);
+        $response->getBody()->write(Util::encodeData($combos, "prepared-dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
     /**
-     * @api /combos/{id}
+     * @api /prepared-dishes/{id}
      * @method GET
-     * @description Get combo by id
+     * @description Get prepared-dish by id
      */
-    $app->get('/combos/{id}', function (Request $request, Response $response, $args) {
+    $app->get('/prepared-dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $combo = $dishController->getDishById(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($combo, "combo"));
+        $response->getBody()->write(Util::encodeData($combo, "prepared-dish"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
     /**
-     * @api /combos/{id}
+     * @api /prepared-dishes/{id}
      * @method PUT
-     * @description Edit a combo
+     * @description Edit a prepared-dish
      */
-    $app->put('/combos/{id}', function (Request $request, Response $response, $args) {
+    $app->put('/prepared-dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $body = $request->getParsedBody();
         $dish = $dishController->editDish(intval($args['id']), $body);
-        $response->getBody()->write(Util::encodeData($dish, "combo"));
+        $response->getBody()->write(Util::encodeData($dish, "prepared-dish"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
     /**
-     * @api /combos/{id}
+     * @api /prepared-dishes/{id}
      * @method DELETE
-     * @description Delete a combo
+     * @description Delete a prepared-dish
      */
-    $app->delete('/combos/{id}', function (Request $request, Response $response, $args) {
+    $app->delete('/prepared-dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $wasDeleted = $dishController->deleteDish(intval($args['id']));
         $response->getBody()->write(Util::encodeData($wasDeleted, "response"));
@@ -75,11 +75,11 @@ return function (App $app) {
     });
 
     /**
-     * @api /combos/{id}/dishes
+     * @api /prepared-dishes/{id}/dishes
      * @method GET
-     * @description Get dishes by combo
+     * @description Get dishes by prepared-dish
      */
-    $app->get('/combos/{id}/dishes', function (Request $request, Response $response, $args) {
+    $app->get('/prepared-dishes/{id}/dishes', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $dishes = $dishController->getDishesByCombo(intval($args['id']));
         $response->getBody()->write(Util::encodeData($dishes, "dishes"));
@@ -87,11 +87,11 @@ return function (App $app) {
     });
 
     /**
-     * @api /combos/{id}/add-dish
+     * @api /prepared-dishes/{id}/add-dish
      * @method POST
-     * @description Add dish to combo
+     * @description Add dish to prepared dish
      */
-    $app->post('/combos/{id}/add-dish', function (Request $request, Response $response, $args) {
+    $app->post('/prepared-dishes/{id}/add-dish', function (Request $request, Response $response, $args) {
         $body = $request->getParsedBody();
         $dishController = new DishController();
         $dishes = $dishController->addDishToCombo(intval($args['id']), $body['dishes']);
@@ -100,11 +100,11 @@ return function (App $app) {
     });
 
     /**
-     * @api /combos/{id}/delete-dish
+     * @api /prepared-dishes/{id}/delete-dish
      * @method DELETE
-     * @description Delete dish from combo
+     * @description Delete dish from prepared dish
      */
-    $app->delete('/combos/{id}/delete-dish', function (Request $request, Response $response, $args) {
+    $app->delete('/prepared-dishes/{id}/delete-dish', function (Request $request, Response $response, $args) {
         $body = $request->getParsedBody();
         $dishController = new DishController();
         $dishes = $dishController->deleteDishFromCombo(intval($args['id']), intval($body['dish_id']));
