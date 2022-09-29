@@ -7,6 +7,7 @@ use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
+use Slim\Exception\HttpNotFoundException;
 
 return function (App $app) {
     /**
@@ -44,9 +45,13 @@ return function (App $app) {
      */
     $app->get('/combos/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
-        $combo = $dishController->getDishById(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($combo, "combo"));
-        return $response->withHeader('Content-Type', 'application/json');
+        $combo = $dishController->getDishById(intval($args['id']));        
+        if ($combo) {
+            $response->getBody()->write(Util::encodeData($combo, "combo"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -57,9 +62,13 @@ return function (App $app) {
     $app->put('/combos/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $body = $request->getParsedBody();
-        $dish = $dishController->editDish(intval($args['id']), $body);
-        $response->getBody()->write(Util::encodeData($dish, "combo"));
-        return $response->withHeader('Content-Type', 'application/json');
+        $combo = $dishController->editDish(intval($args['id']), $body);
+        if ($combo) {
+            $response->getBody()->write(Util::encodeData($combo, "combo"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -70,7 +79,7 @@ return function (App $app) {
     $app->delete('/combos/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $wasDeleted = $dishController->deleteDish(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($wasDeleted, "response"));
+        $response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 

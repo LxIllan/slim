@@ -6,6 +6,7 @@ use App\Application\Controllers\UserController;
 use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpNotFoundException;
 use Slim\App;
 
 return function (App $app) {
@@ -83,9 +84,13 @@ return function (App $app) {
      */
     $app->get('/users/{id}', function (Request $request, Response $response, $args) {
         $userController = new UserController();
-        $user = $userController->getUserById(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($user, "user"));
-        return $response->withHeader('Content-Type', 'application/json');
+        $user = $userController->getUserById(intval($args['id']));        
+        if ($user) {
+            $response->getBody()->write(Util::encodeData($user, "user"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -97,8 +102,12 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $userController = new UserController();
         $user = $userController->edit(intval($args['id']), $body);
-        $response->getBody()->write(Util::encodeData($user, "user"));
-        return $response->withHeader('Content-Type', 'application/json');
+        if ($user) {
+            $response->getBody()->write(Util::encodeData($user, "user"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -108,8 +117,8 @@ return function (App $app) {
      */
     $app->delete('/users/{id}', function (Request $request, Response $response, $args) {
         $userController = new UserController();
-        $user = $userController->delete(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($user, "user"));
+        $wasDeleted = $userController->delete(intval($args['id']));
+        $response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };

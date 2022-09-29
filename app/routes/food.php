@@ -7,6 +7,7 @@ use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
+use Slim\Exception\HttpNotFoundException;
 
 return function (App $app) {
     /**
@@ -44,9 +45,13 @@ return function (App $app) {
      */
     $app->get('/foods/{id}', function (Request $request, Response $response, $args) {
         $foodController = new FoodController();
-        $food = $foodController->getFoodById(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($food, "food"));
-        return $response->withHeader('Content-Type', 'application/json');
+        $food = $foodController->getFoodById(intval($args['id']));        
+        if ($food) {
+            $response->getBody()->write(Util::encodeData($food, "food"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -58,8 +63,12 @@ return function (App $app) {
         $foodController = new FoodController();
         $body = $request->getParsedBody();
         $food = $foodController->editFood(intval($args['id']), $body);
-        $response->getBody()->write(Util::encodeData($food, "food"));
-        return $response->withHeader('Content-Type', 'application/json');
+        if ($food) {
+            $response->getBody()->write(Util::encodeData($food, "food"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -70,7 +79,7 @@ return function (App $app) {
     $app->delete('/foods/{id}', function (Request $request, Response $response, $args) {
         $foodController = new FoodController();
         $wasDeleted = $foodController->deleteFood(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($wasDeleted, "response"));
+        $response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 

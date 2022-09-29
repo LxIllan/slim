@@ -34,9 +34,9 @@ class BranchDAO
 
     /**
      * @param int $id
-     * @return Branch
+     * @return Branch|null
      */
-    public function getById(int $id): Branch
+    public function getById(int $id): Branch|null
     {
         return $this->connection
             ->select("SELECT * FROM branch WHERE id = $id")

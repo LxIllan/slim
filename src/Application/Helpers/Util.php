@@ -24,7 +24,7 @@ class Util
         $query = "INSERT INTO {$table}(";
 
         foreach ($data as $key => $value) {
-            $query .= "{$key}, ";
+            $query .= "`{$key}`, ";
         }
 
         $query = rtrim($query, ", ");
@@ -55,9 +55,9 @@ class Util
 
         foreach ($data as $key => $value) {
             if (is_string($value)) {
-                $query .= " $key = '$value',";
+                $query .= " `$key` = '$value',";
             } else {
-                $query .= " $key = $value,";
+                $query .= " `$key` = $value,";
             }
         }
 

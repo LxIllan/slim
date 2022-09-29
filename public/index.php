@@ -57,6 +57,7 @@ $app->add(new JwtAuthentication([
         "/expenses",
         "/foods",
         "/histories",
+        "/preferences",
         "/prepared-dishes",
         "/products",
         "/profile",
@@ -98,10 +99,13 @@ $routes($app);
 $routes = require __DIR__ . '/../app/routes/history.php';
 $routes($app);
 
-$routes = require __DIR__ . '/../app/routes/product.php';
+$routes = require __DIR__ . '/../app/routes/preference.php';
 $routes($app);
 
 $routes = require __DIR__ . '/../app/routes/prepared_dish.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/product.php';
 $routes($app);
 
 $routes = require __DIR__ . '/../app/routes/user.php';

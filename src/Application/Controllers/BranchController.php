@@ -30,9 +30,9 @@ class BranchController
 
     /**
      * @param int $id
-     * @return Branch
+     * @return Branch|null
      */
-    public function getById(int $id): Branch
+    public function getById(int $id): Branch|null
     {
         return $this->branchDAO->getById($id);
     }

@@ -37,9 +37,9 @@ class DishDAO
 
     /**
      * @param int $id
-     * @return Dish
+     * @return Dish|null
      */
-    public function getById(int $id): Dish
+    public function getById(int $id): Dish|null
     {
         return $this->connection
             ->select("SELECT * FROM dish WHERE id = $id")

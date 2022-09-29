@@ -34,9 +34,9 @@ class FoodDAO
 
     /**
      * @param int $id
-     * @return Food
+     * @return Food|null
      */
-    public function getFoodById(int $id): Food
+    public function getFoodById(int $id): Food|null
     {
         return $this->connection
             ->select("SELECT * FROM food WHERE id = $id")

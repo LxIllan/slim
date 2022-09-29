@@ -7,6 +7,7 @@ use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
@@ -32,9 +33,13 @@ return function (App $app) {
      */
     $app->get('/dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
-        $dish = $dishController->getDishById(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($dish, "dish"));
-        return $response->withHeader('Content-Type', 'application/json');
+        $dish = $dishController->getDishById(intval($args['id']));        
+        if ($dish) {
+            $response->getBody()->write(Util::encodeData($dish, "dish"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -71,8 +76,12 @@ return function (App $app) {
         $dishController = new DishController();
         $body = $request->getParsedBody();
         $dish = $dishController->editDish(intval($args['id']), $body);
-        $response->getBody()->write(Util::encodeData($dish, "dish"));
-        return $response->withHeader('Content-Type', 'application/json');
+        if ($dish) {
+            $response->getBody()->write(Util::encodeData($dish, "dish"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -83,7 +92,7 @@ return function (App $app) {
     $app->delete('/dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $wasDeleted = $dishController->deleteDish(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($wasDeleted, "response"));
+        $response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 

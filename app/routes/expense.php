@@ -68,7 +68,7 @@ return function (App $app) {
     $app->delete('/expenses/{id}', function (Request $request, Response $response, $args) {
         $expenseController = new ExpenseController();
         $wasDeleted = $expenseController->delete(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($wasDeleted, "result"));
+        $response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };

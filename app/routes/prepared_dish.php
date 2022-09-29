@@ -6,6 +6,7 @@ use App\Application\Controllers\DishController;
 use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpNotFoundException;
 use Slim\App;
 
 return function (App $app) {
@@ -32,8 +33,8 @@ return function (App $app) {
     $app->get('/prepared-dishes', function (Request $request, Response $response) {
         $dishController = new DishController();
         $jwt = $request->getAttribute("token");
-        $combos = $dishController->getPreparedDishesByBranch($jwt['branch_id']);
-        $response->getBody()->write(Util::encodeData($combos, "prepared-dishes"));
+        $preparedDishes = $dishController->getPreparedDishesByBranch($jwt['branch_id']);
+        $response->getBody()->write(Util::encodeData($preparedDishes, "prepared-dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -44,9 +45,13 @@ return function (App $app) {
      */
     $app->get('/prepared-dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
-        $combo = $dishController->getDishById(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($combo, "prepared-dish"));
-        return $response->withHeader('Content-Type', 'application/json');
+        $preparedDish = $dishController->getDishById(intval($args['id']));
+        if ($preparedDish) {
+            $response->getBody()->write(Util::encodeData($preparedDish, "prepared-dish"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -57,9 +62,13 @@ return function (App $app) {
     $app->put('/prepared-dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $body = $request->getParsedBody();
-        $dish = $dishController->editDish(intval($args['id']), $body);
-        $response->getBody()->write(Util::encodeData($dish, "prepared-dish"));
-        return $response->withHeader('Content-Type', 'application/json');
+        $preparedDish = $dishController->editDish(intval($args['id']), $body);
+        if ($preparedDish) {
+            $response->getBody()->write(Util::encodeData($preparedDish, "prepared-dish"));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 
     /**
@@ -70,7 +79,7 @@ return function (App $app) {
     $app->delete('/prepared-dishes/{id}', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $wasDeleted = $dishController->deleteDish(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($wasDeleted, "response"));
+        $response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 

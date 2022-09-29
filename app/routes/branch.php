@@ -6,6 +6,7 @@ use App\Application\Controllers\BranchController;
 use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpNotFoundException;
 use Slim\App;
 
 return function (App $app) {
@@ -78,7 +79,29 @@ return function (App $app) {
     $app->get('/branches/{id}', function (Request $request, Response $response, $args) {
         $branchController = new BranchController();
         $branch = $branchController->getById(intval($args['id']));
-        $response->getBody()->write(Util::encodeData($branch, "branch"));
+        if ($branch) {
+            $response->getBody()->write(Util::encodeData($branch, "branch"));
         return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
+    });
+
+    /**
+     * @api /branches/{id}
+     * @method PUT
+     * @description Edit branch by id
+     */
+    $app->put('/branches/{id}', function (Request $request, Response $response, $args) {
+        $branchController = new BranchController();
+        $jwt = $request->getAttribute("token");
+        $body = $request->getParsedBody();
+        $branch = $branchController->edit(intval($args['id']), $body);
+        if ($branch) {
+            $response->getBody()->write(Util::encodeData($branch, "branch"));
+        return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            throw new HttpNotFoundException($request);
+        }
     });
 };
