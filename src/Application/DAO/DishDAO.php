@@ -8,6 +8,7 @@ use App\Application\Helpers\Connection;
 use App\Application\Helpers\Util;
 use App\Application\Helpers\EmailTemplate;
 use App\Application\Model\Dish;
+use App\Application\Model\Ticket;
 use App\Application\Controllers\FoodController;
 use Exception;
 
@@ -220,6 +221,53 @@ class DishDAO
             }
         }
         return $result;
+    }
+
+    /**
+     * @param array $items
+     * @param int $userId
+     * @param int $branchId
+     * @return bool
+     * @throws Exception
+     */
+    public function sellWithTicket(array $items, int $userId, int $branchId): bool 
+    {
+        $branchController = new \App\Application\Controllers\BranchController();
+        $numTicket = $branchController->getNumTicket($branchId);
+        $data = [
+            "ticket_number" => $numTicket,
+            "branch_id" => $branchId,
+            "user_id" => $userId
+        ];
+        $query = Util::prepareInsertQuery($data, 'ticket');
+        $ticket = $this->getTicketById($this->connection->getLastId());
+        if ($ticket) {
+            $ticketId = $ticket->id;
+            foreach ($items as $dish) {
+                $dataToInsert = [
+                    "ticket_id" => $ticketId,
+                    "dish_id" => $dish->id,
+                    "quantity" => $dish->quantity,
+                    "price" => $dish->price                    
+                ];
+                $query = Util::prepareInsertQuery($dataToInsert, 'dishes_in_ticket');
+                if (!$this->connection->insert($query)) {
+                    return false;
+                }
+            }                        
+        }
+        return true;
+    }
+
+    /**
+     * @param int $id
+     * @return Ticket|null
+     */
+    public function getTicketById(int $id): Ticket|null
+    {
+        return $this->connection
+            ->select("SELECT * FROM ticket WHERE id = $id")
+            ->fetch_object('App\Application\Model\Ticket');
     }
 
     /**
