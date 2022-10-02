@@ -209,7 +209,7 @@ class DishDAO
      */
     public function sell(array $items, int $userId, int $branchId): bool
     {
-        $result = false;
+        $result = $this->sellWithTicket($items, $userId, $branchId);
         foreach ($items as $item) {
             $dishToSell = $this->getById($item['dish_id']);
             $result = $this->registerSell(intval($dishToSell->id), intval($item['quantity']), floatval($dishToSell->price), $userId, $branchId);
@@ -240,14 +240,16 @@ class DishDAO
             "user_id" => $userId
         ];
         $query = Util::prepareInsertQuery($data, 'ticket');
+        $this->connection->insert($query);
         $ticket = $this->getTicketById($this->connection->getLastId());
         if ($ticket) {
             $ticketId = $ticket->id;
-            foreach ($items as $dish) {
+            foreach ($items as $item) {
+                $dish = $this->getById($item['dish_id']);
                 $dataToInsert = [
                     "ticket_id" => $ticketId,
                     "dish_id" => $dish->id,
-                    "quantity" => $dish->quantity,
+                    "quantity" => $item['quantity'],
                     "price" => $dish->price                    
                 ];
                 $query = Util::prepareInsertQuery($dataToInsert, 'dishes_in_ticket');

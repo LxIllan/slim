@@ -75,9 +75,9 @@ class BranchDAO
     public function getNumTicket(int $branchId): int
     {
         $num_ticket = $this->connection
-            ->select("SELECT num_ticket FROM branch WHERE id = $branchId")
-            ->fetch_assoc()["num_ticket"];
-        $this->connection->update("UPDATE branch SET num_ticket = ($num_ticket + 1) WHERE id = $branchId");
+            ->select("SELECT ticket_number FROM branch WHERE id = $branchId")
+            ->fetch_assoc()["ticket_number"];
+        $this->connection->update("UPDATE branch SET ticket_number = ($num_ticket + 1) WHERE id = $branchId");
         return intval($num_ticket);
     }
 }

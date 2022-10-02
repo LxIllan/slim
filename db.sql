@@ -55,7 +55,7 @@ CREATE TABLE food (
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO food (name, quantity, quantity_notif, is_notif_sent, cost, is_showed_in_index, category_id, branch_id) VALUES
+INSERT INTO food (name, quantity, quantity_notif, is_notif_sent, cost, showed_in_index, category_id, branch_id) VALUES
     ('Pollo', 44.00, 30, 0, 130.00, 1, 1, 1),
     ('Costilla', 42.16, 0, 0, 149.70, 1, 1, 1),
     ('Chorizo', 431, 0, 0, 48.00, 1, 1, 1),
@@ -281,7 +281,7 @@ INSERT INTO ticket (ticket_number, date, branch_id, user_id) VALUES
 
 
 CREATE TABLE dishes_in_ticket (
-      ticket_id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      ticket_id INT(11) UNSIGNED NOT NULL,
       dish_id SMALLINT(5) UNSIGNED NOT NULL,
       quantity TINYINT(3) UNSIGNED NOT NULL,
       price FLOAT(7,2) NOT NULL,
