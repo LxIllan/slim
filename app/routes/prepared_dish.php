@@ -21,7 +21,7 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $body["branch_id"] = $jwt["branch_id"];
         $dish = $dishController->createDish($body);
-        $response->getBody()->write(Util::encodeData($dish, "prepared-dish", 201));
+        $response->getBody()->write(Util::encodeData($dish, "prepared_dish", 201));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -34,7 +34,7 @@ return function (App $app) {
         $dishController = new DishController();
         $jwt = $request->getAttribute("token");
         $preparedDishes = $dishController->getPreparedDishesByBranch($jwt['branch_id']);
-        $response->getBody()->write(Util::encodeData($preparedDishes, "prepared-dishes"));
+        $response->getBody()->write(Util::encodeData($preparedDishes, "prepared_dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -47,7 +47,7 @@ return function (App $app) {
         $dishController = new DishController();
         $preparedDish = $dishController->getDishById(intval($args['id']));
         if ($preparedDish) {
-            $response->getBody()->write(Util::encodeData($preparedDish, "prepared-dish"));
+            $response->getBody()->write(Util::encodeData($preparedDish, "prepared_dish"));
             return $response->withHeader('Content-Type', 'application/json');
         } else {
             throw new HttpNotFoundException($request);
@@ -64,7 +64,7 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $preparedDish = $dishController->editDish(intval($args['id']), $body);
         if ($preparedDish) {
-            $response->getBody()->write(Util::encodeData($preparedDish, "prepared-dish"));
+            $response->getBody()->write(Util::encodeData($preparedDish, "prepared_dish"));
             return $response->withHeader('Content-Type', 'application/json');
         } else {
             throw new HttpNotFoundException($request);

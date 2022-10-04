@@ -61,7 +61,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $suppliedFoods = $historyController->getSuppliedFood($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::encodeData($suppliedFoods, "supplied-foods"));
+        $response->getBody()->write(Util::encodeData($suppliedFoods, "supplied_foods"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -75,7 +75,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $alteredFoods = $historyController->getAlteredFood($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::encodeData($alteredFoods, "altered-foods"));
+        $response->getBody()->write(Util::encodeData($alteredFoods, "altered_foods"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -89,7 +89,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $usedProducts = $historyController->getUsedProducts($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::encodeData($usedProducts, "used-products"));
+        $response->getBody()->write(Util::encodeData($usedProducts, "used_products"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -103,7 +103,7 @@ return function (App $app) {
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
         $usedProducts = $historyController->getFoodsSold($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::encodeData($usedProducts, "foods-sold"));
+        $response->getBody()->write(Util::encodeData($usedProducts, "foods_sold"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };
