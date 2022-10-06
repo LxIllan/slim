@@ -29,7 +29,20 @@ return function (App $app) {
     $app->get('/categories/dishes', function (Request $request, Response $response) {
         $categoryController = new CategoryController();
         $jwt = $request->getAttribute("token");
-        $dishes = $categoryController->getCategoriesWithDishes($jwt['branch_id']);
+        $dishes = $categoryController->getCategoriesWithDishes($jwt['branch_id'], false);
+        $response->getBody()->write(Util::encodeData($dishes, "categories"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
+     * @api /categories
+     * @method GET
+     * @description Get all categories
+     */
+    $app->get('/categories/dishes/all', function (Request $request, Response $response) {
+        $categoryController = new CategoryController();
+        $jwt = $request->getAttribute("token");
+        $dishes = $categoryController->getCategoriesWithDishes($jwt['branch_id'], true);
         $response->getBody()->write(Util::encodeData($dishes, "categories"));
         return $response->withHeader('Content-Type', 'application/json');
     });

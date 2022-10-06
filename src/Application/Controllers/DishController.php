@@ -49,11 +49,12 @@ class DishController
     /**
      * @param int $categoryId
      * @param int $branchId
+     * @param bool $getAll
      * @return Dish[]
      */
-    public function getDishesByCategory(int $categoryId, int $branchId): array
+    public function getDishesByCategory(int $categoryId, int $branchId, bool $getAll): array
     {
-        return $this->dishDAO->getDishesByCategory($categoryId, $branchId);
+        return $this->dishDAO->getDishesByCategory($categoryId, $branchId, $getAll);
     }
 
     /**

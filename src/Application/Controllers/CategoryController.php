@@ -29,10 +29,11 @@ class CategoryController
 
     /**
      * @param int $branchId
+     * @param bool $getAll
      * @return Category[]
      */
-    public function getCategoriesWithDishes(int $branchId): array
+    public function getCategoriesWithDishes(int $branchId, bool $getAll): array
     {
-        return $this->categoryDAO->getCategoriesWithDishes($branchId);
+        return $this->categoryDAO->getCategoriesWithDishes($branchId, $getAll);
     }
 }

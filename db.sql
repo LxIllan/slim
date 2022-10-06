@@ -26,8 +26,9 @@ CREATE TABLE category (
 );
 
 INSERT INTO category (category) VALUES
-    ('Platillos'),
+    ('Platillos Preparados'),
     ('Paquetes'),
+    ('Platillos'),
     ('Bebidas'),
     ('Postres'),
     ('Extras');

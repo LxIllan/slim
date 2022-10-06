@@ -48,14 +48,15 @@ class CategoryDAO
 
     /**
      * @param int $branchId
+     * @param bool $getAll
      * @return Category[]
      */
-    public function getCategoriesWithDishes(int $branchId): array
+    public function getCategoriesWithDishes(int $branchId, bool $getAll): array
     {
         $dishesController = new DishController();
         $categories = $this->getCategories();
         foreach ($categories as $category) {
-            $category->dishes = $dishesController->getDishesByCategory(intval($category->id), $branchId);
+            $category->dishes = $dishesController->getDishesByCategory(intval($category->id), $branchId, $getAll);
         }
         return $categories;
     }

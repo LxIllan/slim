@@ -65,9 +65,10 @@ class DishDAO
     /**
      * @param int $categoryId
      * @param int $branchId
+     * @param bool $getAll
      * @return Dish[]
      */
-    public function getDishesByCategory(int $categoryId, int $branchId): array
+    public function getDishesByCategory(int $categoryId, int $branchId, bool $getAll): array
     {
         $dishes = [];
         $query = <<<EOF
@@ -75,9 +76,12 @@ class DishDAO
             FROM dish 
             WHERE category_id = $categoryId 
                 AND branch_id = $branchId 
-                AND sell_individually = 1 
+                AND sell_individually = true
                 ORDER BY name
         EOF;
+        if ($getAll) {
+            $query = str_replace('AND sell_individually = true', '', $query);
+        }
         $result = $this->connection->select($query);
         while ($row = $result->fetch_assoc()) {
             $dishes[] = $this->getById(intval($row['id']));
