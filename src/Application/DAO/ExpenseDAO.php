@@ -61,7 +61,11 @@ class ExpenseDAO
      */
     public function delete(int $id): bool
     {
-        $query = Util::prepareDeleteQuery($id, self::TABLE_NAME);
-        return $this->connection->delete($query);
+        $data = [
+            'is_deleted' => 1,
+            'deleted_at' => date('Y-m-d H:i:s')        
+        ];
+        $query = Util::prepareUpdateQuery($id, $data, self::TABLE_NAME);        
+        return $this->connection->update($query);
     }
 }

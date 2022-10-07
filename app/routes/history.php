@@ -18,7 +18,8 @@ return function (App $app) {
         $historyController = new HistoryController();
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
-        $expenses = $historyController->getExpenses($jwt['branch_id'], $params['from'], $params['to'], $params['reason'] ?? null);
+        $getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
+        $expenses = $historyController->getExpenses($jwt['branch_id'], $params['from'], $params['to'], $params['reason'] ?? null, $getDeleted);
         $response->getBody()->write(Util::encodeData($expenses, "expenses"));
         return $response->withHeader('Content-Type', 'application/json');
     });
@@ -102,8 +103,22 @@ return function (App $app) {
         $historyController = new HistoryController();
         $jwt = $request->getAttribute("token");
         $params = $request->getQueryParams();
-        $usedProducts = $historyController->getFoodsSold($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::encodeData($usedProducts, "foods_sold"));
+        $foodsSold = $historyController->getFoodsSold($jwt['branch_id'], $params['from'], $params['to']);
+        $response->getBody()->write(Util::encodeData($foodsSold, "foods_sold"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
+     * @api /histories/tickets
+     * @method GET
+     * @description Get history tickets
+     */
+    $app->get('/histories/tickets', function (Request $request, Response $response) {
+        $historyController = new HistoryController();
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
+        $tickets = $historyController->getTickets($jwt['branch_id'], $params['from'], $params['to']);
+        $response->getBody()->write(Util::encodeData($tickets, "tickets"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 };

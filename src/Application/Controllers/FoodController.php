@@ -40,6 +40,7 @@ class FoodController
             "price" => $food->cost,
             "food_id" => $food->id,
             "serving" => 1,
+            "sell_individually" => 1,
             "category_id" => $food->category_id,
             "branch_id" => $food->branch_id
         ];

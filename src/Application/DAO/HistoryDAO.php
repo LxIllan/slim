@@ -134,9 +134,10 @@ class HistoryDAO
      * @param string $from
      * @param string $to
      * @param string $reason
+     * @param bool $isDeleted
      * @return StdClass
      */
-    public function getExpenses(int $branchId, string $from, string $to, string $reason): StdClass
+    public function getExpenses(int $branchId, string $from, string $to, string $reason, bool $isDeleted): StdClass
     {
         $expenses = new StdClass();
         $expenses->amount = $this->getSumFromTable('amount', 'expense', $branchId, $from, $to);
@@ -152,11 +153,17 @@ class HistoryDAO
                    CONCAT(user.name, ' ' ,user.last_name) AS cashier
             FROM expense
             JOIN user ON expense.user_id = user.id
-            WHERE expense.branch_id = $branchId 
-              AND DATE(expense.date) >= '$from' 
-              AND DATE(expense.date) <= '$to' 
+            WHERE expense.branch_id = $branchId
+                AND DATE(expense.date) >= '$from'
+                AND DATE(expense.date) <= '$to'
+                AND expense.reason LIKE '%$reason%'
+                AND expense.is_deleted = false
             ORDER BY date DESC
         EOF;
+
+        if ($isDeleted) {
+            $query = str_replace('expense.is_deleted = false', 'expense.is_deleted = true', $query);
+        }
 
         $result = $this->connection->select($query);
         $expenses->length = $result->num_rows;
@@ -249,6 +256,54 @@ class HistoryDAO
             "file:" . __DIR__ . '/' . basename(__FILE__) . "\r\n", FILE_APPEND);
 
         return $foodSold;
+    }
+
+    /**
+     * @param int $branchId
+     * @param string $from
+     * @param string $to     
+     * @return StdClass
+     */
+    public function getTickets(int $branchId, string $from, string $to): StdClass
+    {
+        $tickets = new StdClass();
+        $tickets->amount = 0;
+
+        $query = <<<EOF
+            SELECT ticket.id, ticket.ticket_number, ticket.date, CONCAT(user.name, ' ' ,user.last_name) AS cashier
+            FROM ticket
+            JOIN user ON ticket.user_id = user.id
+            WHERE ticket.branch_id = $branchId
+                AND DATE(ticket.date) >= '$from'
+                AND DATE(ticket.date) <= '$to'
+            ORDER BY date DESC;
+        EOF;
+
+        $result = $this->connection->select($query);
+        $tickets->length = $result->num_rows;
+        if ($tickets->length == 0) {
+            $tickets->items = [];
+            return $tickets;
+        }
+        while ($row = $result->fetch_assoc()) {
+            $item = $row;
+            $ticketId = $row['id'];
+            $item["total"] = 0;
+            $query = <<<EOF
+                SELECT dishes_in_ticket.dish_id, dishes_in_ticket.quantity, dishes_in_ticket.price, dish.name
+                FROM dishes_in_ticket
+                JOIN dish ON dishes_in_ticket.dish_id = dish.id
+                WHERE dishes_in_ticket.ticket_id = $ticketId;
+            EOF;
+            $resultDish = $this->connection->select($query);
+            while ($rowDish = $resultDish->fetch_assoc()) {
+                $item['dishes'][] = $rowDish;
+                $tickets->amount += $rowDish['price'];
+                $item["total"] += $rowDish['price'];
+            }
+            $tickets->items[] = $item;
+        }        
+        return $tickets;
     }
 
     /**

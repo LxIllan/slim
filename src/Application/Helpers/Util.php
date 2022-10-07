@@ -237,4 +237,14 @@ class Util
         }
         return true;
     }
+
+    /**
+     * @param string $str
+     * @return bool
+     */
+    public static function strToBool(string $str): bool
+    {
+        $str = strtolower($str);
+        return ($str == 'true') ? true : false;
+    }
 }

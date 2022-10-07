@@ -254,7 +254,7 @@ class DishDAO
                     "ticket_id" => $ticketId,
                     "dish_id" => $dish->id,
                     "quantity" => $item['quantity'],
-                    "price" => $dish->price                    
+                    "price" => $dish->price * $item['quantity']                    
                 ];
                 $query = Util::prepareInsertQuery($dataToInsert, 'dishes_in_ticket');
                 if (!$this->connection->insert($query)) {

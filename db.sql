@@ -162,8 +162,10 @@ CREATE TABLE expense (
     amount FLOAT(7,2) NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     reason VARCHAR(100) NOT NULL,
+    is_deleted BOOLEAN NULL DEFAULT 0,
     branch_id TINYINT(3) UNSIGNED NOT NULL,
     user_id TINYINT(3) UNSIGNED NOT NULL,
+    deleted_at TIMESTAMP NULL,
     FOREIGN KEY (user_id)
         REFERENCES user (id) 
         ON DELETE CASCADE ON UPDATE CASCADE,
