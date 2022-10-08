@@ -9,7 +9,7 @@ use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use App\Application\Helpers\Connection;
+// use mysqli;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -17,6 +17,9 @@ return function (ContainerBuilder $containerBuilder) {
             $settings = $c->get(SettingsInterface::class);
 
             $loggerSettings = $settings->get('logger');
+            file_put_contents(__DIR__ . "/../logs/system.log", date("[D, d M Y H:i:s]") . " " .
+            'loggerSettings-> ' . json_encode($loggerSettings) . " " .
+            "file:" . __DIR__ . '/' . basename(__FILE__) . "\r\n", FILE_APPEND);
             $logger = new Logger($loggerSettings['name']);
 
             $processor = new UidProcessor();
@@ -27,9 +30,17 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $logger;
         },
-        Connection::class => function (ContainerInterface $c) {
-            $connection = new Connection();
-            return $connection;
-        }
+        // mysqli::class => function (ContainerInterface $c) {
+        //     $settings = $c->get(SettingsInterface::class);
+        //     $dbSettings = $settings->get('database');
+        //     file_put_contents(__DIR__ . "/../logs/system.log", date("[D, d M Y H:i:s]") . " " .
+        //     'dbSettings-> ' . json_encode($dbSettings) . " " .
+        //     "file:" . __DIR__ . '/' . basename(__FILE__) . "\r\n", FILE_APPEND);
+        //     $host = $dbSettings['host'];
+        //     $database = $dbSettings['database'];
+        //     $user = $dbSettings['user'];
+        //     $pass = $dbSettings['pass'];
+        //     return new mysqli($host, $user, $pass, $database);
+        // }
     ]);
 };

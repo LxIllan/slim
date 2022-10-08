@@ -35,5 +35,5 @@ return function (App $app) {
     $app->get('/logout', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode('log out'));
         return $response->withHeader('Content-Type', 'application/json');
-    })->add(JwtMiddleware::json($_ENV['JWT_SECRET'], 'jwt', ['Authorisation Failed']));
+    })->add(JwtMiddleware::json($_ENV['JWT_SECRET'], 'jwt', ['Authorization Failed']));
 };
