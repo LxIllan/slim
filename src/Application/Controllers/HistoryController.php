@@ -78,27 +78,7 @@ class HistoryController
             $to = date('Y-m-d');
         }
         return $this->historyDAO->getCourtesies($branchId, $from, $to);
-    }
-
-    /**
-     * @param int $branchId
-     * @param string|null $from
-     * @param string|null $to
-     * @param string|null $reason
-     * @param bool $isDeleted
-     * @return StdClass
-     */
-    public function getExpenses(int $branchId, ?string $from, ?string $to, ?string $reason, bool $isDeleted = false): StdClass
-    {
-        if ((is_null($from)) && (is_null($to))) {
-            $from = date('Y-m-d');
-            $to = date('Y-m-d');
-        }
-        if (!isset($reason)) {
-            $reason = '';
-        }
-        return $this->historyDAO->getExpenses($branchId, $from, $to, $reason, $isDeleted);
-    }
+    }    
 
     /**
      * @param int $branchId

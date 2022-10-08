@@ -28,6 +28,21 @@ return function (App $app) {
     });
 
     /**
+     * @api /expenses/history
+     * @method GET
+     * @description Get expenses history
+     */
+    $app->get('/expenses/history', function (Request $request, Response $response) {
+        $expenseController = new ExpenseController();
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
+        $getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
+        $expenses = $expenseController->getHistory($jwt['branch_id'], $params['from'], $params['to'], $params['reason'] ?? null, $getDeleted);
+        $response->getBody()->write(Util::encodeData($expenses, "expenses"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
      * @api /expenses/{id}
      * @method GET
      * @description Get expense by id
@@ -70,5 +85,5 @@ return function (App $app) {
         $wasDeleted = $expenseController->delete(intval($args['id']));
         $response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
         return $response->withHeader('Content-Type', 'application/json');
-    });
+    });    
 };

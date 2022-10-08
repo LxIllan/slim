@@ -10,21 +10,6 @@ use Slim\App;
 
 return function (App $app) {
     /**
-     * @api /histories/expenses
-     * @method GET
-     * @description Get history expenses
-     */
-    $app->get('/histories/expenses', function (Request $request, Response $response) {
-        $historyController = new HistoryController();
-        $jwt = $request->getAttribute("token");
-        $params = $request->getQueryParams();
-        $getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
-        $expenses = $historyController->getExpenses($jwt['branch_id'], $params['from'], $params['to'], $params['reason'] ?? null, $getDeleted);
-        $response->getBody()->write(Util::encodeData($expenses, "expenses"));
-        return $response->withHeader('Content-Type', 'application/json');
-    });
-
-    /**
      * @api /histories/sales
      * @method GET
      * @description Get history sales

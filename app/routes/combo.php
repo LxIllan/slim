@@ -113,10 +113,9 @@ return function (App $app) {
      * @method DELETE
      * @description Delete dish from combo
      */
-    $app->delete('/combos/{id}/delete-dish', function (Request $request, Response $response, $args) {
-        $body = $request->getParsedBody();
+    $app->delete('/combos/{id}/delete-dish/{dish_id}', function (Request $request, Response $response, $args) {        
         $dishController = new DishController();
-        $dishes = $dishController->deleteDishFromCombo(intval($args['id']), intval($body['dish_id']));
+        $dishes = $dishController->deleteDishFromCombo(intval($args['id']), intval($args['dish_id']));
         $response->getBody()->write(Util::encodeData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });

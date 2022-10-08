@@ -247,4 +247,26 @@ class Util
         $str = strtolower($str);
         return ($str == 'true') ? true : false;
     }
+
+    /**
+     * @param string $column
+     * @param string $table
+     * @param int $branchId
+     * @param string $from
+     * @param string $to
+     * @return float
+     */
+    public static function getSumFromTable(string $column, string $table, int $branchId, string $from, string $to): float
+    {
+        $connection = new \App\Application\Helpers\Connection();
+        $query = <<<EOF
+            SELECT SUM($column) 
+            FROM $table 
+            WHERE DATE(date) >= '$from' 
+              AND DATE(date) <= '$to' 
+              AND branch_id = $branchId
+        EOF;
+        $row = $connection->select($query)->fetch_array();
+        return floatval($row[0]);
+    }
 }

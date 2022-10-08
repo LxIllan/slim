@@ -129,11 +129,11 @@ class DishDAO
      * @param int $branchId
      * @return Dish[]
      */
-    public function getPreparedDishesByBranch(int $branchId): array
+    public function getSpecialDishesByBranch(int $branchId): array
     {
         $dishes = [];
         $result = $this->connection
-            ->select("SELECT id FROM dish WHERE branch_id = $branchId AND is_combo = 1 AND is_prepared_dish = 1 ORDER BY name");
+            ->select("SELECT id FROM dish WHERE branch_id = $branchId AND is_combo = 1 AND is_special_dish = 1 ORDER BY name");
         while ($row = $result->fetch_assoc()) {
             $dishes[] = $this->getById(intval($row['id']));
         }
