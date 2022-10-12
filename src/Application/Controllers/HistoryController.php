@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Controllers;
 
 use App\Application\DAO\HistoryDAO;
-use App\Application\Helpers\Util;
 use \StdClass;
 
 class HistoryController
@@ -78,21 +77,6 @@ class HistoryController
             $to = date('Y-m-d');
         }
         return $this->historyDAO->getCourtesies($branchId, $from, $to);
-    }    
-
-    /**
-     * @param int $branchId
-     * @param string|null $from
-     * @param string|null $to
-     * @return StdClass
-     */
-    public function getUsedProducts(int $branchId, ?string $from, ?string $to): StdClass
-    {
-        if ((is_null($from)) && (is_null($to))) {
-            $from = date('Y-m-d', strtotime("this week"));
-            $to = date('Y-m-d', strtotime($from . "next Sunday"));
-        }
-        return $this->historyDAO->getUsedProducts($branchId, $from, $to);
     }
 
     /**

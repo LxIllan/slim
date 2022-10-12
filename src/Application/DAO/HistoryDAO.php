@@ -131,32 +131,6 @@ class HistoryDAO
 
     /**
      * @param int $branchId
-     * @param string $from
-     * @param string $to
-     * @return StdClass
-     */
-    public function getUsedProducts(int $branchId, string $from, string $to): StdClass
-    {
-        $usedProducts = new StdClass();
-        $query = <<<EOF
-            SELECT used_product.id, used_product.date, product.name, 
-                used_product.quantity, CONCAT(user.name, ' ' , user.last_name) AS cashier 
-            FROM used_product, product, user 
-            WHERE used_product.user_id = user.id AND used_product.product_id = product.id 
-                AND used_product.branch_id = $branchId
-                AND DATE(used_product.date) >= '$from' AND DATE(used_product.date) <= '$to' ORDER BY date DESC
-        EOF;
-
-        $result = $this->connection->select($query);
-        $usedProducts->length = $result->num_rows;
-        while ($row = $result->fetch_assoc()) {
-            $usedProducts->items[] = $row;
-        }
-        return $usedProducts;
-    }
-
-    /**
-     * @param int $branchId
      * @param string|null $from
      * @param string|null $to
      * @return StdClass

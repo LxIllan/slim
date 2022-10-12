@@ -11,7 +11,10 @@ use StdClass;
 
 class ExpenseDAO
 {
-    private const TABLE_NAME = 'expense';
+    /**
+     * @var string $table
+     */
+    protected string $table = '';
 
     /**
      * @var Connection $connection
@@ -29,7 +32,7 @@ class ExpenseDAO
      */
     public function create(array $data): Expense|null
     {
-        $query = Util::prepareInsertQuery($data, self::TABLE_NAME);
+        $query = Util::prepareInsertQuery($data, $this->table);
         return ($this->connection->insert($query)) ? $this->getById($this->connection->getLastId()) : null;
     }
 
@@ -40,7 +43,7 @@ class ExpenseDAO
     public function getById(int $id): Expense|null
     {
         return $this->connection
-            ->select("SELECT * FROM expense WHERE id = $id")
+            ->select("SELECT * FROM $this->table WHERE id = $id")
             ->fetch_object('App\Application\Model\Expense');
     }
 
@@ -55,13 +58,7 @@ class ExpenseDAO
     public function getHistory(int $branchId, string $from, string $to, string $reason, bool $isDeleted): StdClass
     {
         $expenses = new StdClass();
-        $expenses->amount = Util::getSumFromTable('amount', 'expense', $branchId, $from, $to);
-
-        if ($expenses->amount == 0) {
-            $expenses->length = 0;
-            $expenses->expenses = [];
-            return $expenses;
-        }
+        $expenses->amount = 0;        
 
         $query = <<<EOF
             SELECT expense.id, expense.date, expense.amount, expense.reason, 
@@ -82,8 +79,15 @@ class ExpenseDAO
 
         $result = $this->connection->select($query);
         $expenses->length = $result->num_rows;
+
+        if ($expenses->length == 0) {
+            $expenses->items = [];
+            return $expenses;
+        }
+
         while ($row = $result->fetch_assoc()) {
             $expenses->items[] = $row;
+            $expenses->amount += floatval($row['amount']);
         }
         return $expenses;
     }
@@ -95,7 +99,7 @@ class ExpenseDAO
      */
     public function edit(int $id, array $data): Expense|null
     {
-        $query = Util::prepareUpdateQuery($id, $data, self::TABLE_NAME);
+        $query = Util::prepareUpdateQuery($id, $data, $this->table);
         return ($this->connection->update($query)) ? $this->getById($id) : null;
     }
 
@@ -109,7 +113,7 @@ class ExpenseDAO
             'is_deleted' => 1,
             'deleted_at' => date('Y-m-d H:i:s')        
         ];
-        $query = Util::prepareUpdateQuery($id, $data, self::TABLE_NAME);        
+        $query = Util::prepareUpdateQuery($id, $data, $this->table);        
         return $this->connection->update($query);
     }
 }

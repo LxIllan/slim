@@ -118,7 +118,7 @@ class DishDAO
     {
         $dishes = [];
         $result = $this->connection
-            ->select("SELECT id FROM dish WHERE branch_id = $branchId AND is_combo = 1 AND is_prepared_dish = 0 ORDER BY name");
+            ->select("SELECT id FROM dish WHERE branch_id = $branchId AND is_combo = 1 AND is_special_dish = 0 ORDER BY name");
         while ($row = $result->fetch_assoc()) {
             $dishes[] = $this->getById(intval($row['id']));
         }

@@ -63,21 +63,7 @@ return function (App $app) {
         $alteredFoods = $historyController->getAlteredFood($jwt['branch_id'], $params['from'], $params['to']);
         $response->getBody()->write(Util::encodeData($alteredFoods, "altered_foods"));
         return $response->withHeader('Content-Type', 'application/json');
-    });
-
-    /**
-     * @api /histories/used-products
-     * @method GET
-     * @description Get history used products
-     */
-    $app->get('/histories/used-products', function (Request $request, Response $response) {
-        $historyController = new HistoryController();
-        $jwt = $request->getAttribute("token");
-        $params = $request->getQueryParams();
-        $usedProducts = $historyController->getUsedProducts($jwt['branch_id'], $params['from'], $params['to']);
-        $response->getBody()->write(Util::encodeData($usedProducts, "used_products"));
-        return $response->withHeader('Content-Type', 'application/json');
-    });
+    });    
 
     /**
      * @api /histories/foods-sold

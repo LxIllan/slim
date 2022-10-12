@@ -6,7 +6,7 @@ namespace App\Application\Controllers;
 
 use App\Application\Model\Product;
 use App\Application\DAO\ProductDAO;
-
+use stdClass;
 class ProductController
 {
     /**
@@ -44,6 +44,22 @@ class ProductController
     public function getByBranch(int $branchId)
     {
         return $this->productDAO->getByBranch($branchId);
+    }
+
+    /**
+     * @param int $branchId
+     * @param string|null $from
+     * @param string|null $to
+     * @param bool $isDeleted
+     * @return StdClass
+     */
+    public function getUsed(int $branchId, ?string $from, ?string $to, bool $isDeleted = false): StdClass
+    {
+        if ((is_null($from)) && (is_null($to))) {
+            $from = date('Y-m-d', strtotime("this week"));
+            $to = date('Y-m-d', strtotime($from . "next Sunday"));
+        }
+        return $this->productDAO->getUsed($branchId, $from, $to, $isDeleted);
     }
 
     /**
