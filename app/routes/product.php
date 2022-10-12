@@ -39,6 +39,21 @@ return function (App $app) {
     });
 
     /**
+     * @api /products/used
+     * @method GET
+     * @description Get history used products
+     */
+    $app->get('/products/used', function (Request $request, Response $response) {
+        $productController = new ProductController();
+        $jwt = $request->getAttribute("token");
+        $params = $request->getQueryParams();
+        $getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
+        $usedProducts = $productController->getUsed($jwt['branch_id'], $params['from'], $params['to'], $getDeleted);
+        $response->getBody()->write(Util::encodeData($usedProducts, "used_products"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
      * @api /products/{id}
      * @method GET
      * @description Get dish by id
@@ -81,18 +96,30 @@ return function (App $app) {
         $wasDeleted = $productController->delete(intval($args['id']));
         $response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
         return $response->withHeader('Content-Type', 'application/json');
-    });
+    });    
 
     /**
      * @api /products/{id}/use
      * @method POST
-     * @description Create a new dish
+     * @description Use a product
      */
     $app->post('/products/{id}/use', function (Request $request, Response $response, $args) {
         $productController = new ProductController();
         $jwt = $request->getAttribute("token");
         $body = $request->getParsedBody();
-        $product = $productController->useProduct(intval($args['id']), intval($body['quantity']), $jwt['user_id']);
+        $product = $productController->use(intval($args['id']), intval($body['quantity']), $jwt['user_id']);
+        $response->getBody()->write(Util::encodeData($product, "product"));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    /**
+     * @api /products/{id}/disuse
+     * @method POST
+     * @description Disuse a product
+     */
+    $app->post('/products/{id}/disuse', function (Request $request, Response $response, $args) {
+        $productController = new ProductController();
+        $product = $productController->disuse(intval($args['id']));
         $response->getBody()->write(Util::encodeData($product, "product"));
         return $response->withHeader('Content-Type', 'application/json');
     });

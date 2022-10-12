@@ -14,7 +14,7 @@ class ExpenseDAO
     /**
      * @var string $table
      */
-    protected string $table = '';
+    protected string $table = 'expense';
 
     /**
      * @var Connection $connection

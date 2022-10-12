@@ -88,8 +88,17 @@ class ProductController
      * @param int $branchId
      * @return Product|null
      */
-    public function useProduct(int $productId, int $quantity, int $userId): Product|null
+    public function use(int $productId, int $quantity, int $userId): Product|null
     {
-        return $this->productDAO->useProduct($productId, $quantity, $userId);
+        return $this->productDAO->use($productId, $quantity, $userId);
+    }
+
+    /**
+     * @param int $id
+     * @return Product|null
+     */
+    public function disuse(int $id): Product|null
+    {
+        return $this->productDAO->disuse($id);
     }
 }
