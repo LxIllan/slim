@@ -43,7 +43,7 @@ class FoodDAO
 	public function getById(int $id): Food|null
 	{
 		return $this->connection
-			->select("SELECT * FROM $this->food WHERE id = $id")
+			->select("SELECT * FROM $this->table WHERE id = $id")
 			->fetch_object('App\Application\Model\Food');
 	}
 
