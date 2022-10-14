@@ -67,17 +67,4 @@ class BranchDAO
         $query = Util::prepareUpdateQuery($id, $data, self::TABLE_NAME);
         return ($this->connection->update($query)) ? $this->getById($id) : null;
     }
-
-    /**
-     * @param int $branchId
-     * @return int
-     */
-    public function getNumTicket(int $branchId): int
-    {
-        $num_ticket = $this->connection
-            ->select("SELECT ticket_number FROM branch WHERE id = $branchId")
-            ->fetch_assoc()["ticket_number"];
-        $this->connection->update("UPDATE branch SET ticket_number = ($num_ticket + 1) WHERE id = $branchId");
-        return intval($num_ticket);
-    }
 }

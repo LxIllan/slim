@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpNotFoundException;
 use Slim\App;
+use Slim\Exception\HttpException;
 
 return function (App $app) {
     /**
@@ -29,22 +30,13 @@ return function (App $app) {
      * @description Get branches
      */
     $app->get('/branches', function (Request $request, Response $response) {
+        $jwt = $request->getAttribute("token");
+        if (!Util::isAdmin($jwt)) {
+            throw new HttpException($request, "You don't have permission to access this resource", 403);
+        }
         $branchController = new BranchController();
         $branches = $branchController->getBranches();
         $response->getBody()->write(Util::encodeData($branches, "branches"));
-        return $response->withHeader('Content-Type', 'application/json');
-    });
-
-    /**
-     * @api /branches/num-ticket
-     * @method GET
-     * @description Get num ticket by branch id
-     */
-    $app->get('/branches/num-ticket', function (Request $request, Response $response) {
-        $branchController = new BranchController();
-        $jwt = $request->getAttribute("token");
-        $numTicket = $branchController->getNumTicket($jwt['branch_id']);
-        $response->getBody()->write(Util::encodeData($numTicket, "num_ticket"));
         return $response->withHeader('Content-Type', 'application/json');
     });
 

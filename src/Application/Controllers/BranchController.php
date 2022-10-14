@@ -54,15 +54,4 @@ class BranchController
     {
         return $this->branchDAO->edit($id, $data);
     }
-
-    /**
-     * @param int $branchId
-     * @return int
-     */
-    public function getNumTicket(int $branchId): int
-    {
-        return $this->branchDAO->getNumTicket($branchId);
-    }
-
-
 }

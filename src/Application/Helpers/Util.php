@@ -249,6 +249,15 @@ class Util
     }
 
     /**
+     * @param array $jwt
+     * @return bool
+     */
+    public static function isAdmin(array $jwt): bool
+    {
+        return boolval($jwt['root']);
+    }
+
+    /**
      * @param string $column
      * @param string $table
      * @param int $branchId
