@@ -81,6 +81,9 @@ $routes($app);
 $routes = require __DIR__ . '/../app/routes/user.php';
 $routes($app);
 
+$routes = require __DIR__ . '/../app/routes/ticket.php';
+$routes($app);
+
 /** @var SettingsInterface $settings */
 $settings = $container->get(SettingsInterface::class);
 

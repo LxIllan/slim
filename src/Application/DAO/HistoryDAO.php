@@ -17,55 +17,7 @@ class HistoryDAO
     public function __construct()
     {
         $this->connection = new Connection();
-    }
-
-    /**
-     * @param int $branchId
-     * @param string $from
-     * @param string $to
-     * @return StdClass
-     */
-    public function getSuppliedFood(int $branchId, string $from, string $to): StdClass
-    {
-        $suppliedFood = new StdClass();
-
-        $result = $this->connection->select("SELECT supplied_food.id, supplied_food.date, food.name, "
-            . "supplied_food.quantity, supplied_food.new_quantity, CONCAT(user.name, ' ', user.last_name) AS cashier "
-            . "FROM supplied_food, food, user "
-            . "WHERE supplied_food.user_id = user.id AND supplied_food.food_id = food.id "
-            . "AND supplied_food.branch_id = '$branchId' "
-            . "AND DATE(supplied_food.date) >= '$from' AND DATE(supplied_food.date) <= '$to' ORDER BY date ASC");
-
-        $suppliedFood->length = $result->num_rows;
-        while ($row = $result->fetch_assoc()) {
-            $suppliedFood->items[] = $row;
-        }
-        return $suppliedFood;
-    }
-
-    /**
-     * @param int $branchId
-     * @param string $from
-     * @param string $to
-     * @return StdClass
-     */
-    public function getAlteredFood(int $branchId, string $from, string $to): StdClass
-    {
-        $alteredFood = new StdClass();;
-
-        $result = $this->connection->select("SELECT altered_food.id, altered_food.date, food.name, "
-            . "altered_food.quantity, altered_food.reason, altered_food.new_quantity, CONCAT(user.name, ' ' ,user.last_name) AS cashier "
-            . "FROM altered_food, food, user "
-            . "WHERE altered_food.user_id = user.id AND altered_food.food_id = food.id "
-            . "AND altered_food.branch_id = '$branchId' "
-            . "AND DATE(altered_food.date) >= '$from' AND DATE(altered_food.date) <= '$to' ORDER BY date ASC");
-
-        $alteredFood->length = $result->num_rows;
-        while ($row = $result->fetch_assoc()) {
-            $alteredFood->food[] = $row;
-        }
-        return $alteredFood;
-    }
+    }    
 
     /**
      * @param int $branchId
@@ -138,7 +90,7 @@ class HistoryDAO
     public function getFoodsSold(int $branchId, ?string $from, ?string $to): StdClass
     {
         $foodController = new \App\Application\Controllers\FoodController();
-        $foods = $foodController->getFoodByBranch($branchId);
+        $foods = $foodController->getByBranch($branchId);
 
         $foodsSold = new StdClass();
         foreach ($foods as $food) {
@@ -186,55 +138,7 @@ class HistoryDAO
             "file:" . __DIR__ . '/' . basename(__FILE__) . "\r\n", FILE_APPEND);
 
         return $foodSold;
-    }
-
-    /**
-     * @param int $branchId
-     * @param string $from
-     * @param string $to     
-     * @return StdClass
-     */
-    public function getTickets(int $branchId, string $from, string $to): StdClass
-    {
-        $tickets = new StdClass();
-        $tickets->amount = 0;
-
-        $query = <<<EOF
-            SELECT ticket.id, ticket.ticket_number, ticket.date, CONCAT(user.name, ' ' ,user.last_name) AS cashier
-            FROM ticket
-            JOIN user ON ticket.user_id = user.id
-            WHERE ticket.branch_id = $branchId
-                AND DATE(ticket.date) >= '$from'
-                AND DATE(ticket.date) <= '$to'
-            ORDER BY date DESC;
-        EOF;
-
-        $result = $this->connection->select($query);
-        $tickets->length = $result->num_rows;
-        if ($tickets->length == 0) {
-            $tickets->items = [];
-            return $tickets;
-        }
-        while ($row = $result->fetch_assoc()) {
-            $item = $row;
-            $ticketId = $row['id'];
-            $item["total"] = 0;
-            $query = <<<EOF
-                SELECT dishes_in_ticket.dish_id, dishes_in_ticket.quantity, dishes_in_ticket.price, dish.name
-                FROM dishes_in_ticket
-                JOIN dish ON dishes_in_ticket.dish_id = dish.id
-                WHERE dishes_in_ticket.ticket_id = $ticketId;
-            EOF;
-            $resultDish = $this->connection->select($query);
-            while ($rowDish = $resultDish->fetch_assoc()) {
-                $item['dishes'][] = $rowDish;
-                $tickets->amount += $rowDish['price'];
-                $item["total"] += $rowDish['price'];
-            }
-            $tickets->items[] = $item;
-        }        
-        return $tickets;
-    }
+    }    
 
     /**
      * @param string $column

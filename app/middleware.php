@@ -36,6 +36,7 @@ return function (App $app) {
             "/profile",
             "/sell",
             "/special-dishes",
+            "/tickets",
             "/users"
         ],
         "error" => function ($response, $arguments) {

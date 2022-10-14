@@ -8,7 +8,6 @@ use App\Application\Helpers\Connection;
 use App\Application\Helpers\Util;
 use App\Application\Helpers\EmailTemplate;
 use App\Application\Model\Dish;
-use App\Application\Model\Ticket;
 use App\Application\Controllers\FoodController;
 use Exception;
 
@@ -236,8 +235,8 @@ class DishDAO
      */
     public function sellWithTicket(array $items, int $userId, int $branchId): bool 
     {
-        $branchController = new \App\Application\Controllers\BranchController();
-        $numTicket = $branchController->getNumTicket($branchId);
+        $TicketController = new \App\Application\Controllers\TicketController();
+        $numTicket = $TicketController->getNextNumber($branchId);
         $data = [
             "ticket_number" => $numTicket,
             "branch_id" => $branchId,
@@ -245,7 +244,7 @@ class DishDAO
         ];
         $query = Util::prepareInsertQuery($data, 'ticket');
         $this->connection->insert($query);
-        $ticket = $this->getTicketById($this->connection->getLastId());
+        $ticket = $TicketController->getById($this->connection->getLastId());
         if ($ticket) {
             $ticketId = $ticket->id;
             foreach ($items as $item) {
@@ -263,18 +262,7 @@ class DishDAO
             }                        
         }
         return true;
-    }
-
-    /**
-     * @param int $id
-     * @return Ticket|null
-     */
-    public function getTicketById(int $id): Ticket|null
-    {
-        return $this->connection
-            ->select("SELECT * FROM ticket WHERE id = $id")
-            ->fetch_object('App\Application\Model\Ticket');
-    }
+    }    
 
     /**
      * @param int $comboId
@@ -325,7 +313,7 @@ class DishDAO
     private function subtractFood(int $foodId, float $quantity): bool
     {
         $foodController = new FoodController();
-        $food = $foodController->getFoodById($foodId);
+        $food = $foodController->getById($foodId);
 
         $newQuantity = $food->quantity - $quantity;
         $dataToUpdate = [
