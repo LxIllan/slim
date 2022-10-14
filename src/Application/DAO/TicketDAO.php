@@ -31,9 +31,23 @@ class TicketDAO
 	 */
 	public function getById(int $id): Ticket|null
 	{
-		return $this->connection
+		$ticket = $this->connection
 			->select("SELECT * FROM $this->table WHERE id = $id")
 			->fetch_object('App\Application\Model\Ticket');
+		
+		$query = <<<SQL
+			SELECT dish.name, dishes_in_ticket.quantity, dishes_in_ticket.price
+			FROM dishes_in_ticket
+			JOIN dish ON dishes_in_ticket.dish_id = dish.id
+			WHERE dishes_in_ticket.ticket_id = $ticket->id
+		SQL;
+
+		$resultDish = $this->connection->select($query);
+		while ($rowDish = $resultDish->fetch_assoc()) {
+			$ticket->dishes[] = $rowDish;
+		}
+		
+		return $ticket;
 	}
 
 	/**

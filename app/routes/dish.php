@@ -50,7 +50,7 @@ return function (App $app) {
     $app->get('/categories/{id}/dishes', function (Request $request, Response $response, $args) {
         $dishController = new DishController();
         $jwt = $request->getAttribute("token");
-        $dishes = $dishController->getDishesByCategory(intval($args['id']), $jwt['branch_id']);
+        $dishes = $dishController->getDishesByCategory(intval($args['id']), $jwt['branch_id'], false);
         $response->getBody()->write(Util::encodeData($dishes, "dishes"));
         return $response->withHeader('Content-Type', 'application/json');
     });

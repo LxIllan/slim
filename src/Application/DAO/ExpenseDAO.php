@@ -60,7 +60,7 @@ class ExpenseDAO
         $expenses = new StdClass();
         $expenses->amount = 0;        
 
-        $query = <<<EOF
+        $query = <<<SQL
             SELECT expense.id, expense.date, expense.amount, expense.reason, 
                    CONCAT(user.name, ' ' ,user.last_name) AS cashier
             FROM expense
@@ -71,7 +71,7 @@ class ExpenseDAO
                 AND expense.reason LIKE '%$reason%'
                 AND expense.is_deleted = false
             ORDER BY date DESC
-        EOF;
+        SQL;
 
         if ($isDeleted) {
             $query = str_replace('expense.is_deleted = false', 'expense.is_deleted = true', $query);

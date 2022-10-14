@@ -131,6 +131,7 @@ class DishController
      */
     public function sell(array $items, int $userId, int $branchId): mixed
     {
-        return $this->dishDAO->sell($items, $userId, $branchId);
+        $sellDAO = new \App\Application\DAO\SellDAO();
+        return $sellDAO->sell($items, $userId, $branchId);
     }
 }
