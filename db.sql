@@ -216,6 +216,28 @@ CREATE TABLE supplied_food (
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE supplied_product (
+    id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    product_id SMALLINT(5) UNSIGNED NOT NULL,
+    quantity FLOAT(6,2) NOT NULL,
+    new_quantity FLOAT(6,2) NOT NULL,
+    cost FLOAT(7,2) NOT NULL,
+    date TIMESTAMP NOT NULL,
+    is_deleted BOOLEAN NULL DEFAULT 0,
+    user_id TINYINT(3) UNSIGNED NOT NULL,
+    branch_id TINYINT(3) UNSIGNED NOT NULL,
+    deleted_at TIMESTAMP NULL,
+    FOREIGN KEY (product_id)
+    REFERENCES product (id) 
+    ON DELETE CASCADE  ON UPDATE CASCADE,
+    FOREIGN KEY (user_id)
+    REFERENCES user (id) 
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (branch_id)
+    REFERENCES branch (id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE altered_food (
     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     food_id SMALLINT(5) UNSIGNED NOT NULL,
@@ -230,6 +252,29 @@ CREATE TABLE altered_food (
     deleted_at TIMESTAMP NULL,
     FOREIGN KEY (food_id)
     REFERENCES food (id) 
+    ON DELETE CASCADE  ON UPDATE CASCADE,
+    FOREIGN KEY (user_id)
+    REFERENCES user (id) 
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (branch_id)
+    REFERENCES branch (id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE altered_product (
+    id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    product_id SMALLINT(5) UNSIGNED NOT NULL,
+    quantity FLOAT(6,2) NOT NULL,
+    reason VARCHAR(100) NOT NULL,
+    new_quantity FLOAT(6,2) NOT NULL,
+    cost FLOAT(7,2) NOT NULL,
+    date TIMESTAMP NOT NULL,
+    is_deleted BOOLEAN NULL DEFAULT 0,
+    user_id TINYINT(3) UNSIGNED NOT NULL,
+    branch_id TINYINT(3) UNSIGNED NOT NULL,
+    deleted_at TIMESTAMP NULL,
+    FOREIGN KEY (product_id)
+    REFERENCES product (id) 
     ON DELETE CASCADE  ON UPDATE CASCADE,
     FOREIGN KEY (user_id)
     REFERENCES user (id) 

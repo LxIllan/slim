@@ -116,7 +116,7 @@ return function (App $app) {
 	/**
 	 * @api /foods/{id}/supply
 	 * @method PUT
-	 * @description Delete food
+	 * @description Supply food
 	 */
 	$app->put('/foods/{id}/supply', function (Request $request, Response $response, $args) {
 		$foodController = new FoodController();
@@ -130,7 +130,7 @@ return function (App $app) {
 	/**
 	 * @api /foods/{id}/alter
 	 * @method PUT
-	 * @description Delete food
+	 * @description Alter food
 	 */
 	$app->put('/foods/{id}/alter', function (Request $request, Response $response, $args) {
 		$foodController = new FoodController();

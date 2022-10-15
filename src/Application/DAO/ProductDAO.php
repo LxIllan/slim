@@ -65,6 +65,77 @@ class ProductDAO
     }
 
     /**
+	 * @param int $branchId
+	 * @param string $from
+	 * @param string $to
+	 * @param bool $isDeleted
+	 * @return StdClass
+	 */
+	public function getAltered(int $branchId, string $from, string $to, bool $isDeleted): StdClass
+	{
+		$alteredProduct = new StdClass();;
+
+		$query = <<<SQL
+			SELECT altered_product.id, altered_product.date, product.name, altered_product.quantity, altered_product.reason,
+				altered_product.new_quantity, altered_product.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
+			FROM altered_product
+			INNER JOIN product ON product.id = altered_product.product_id
+			INNER JOIN user ON user.id = altered_product.user_id
+			WHERE product.branch_id = $branchId 
+				AND DATE(altered_product.date) BETWEEN '$from' AND '$to'
+				AND altered_product.is_deleted = false
+			ORDER BY altered_product.date DESC
+		SQL;
+		
+		if ($isDeleted) {
+			$query = str_replace('AND altered_product.is_deleted = false', 'AND altered_product.is_deleted = true', $query);
+		}
+
+		$result = $this->connection->select($query);
+
+		$alteredProduct->length = $result->num_rows;
+		while ($row = $result->fetch_assoc()) {
+			$alteredProduct->items[] = $row;
+		}
+		return $alteredProduct;
+	}
+
+	/**
+	 * @param int $branchId
+	 * @param string $from
+	 * @param string $to
+	 * @param bool $isDeleted
+	 * @return StdClass
+	 */
+	public function getSupplied(int $branchId, string $from, string $to, bool $isDeleted): StdClass
+	{
+		$suppliedProduct = new StdClass();
+
+		$query = <<<SQL
+			SELECT supplied_product.id, supplied_product.date, product.name, supplied_product.quantity, 
+				supplied_product.new_quantity, supplied_product.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
+			FROM supplied_product
+			INNER JOIN product ON product.id = supplied_product.product_id
+			INNER JOIN user ON user.id = supplied_product.user_id
+			WHERE product.branch_id = $branchId 
+				AND DATE(supplied_product.date) BETWEEN '$from' AND '$to'
+				AND supplied_product.is_deleted = false
+			ORDER BY supplied_product.date DESC
+		SQL;
+		
+		if ($isDeleted) {
+			$query = str_replace('AND supplied_product.is_deleted = false', 'AND supplied_product.is_deleted = true', $query);
+		}
+
+		$result = $this->connection->select($query);
+		$suppliedProduct->length = $result->num_rows;
+		while ($row = $result->fetch_assoc()) {
+			$suppliedProduct->items[] = $row;
+		}
+		return $suppliedProduct;
+	}
+
+    /**
      * @param int $branchId
      * @param string $from
      * @param string $to
@@ -75,7 +146,7 @@ class ProductDAO
     {
         $usedProducts = new StdClass();
 
-        $query = <<<EOF
+        $query = <<<SQL
             SELECT used_product.id, used_product.date, product.name, used_product.quantity,
                 CONCAT(user.name, ' ' , user.last_name) AS cashier
             FROM used_product
@@ -86,7 +157,7 @@ class ProductDAO
                 AND DATE(used_product.date) <= '$to'
                 AND used_product.is_deleted = false
             ORDER BY date DESC
-        EOF;
+        SQL;
 
         if ($isDeleted) {
             $query = str_replace('used_product.is_deleted = false', 'used_product.is_deleted = true', $query);
@@ -112,18 +183,14 @@ class ProductDAO
     }
 
     /**
-     * @param int $id
-     * @return bool
-     */
-    public function delete(int $id): bool
-    {
-        $data = [
-            'is_deleted' => 1,
-            'deleted_at' => date('Y-m-d H:i:s')        
-        ];
-        $query = Util::prepareUpdateQuery($id, $data, $this->table);        
-        return $this->connection->update($query);
-    }
+	 * @param int $id
+	 * @return bool
+	 */
+	public function delete(int $id): bool
+	{
+		$query = Util::prepareDeleteQuery($id, $this->table);
+		return $this->connection->delete($query);
+	}
 
     /**
      * @param int $productId
@@ -218,4 +285,66 @@ class ProductDAO
         }        
         return null;
     }
+
+    /**
+	 * @param int $productId
+	 * @param float $quantity
+	 * @param string $reason
+	 * @param int $userId
+	 * @param int $branchId
+	 * @return Product
+	 */
+	public function alter(int $productId, float $quantity, string $reason, int $userId, int $branchId): Product
+	{
+		$product = $this->getById($productId);
+		$newQuantity = $product->quantity + $quantity;
+		$cost = $product->cost * $quantity;
+
+		$dataToInsert = [
+			"product_id" => $productId,
+			"quantity" => $quantity,
+			"reason" => $reason,
+			"new_quantity" => $newQuantity,
+			"cost" => $cost,
+			"user_id" => $userId,
+			"branch_id" => $branchId
+		];
+
+		$this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'altered_product'));
+
+		$dataToUpdate = [
+			"quantity" => $newQuantity
+		];
+		return $this->edit($productId, $dataToUpdate);
+	}
+
+    /**
+	 * @param int $productId
+	 * @param float $quantity
+	 * @param int $userId
+	 * @param int $branchId
+	 * @return Product
+	 */
+	public function supply(int $productId, float $quantity, int $userId, int $branchId): Product
+	{
+		$product = $this->getById($productId);
+		$newQuantity = $product->quantity + $quantity;
+		$cost = $product->cost * $quantity;
+
+		$dataToInsert = [
+			"product_id" => $productId,
+			"quantity" => $quantity,
+			"new_quantity" => $newQuantity,
+			"cost" => $cost,
+			"user_id" => $userId,
+			"branch_id" => $branchId
+		];
+
+		$this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'supplied_product'));
+
+		$dataToUpdate = [
+			"quantity" => $newQuantity
+		];
+		return $this->edit($productId, $dataToUpdate);
+	}
 }

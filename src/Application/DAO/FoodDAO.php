@@ -93,7 +93,7 @@ class FoodDAO
 
 		$alteredFood->length = $result->num_rows;
 		while ($row = $result->fetch_assoc()) {
-			$alteredFood->food[] = $row;
+			$alteredFood->items[] = $row;
 		}
 		return $alteredFood;
 	}

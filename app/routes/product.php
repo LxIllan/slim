@@ -39,6 +39,36 @@ return function (App $app) {
     });
 
     /**
+	 * @api /products/altered
+	 * @method GET
+	 * @description Get history altered products
+	 */
+	$app->get('/products/altered', function (Request $request, Response $response) {
+		$productController = new ProductController();
+		$jwt = $request->getAttribute("token");
+		$params = $request->getQueryParams();
+		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
+		$alteredProducts = $productController->getAltered($jwt['branch_id'], $params['from'], $params['to'], $getDeleted);
+		$response->getBody()->write(Util::encodeData($alteredProducts, "altered_products"));
+		return $response->withHeader('Content-Type', 'application/json');
+	});  
+
+	/**
+	 * @api /products/supplied
+	 * @method GET
+	 * @description Get history supplied products
+	 */
+	$app->get('/products/supplied', function (Request $request, Response $response) {
+		$productController = new ProductController();
+		$jwt = $request->getAttribute("token");
+		$params = $request->getQueryParams();
+		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
+		$suppliedProducts = $productController->getSupplied($jwt['branch_id'], $params['from'], $params['to'], $getDeleted);
+		$response->getBody()->write(Util::encodeData($suppliedProducts, "supplied_products"));
+		return $response->withHeader('Content-Type', 'application/json');
+	});
+
+    /**
      * @api /products/used
      * @method GET
      * @description Get history used products
@@ -97,6 +127,34 @@ return function (App $app) {
         $response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
         return $response->withHeader('Content-Type', 'application/json');
     });    
+
+    /**
+	 * @api /products/{id}/alter
+	 * @method PUT
+	 * @description Alter product
+	 */
+	$app->put('/products/{id}/alter', function (Request $request, Response $response, $args) {
+		$productController = new ProductController();
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$product = $productController->alter(intval($args['id']), floatval($body['quantity']), $body['reason'], $jwt['user_id'], $jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($product, "product"));
+		return $response->withHeader('Content-Type', 'application/json');
+	});
+
+    /**
+	 * @api /products/{id}/supply
+	 * @method PUT
+	 * @description Supply product
+	 */
+	$app->put('/products/{id}/supply', function (Request $request, Response $response, $args) {
+		$productController = new ProductController();
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$product = $productController->supply(intval($args['id']), floatval($body['quantity']), $jwt['user_id'], $jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($product, "product"));
+		return $response->withHeader('Content-Type', 'application/json');
+	});
 
     /**
      * @api /products/{id}/use
