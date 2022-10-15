@@ -9,31 +9,31 @@ use App\Application\DAO\CategoryDAO;
 
 class CategoryController
 {
-    /**
-     * @var CategoryDAO $categoryDAO
-     */
-    private CategoryDAO $categoryDAO;
+	/**
+	 * @var CategoryDAO $categoryDAO
+	 */
+	private CategoryDAO $categoryDAO;
 
-    public function __construct()
-    {
-        $this->categoryDAO = new CategoryDAO();
-    }
+	public function __construct()
+	{
+		$this->categoryDAO = new CategoryDAO();
+	}
 
-    /**
-     * @return Category[]
-     */
-    public function getCategories(): array
-    {
-        return $this->categoryDAO->getCategories();
-    }
+	/**
+	 * @return Category[]
+	 */
+	public function getCategories(): array
+	{
+		return $this->categoryDAO->getCategories();
+	}
 
-    /**
-     * @param int $branchId
-     * @param bool $getAll
-     * @return Category[]
-     */
-    public function getCategoriesWithDishes(int $branchId, bool $getAll): array
-    {
-        return $this->categoryDAO->getCategoriesWithDishes($branchId, $getAll);
-    }
+	/**
+	 * @param int $branchId
+	 * @param bool $getAll
+	 * @return Category[]
+	 */
+	public function getCategoriesWithDishes(int $branchId, bool $getAll): array
+	{
+		return $this->categoryDAO->getCategoriesWithDishes($branchId, $getAll);
+	}
 }

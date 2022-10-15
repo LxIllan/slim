@@ -10,54 +10,54 @@ use App\Application\Controllers\DishController;
 
 class CategoryDAO
 {
-    private const TABLE_NAME = 'category';
+	private const TABLE_NAME = 'category';
 
-    /**
-     * @var Connection $connection
-     */
-    private Connection $connection;
+	/**
+	 * @var Connection $connection
+	 */
+	private Connection $connection;
 
-    public function __construct()
-    {
-        $this->connection = new Connection();
-    }
+	public function __construct()
+	{
+		$this->connection = new Connection();
+	}
 
-    /**
-     * @param int $id
-     * @return Category
-     */
-    public function getById(int $id): Category
-    {
-        return $this->connection
-            ->select("SELECT id, category FROM category WHERE id = $id")
-            ->fetch_object('App\Application\Model\Category');
-    }
+	/**
+	 * @param int $id
+	 * @return Category
+	 */
+	public function getById(int $id): Category
+	{
+		return $this->connection
+			->select("SELECT id, category FROM category WHERE id = $id")
+			->fetch_object('App\Application\Model\Category');
+	}
 
-    /**
-     * @return Category[]
-     */
-    public function getCategories(): array
-    {
-        $categories = [];
-        $result = $this->connection->select("SELECT id FROM category");
-        while ($row = $result->fetch_assoc()) {
-            $categories[] = $this->getById(intval($row['id']));
-        }
-        return $categories;
-    }
+	/**
+	 * @return Category[]
+	 */
+	public function getCategories(): array
+	{
+		$categories = [];
+		$result = $this->connection->select("SELECT id FROM category");
+		while ($row = $result->fetch_assoc()) {
+			$categories[] = $this->getById(intval($row['id']));
+		}
+		return $categories;
+	}
 
-    /**
-     * @param int $branchId
-     * @param bool $getAll
-     * @return Category[]
-     */
-    public function getCategoriesWithDishes(int $branchId, bool $getAll): array
-    {
-        $dishesController = new DishController();
-        $categories = $this->getCategories();
-        foreach ($categories as $category) {
-            $category->dishes = $dishesController->getDishesByCategory(intval($category->id), $branchId, $getAll);
-        }
-        return $categories;
-    }
+	/**
+	 * @param int $branchId
+	 * @param bool $getAll
+	 * @return Category[]
+	 */
+	public function getCategoriesWithDishes(int $branchId, bool $getAll): array
+	{
+		$dishesController = new DishController();
+		$categories = $this->getCategories();
+		foreach ($categories as $category) {
+			$category->dishes = $dishesController->getDishesByCategory(intval($category->id), $branchId, $getAll);
+		}
+		return $categories;
+	}
 }

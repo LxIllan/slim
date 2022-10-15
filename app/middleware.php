@@ -11,41 +11,41 @@ use Tuupola\Middleware\JwtAuthentication;
 use Slim\App;
 
 return function (App $app) {
-    $app->add(SessionMiddleware::class);
-    $app->add(JsonBodyParserMiddleware::class);
+	$app->add(SessionMiddleware::class);
+	$app->add(JsonBodyParserMiddleware::class);
 
-    $app->options('/{routes:.*}', function (Request $request, Response $response) {
-        // CORS Pre-Flight OPTIONS Request Handler
-        return $response;
-    });
-    $app->add(CorsMiddleware::class);
-    // JWT Authentication
-    $app->add(new JwtAuthentication([
-        "secret" => $_ENV["JWT_SECRET"],
-        "path" => [
-            "/branches",
-            "/categories",
-            "/cashiers",
-            "/combos",
-            "/dishes",
-            "/expenses",
-            "/foods",
-            "/histories",
-            "/preferences",        
-            "/products",
-            "/profile",
-            "/sell",
-            "/special-dishes",
-            "/tickets",
-            "/users"
-        ],
-        "error" => function ($response, $arguments) {
-            $data["status"] = "error";
-            $data["message"] = $arguments["message"];
-            $response->getBody()->write(json_encode($data));
-            return $response->withHeader("Content-Type", "application/json");
-        },
-        "secure" => true,
-        "relaxed" => ["localhost"],
-    ]));
+	$app->options('/{routes:.*}', function (Request $request, Response $response) {
+		// CORS Pre-Flight OPTIONS Request Handler
+		return $response;
+	});
+	$app->add(CorsMiddleware::class);
+	// JWT Authentication
+	$app->add(new JwtAuthentication([
+		"secret" => $_ENV["JWT_SECRET"],
+		"path" => [
+			"/branches",
+			"/categories",
+			"/cashiers",
+			"/combos",
+			"/dishes",
+			"/expenses",
+			"/foods",
+			"/histories",
+			"/preferences",        
+			"/products",
+			"/profile",
+			"/sell",
+			"/special-dishes",
+			"/tickets",
+			"/users"
+		],
+		"error" => function ($response, $arguments) {
+			$data["status"] = "error";
+			$data["message"] = $arguments["message"];
+			$response->getBody()->write(json_encode($data));
+			return $response->withHeader("Content-Type", "application/json");
+		},
+		"secure" => true,
+		"relaxed" => ["localhost"],
+	]));
 };

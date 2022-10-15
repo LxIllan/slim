@@ -21,7 +21,7 @@ $dotenv->safeLoad();
 $containerBuilder = new ContainerBuilder();
 
 if (true) { // Should be set to true in production
-    $containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
+	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 
 // Set up settings
