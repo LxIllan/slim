@@ -9,23 +9,18 @@ use App\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
-use Tuupola\Middleware\JwtAuthentication;
 use Dotenv\Dotenv;
-use App\Application\Model\Database;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 //Initialize Dotenv
-$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->safeLoad();
-
-//Initialize Illuminate Database Connection
-new Database();
 
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
-if (false) { // Should be set to true in production
+if (true) { // Should be set to true in production
 	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 
@@ -36,10 +31,6 @@ $settings($containerBuilder);
 // Set up dependencies
 $dependencies = require __DIR__ . '/../app/dependencies.php';
 $dependencies($containerBuilder);
-
-// Set up repositories
-$repositories = require __DIR__ . '/../app/repositories.php';
-$repositories($containerBuilder);
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();
@@ -52,29 +43,45 @@ $callableResolver = $app->getCallableResolver();
 // Register middleware
 $middleware = require __DIR__ . '/../app/middleware.php';
 $middleware($app);
-$app->add(new JwtAuthentication([
-    "secret" => $_ENV['JWT_SECRET'],
-    "path" => ["/branches", "/categories"], /* or ["/api", "/admin"] */
-	"error" => function ($response, $arguments) {
-        $data["status"] = "error";
-        $data["message"] = $arguments["message"];
-
-        $response->getBody()->write(json_encode($data));
-
-        return $response->withHeader("Content-Type", "application/json");
-    },
-	"secure" => true,
-    "relaxed" => ["localhost", "syss.tech"],
-]));
 
 // Register routes
-$routes = require __DIR__ . '/../app/routes/user.php';
+$routes = require __DIR__ . '/../app/routes/auth.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/branch.php';
 $routes($app);
 
 $routes = require __DIR__ . '/../app/routes/category.php';
 $routes($app);
 
-$routes = require __DIR__ . '/../app/routes/branch.php';
+$routes = require __DIR__ . '/../app/routes/combo.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/dish.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/expense.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/food.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/history.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/preference.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/product.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/special_dish.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/user.php';
+$routes($app);
+
+$routes = require __DIR__ . '/../app/routes/ticket.php';
 $routes($app);
 
 /** @var SettingsInterface $settings */

@@ -1,0 +1,1378 @@
+{
+	"info": {
+		"_postman_id": "5c9f780a-b298-4003-91ab-943fb0425957",
+		"name": "Slim",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18225211"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"Fernando.Illan@syss.tech\",\r\n    \"password\": \"lfIllan1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/login",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dishes",
+			"item": [
+				{
+					"name": "Combos",
+					"item": [
+						{
+							"name": "Create combo",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\" : \"Combo test\",\n    \"price\" : 600,\n    \"description\": \"Combo test\",\n    \"is_combo\": true,\n    \"food_id\" : 1,\n    \"category_id\" : 2,\n    \"branch_id\" : 8\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Host}}/combos",
+									"host": [
+										"{{Host}}"
+									],
+									"path": [
+										"combos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit combo",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\" : \"Other name\",\n    \"price\" : 60\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Host}}/combos/281",
+									"host": [
+										"{{Host}}"
+									],
+									"path": [
+										"combos",
+										"281"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete combo",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{Host}}/combos/281",
+									"host": [
+										"{{Host}}"
+									],
+									"path": [
+										"combos",
+										"281"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get combos by branch",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Host}}/combos",
+									"host": [
+										"{{Host}}"
+									],
+									"path": [
+										"combos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get combo by id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"branchId\": 8\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Host}}/combos/269",
+									"host": [
+										"{{Host}}"
+									],
+									"path": [
+										"combos",
+										"269"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add dish to combo",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{    \n    \"dish_id\": 279\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Host}}/combos/281/add-dish",
+									"host": [
+										"{{Host}}"
+									],
+									"path": [
+										"combos",
+										"281",
+										"add-dish"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get dishes by combo",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"branch_id\": 8\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Host}}/combos/281/dishes",
+									"host": [
+										"{{Host}}"
+									],
+									"path": [
+										"combos",
+										"281",
+										"dishes"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create dish",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"1/8k Costilla\",\n    \"price\" : 600,\n    \"food_id\" : 151,\n    \"category_id\" : 1,\n    \"branch_id\" : 8\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/dishes",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit dish",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\" : \"1/4k Costilla\",\n    \"precio\" : 0,\n    \"cantidad_vendida\" : 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/dishes/272",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"dishes",
+								"272"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete dish",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/dishes/272",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"dishes",
+								"272"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dish by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/dishes/268",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"dishes",
+								"268"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dishes by food",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/foods/155/dishes",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"foods",
+								"155",
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dishes by category id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/categories/1/dishes",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"categories",
+								"1",
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sell",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [\n        {\n            \"dish_id\" : 269,\n            \"quantity\" : 2\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/sell",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"sell"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Foods",
+			"item": [
+				{
+					"name": "Create food",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"Test4\",\n    \"quantity\": 50,\n    \"quantity_notif\" : 5,\n    \"cost\" : 50,\n    \"category_id\" : 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/foods",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"foods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get food by branch",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/foods",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"foods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit food",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"1 Chamorro\",\n    \"cost\" : 110,\n    \"quantity_notif\" : 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/foods/154",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"foods",
+								"154"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete food",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/foods/163",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"foods",
+								"163"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get food by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/foods/155",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"foods",
+								"155"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supply food",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\" : 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/foods/155/supply",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"foods",
+								"155",
+								"supply"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alter food",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\" : -10,\n    \"reason\" : \"Se rompio\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/foods/155/alter",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"foods",
+								"155",
+								"alter"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "History",
+			"item": [
+				{
+					"name": "Expenses",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/histories/expenses?from=2020-11-11&to=2022-11-30",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"histories",
+								"expenses"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2020-11-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sales",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/histories/sales?from=2022-08-01&to=2022-11-30",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"histories",
+								"sales"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2022-08-01"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Courtesies",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/histories/courtesies?from=2022-08-11&to=2022-11-30",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"histories",
+								"courtesies"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2022-08-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supplied food",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/histories/supplied-foods?from=2020-11-11&to=2022-11-30",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"histories",
+								"supplied-foods"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2020-11-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Altered food",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/histories/altered-foods?from=2020-11-11&to=2022-11-30",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"histories",
+								"altered-foods"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2020-11-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Used products",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/histories/used-products?from=2020-11-11&to=2022-11-30",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"histories",
+								"used-products"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2020-11-11"
+								},
+								{
+									"key": "to",
+									"value": "2022-11-30"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Create product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"Bolsa de basura3\",\n    \"quantity\" : 50,\n    \"quantity_notif\" : 5,\n    \"cost\" : 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/products",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit product",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cost\" : 50\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/products/4",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/products/4",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get product by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/products/4",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get products by branch",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/products",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Use product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\" : 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/products/6/use",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"products",
+								"6",
+								"use"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\": \"Fernando\",\r\n\t\"last_name\": \"Illan\",\r\n\t\"email\": \"Fernando.Illan@syss.tech\",\r\n\t\"phone\": \"3861963066\",\r\n\t\"address\": \"687 Agustin St.\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/users/22",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"22"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Exist email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\": \"fernanddo.illan@syss.tech\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/users/exist-email",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"exist-email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get cashier by branch",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/cashiers",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"cashiers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/users/22",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"22"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit user by id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/users/22",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"22"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/users/22",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"users",
+								"22"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get branches",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/branches",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get branch by id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/branches/8",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches",
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get num ticket id branch",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/branches/num-ticket",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches",
+						"num-ticket"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check JWT",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/branches/check-jwt",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches",
+						"check-jwt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check connection",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/branches/connection",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"branches",
+						"connection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get categories",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/categories",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get categories with dishes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Host}}/categories/dishes",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"categories",
+						"dishes"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjA1MTUyNTgsImV4cCI6MTY3MDUxNTI1NywidXNlcl9pZCI6MywiYnJhbmNoX2lkIjoyLCJyb290IjoiMSJ9.MSDCi4f5ANPk8_cST3GzHZwe7whzVyZaG0sTv78U-nc",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Host",
+			"value": "http://localhost:8080"
+		}
+	]
+}
