@@ -215,11 +215,10 @@ class ProductDAO
 			$branchController = new \App\Application\Controllers\BranchController();
 			$branch = $branchController->getById(intval($product->branch_id));
 			$data = [
-				'subject' => "Notificación de: $branch->location",
+				'subject' => "Notificación de: $branch->name",
 				'food_name' => $product->name,
 				'quantity' => $newQuantity,
 				'branch_name' => $branch->name,
-				'branch_location' => $branch->location,
 				'email' => $branch->admin_email
 			];
 			if (Util::sendMail($data, EmailTemplate::NOTIFICATION_TO_ADMIN)) {

@@ -96,4 +96,20 @@ return function (App $app) {
 			throw new HttpNotFoundException($request);
 		}
 	});
+
+	/**
+	 * @api /branches/{id}
+	 * @method DELETE
+	 * @description Delete branch by id
+	 */
+	$app->delete('/branches/{id}', function (Request $request, Response $response, $args) {
+		$jwt = $request->getAttribute("token");
+		if (!Util::isAdmin($jwt)) {
+			throw new HttpException($request, "You don't have permission to access this resource", 403);
+		}
+		$branchController = new BranchController();
+		$wasDeleted = $branchController->delete(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($wasDeleted, "response"));
+		return $response->withHeader('Content-Type', 'application/json');
+	});
 };

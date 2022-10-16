@@ -31,6 +31,7 @@ return function (App $app) {
 			"/expenses",
 			"/foods",
 			"/histories",
+			"/logout",
 			"/preferences",        
 			"/products",
 			"/profile",
@@ -40,12 +41,11 @@ return function (App $app) {
 			"/users"
 		],
 		"error" => function ($response, $arguments) {
-			$data["status"] = "error";
-			$data["message"] = $arguments["message"];
+			$data["statusCode"] = 401;
+			$data["Error"] = ["type" => "UNAUTHENTICATED", "description" => "The request requires valid user authentication."];
 			$response->getBody()->write(json_encode($data));
 			return $response->withHeader("Content-Type", "application/json");
 		},
-		"secure" => true,
-		"relaxed" => ["localhost"],
+		"secure" => true
 	]));
 };

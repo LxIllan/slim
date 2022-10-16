@@ -105,12 +105,10 @@ class Util
 
 		switch ($template) {
 			case EmailTemplate::NOTIFICATION_TO_ADMIN:
-				$message = str_replace("{branchLocation}", $data['branch_location'], $message);
 				$message = str_replace("{quantity}", strval($data['quantity']), $message);
 				$message = str_replace("{foodName}", $data['food_name'], $message);
 				break;
 			case EmailTemplate::PASSWORD_TO_NEW_USER:
-				$message = str_replace("{branchLocation}", $data['branch_location'], $message);
 				$message = str_replace("{userName}", $data['username'], $message);
 				$message = str_replace("{password}", $data['password'], $message);
 				break;

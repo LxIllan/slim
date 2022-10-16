@@ -54,4 +54,13 @@ class BranchController
 	{
 		return $this->branchDAO->edit($id, $data);
 	}
+
+	/**
+	 * @param int $id
+	 * @return bool
+	 */
+	public function delete(int $id): bool
+	{
+		return $this->branchDAO->delete($id);
+	}
 }

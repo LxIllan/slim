@@ -40,7 +40,6 @@ class UserController
 				'subject' => "Bienvenido a $branch->name",
 				'email' => $user->email,
 				'branch_name' => $branch->name,
-				'branch_location' => $branch->location,
 				'password' => $password,
 				'username' => "$user->name $user->last_name"
 			];

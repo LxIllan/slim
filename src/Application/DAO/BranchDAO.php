@@ -10,7 +10,10 @@ use App\Application\Helpers\Util;
 
 class BranchDAO
 {
-	private const TABLE_NAME = 'branch';
+	/**
+	 * @var string $table
+	 */
+	protected string $table = 'branch';
 
 	/**
 	 * @var Connection $connection
@@ -28,7 +31,7 @@ class BranchDAO
 	 */
 	public function create(array $data): Branch|null
 	{
-		$query = Util::prepareInsertQuery($data, self::TABLE_NAME);
+		$query = Util::prepareInsertQuery($data, $this->table);
 		return ($this->connection->insert($query)) ? $this->getById($this->connection->getLastId()) : null;
 	}
 
@@ -39,7 +42,7 @@ class BranchDAO
 	public function getById(int $id): Branch|null
 	{
 		return $this->connection
-			->select("SELECT * FROM branch WHERE id = $id")
+			->select("SELECT * FROM $this->table WHERE id = $id")
 			->fetch_object('App\Application\Model\Branch');
 	}
 
@@ -49,7 +52,7 @@ class BranchDAO
 	public function getBranches(): array
 	{
 		$branches = [];
-		$result = $this->connection->select("SELECT id FROM branch");
+		$result = $this->connection->select("SELECT id FROM $this->table");
 				
 		while ($row = $result->fetch_assoc()) {
 			$branches[] = $this->getById(intval($row['id']));
@@ -64,7 +67,17 @@ class BranchDAO
 	 */
 	public function edit(int $id, array $data): Branch|null
 	{
-		$query = Util::prepareUpdateQuery($id, $data, self::TABLE_NAME);
+		$query = Util::prepareUpdateQuery($id, $data, $this->table);
 		return ($this->connection->update($query)) ? $this->getById($id) : null;
+	}
+
+	/**
+	 * @param int $id
+	 * @return bool
+	 */
+	public function delete(int $id): bool
+	{
+		$query = Util::prepareDeleteQuery($id, $this->table);
+		return $this->connection->delete($query);
 	}
 }

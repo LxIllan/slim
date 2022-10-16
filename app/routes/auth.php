@@ -6,7 +6,6 @@ use App\Application\Controllers\UserController;
 use App\Application\Helpers\Util;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use PsrJwt\Factory\JwtMiddleware;
 use ReallySimpleJWT\Token;
 use Slim\App;
 
@@ -35,5 +34,5 @@ return function (App $app) {
 	$app->get('/logout', function (Request $request, Response $response) {
 		$response->getBody()->write(json_encode('log out'));
 		return $response->withHeader('Content-Type', 'application/json');
-	})->add(JwtMiddleware::json($_ENV['JWT_SECRET'], 'jwt', ['Authorization Failed']));
+	});
 };
