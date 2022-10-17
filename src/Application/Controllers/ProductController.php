@@ -30,11 +30,12 @@ class ProductController
 
 	/**
 	 * @param int $id
+	 * @param array $columns
 	 * @return Product|null
 	 */
-	public function getById(int $id): Product|null
+	public function getById(int $id, array $columns = []): Product|null
 	{
-		return $this->productDAO->getById($id);
+		return $this->productDAO->getById($id, $columns);
 	}
 
 	/**

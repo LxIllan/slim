@@ -30,11 +30,12 @@ class ExpenseController
 
 	/**
 	 * @param int $id
+	 * @param array $columns
 	 * @return Expense|null
 	 */
-	public function getById(int $id): Expense|null
+	public function getById(int $id, array $columns = []): Expense|null
 	{
-		return $this->expenseDAO->getById($id);
+		return $this->expenseDAO->getById($id, $columns);
 	}
 
 	/**

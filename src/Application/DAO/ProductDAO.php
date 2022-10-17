@@ -11,43 +11,17 @@ use App\Application\Model\Product;
 use StdClass;
 use Exception;
 
-class ProductDAO
+class ProductDAO extends DAO
 {
 	/**
 	 * @var string $table
 	 */
 	protected string $table = 'product';
 
-	/**
-	 * @var Connection $connection
-	 */
-	private Connection $connection;
-
 	public function __construct()
 	{
-		$this->connection = new Connection();
-	}
-
-	/**
-	 * @param array $data
-	 * @return Product|null
-	 */
-	public function create(array $data): Product|null
-	{
-		$query = Util::prepareInsertQuery($data, $this->table);
-		return ($this->connection->update($query)) ? $this->getById($this->connection->getLastId()) : null;
-	}
-
-	/**
-	 * @param int $id
-	 * @return Product
-	 */
-	public function getById(int $id): Product
-	{
-		return $this->connection
-			->select("SELECT * FROM product WHERE id = $id")
-			->fetch_object('App\Application\Model\Product');
-	}
+		parent::__construct();
+	}	
 
 	/**
 	 * @param int $branchId
@@ -169,28 +143,7 @@ class ProductDAO
 			$usedProducts->items[] = $row;
 		}
 		return $usedProducts;
-	}
-
-	/**
-	 * @param int $id
-	 * @param array $data
-	 * @return Product|null
-	 */
-	public function edit(int $id, array $data): Product|null
-	{
-		$query = Util::prepareUpdateQuery($id, $data, $this->table);
-		return ($this->connection->update($query)) ? $this->getById($id) : null;
-	}
-
-	/**
-	 * @param int $id
-	 * @return bool
-	 */
-	public function delete(int $id): bool
-	{
-		$query = Util::prepareDeleteQuery($id, $this->table);
-		return $this->connection->delete($query);
-	}
+	}	
 
 	/**
 	 * @param int $productId

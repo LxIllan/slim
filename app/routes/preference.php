@@ -33,7 +33,7 @@ return function (App $app) {
 	$app->get('/preferences', function (Request $request, Response $response) {
 		$preferenceController = new PreferenceController();
 		$jwt = $request->getAttribute("token");
-		$branches = $preferenceController->getPreferences($jwt["branch_id"]);
+		$branches = $preferenceController->getAll($jwt["branch_id"]);
 		$response->getBody()->write(Util::encodeData($branches, "preferences"));
 		return $response->withHeader('Content-Type', 'application/json');
 	});

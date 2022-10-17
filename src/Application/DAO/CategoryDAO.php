@@ -4,33 +4,19 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
-use App\Application\Helpers\Connection;
 use App\Application\Model\Category;
 use App\Application\Controllers\DishController;
 
-class CategoryDAO
+class CategoryDAO extends DAO
 {
-	private const TABLE_NAME = 'category';
-
 	/**
-	 * @var Connection $connection
+	 * @var string $table
 	 */
-	private Connection $connection;
+	protected string $table = 'category';
 
 	public function __construct()
 	{
-		$this->connection = new Connection();
-	}
-
-	/**
-	 * @param int $id
-	 * @return Category
-	 */
-	public function getById(int $id): Category
-	{
-		return $this->connection
-			->select("SELECT id, category FROM category WHERE id = $id")
-			->fetch_object('App\Application\Model\Category');
+		parent::__construct();
 	}
 
 	/**
@@ -39,7 +25,7 @@ class CategoryDAO
 	public function getCategories(): array
 	{
 		$categories = [];
-		$result = $this->connection->select("SELECT id FROM category");
+		$result = $this->connection->select("SELECT id FROM $this->table");
 		while ($row = $result->fetch_assoc()) {
 			$categories[] = $this->getById(intval($row['id']));
 		}

@@ -51,9 +51,9 @@ class PreferenceController
 	 * @param int $branchId
 	 * @return Preference[]
 	 */
-	public function getPreferences(int $branchId): array
+	public function getAll(int $branchId): array
 	{
-		return $this->preferenceDAO->getPreferences($branchId);
+		return $this->preferenceDAO->getAll($branchId);
 	}
 
 	/**

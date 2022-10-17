@@ -30,11 +30,12 @@ class BranchController
 
 	/**
 	 * @param int $id
+	 * @param array $columns
 	 * @return Branch|null
 	 */
-	public function getById(int $id): Branch|null
+	public function getById(int $id, array $columns = []): Branch|null
 	{
-		return $this->branchDAO->getById($id);
+		return $this->branchDAO->getById($id, $columns);
 	}
 
 	/**
@@ -42,7 +43,7 @@ class BranchController
 	 */
 	public function getBranches(): array
 	{
-		return $this->branchDAO->getBranches();
+		return $this->branchDAO->getAll();
 	}
 
 	/**
