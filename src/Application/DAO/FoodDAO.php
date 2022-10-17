@@ -4,48 +4,21 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
-use App\Application\Helpers\Connection;
 use App\Application\Helpers\Util;
 use App\Application\Model\Food;
 use StdClass;
 
-class FoodDAO
+class FoodDAO extends DAO
 {
 	/**
 	 * @var string $table
 	 */
 	protected string $table = 'food';
 
-	/**
-	 * @var Connection $connection
-	 */
-	private Connection $connection;
-
 	public function __construct()
 	{
-		$this->connection = new Connection();
-	}
-
-	/**
-	 * @param array $data
-	 * @return Food|null
-	 */
-	public function create(array $data): Food|null
-	{
-		$query = Util::prepareInsertQuery($data, $this->table);
-		return ($this->connection->insert($query)) ? $this->getById($this->connection->getLastId()) : null;
-	}
-
-	/**
-	 * @param int $id
-	 * @return Food|null
-	 */
-	public function getById(int $id): Food|null
-	{
-		return $this->connection
-			->select("SELECT * FROM $this->table WHERE id = $id")
-			->fetch_object('App\Application\Model\Food');
-	}
+		parent::__construct();
+	}	
 
 	/**
 	 * @param int $branchId
@@ -149,27 +122,6 @@ class FoodDAO
 	}
 
 	/**
-	 * @param int $id
-	 * @param array $data
-	 * @return Food|null
-	 */
-	public function edit(int $id, array $data): Food|null
-	{
-		$query = Util::prepareUpdateQuery($id, $data, $this->table);
-		return ($this->connection->update($query)) ? $this->getById($id) : null;
-	}
-
-	/**
-	 * @param int $id
-	 * @return bool
-	 */
-	public function delete(int $id): bool
-	{
-		$query = Util::prepareDeleteQuery($id, $this->table);
-		return $this->connection->delete($query);
-	}
-
-	/**
 	 * @param int $foodId
 	 * @param float $quantity
 	 * @param int $userId
@@ -229,5 +181,75 @@ class FoodDAO
 			"quantity" => $newQuantity
 		];
 		return $this->edit($foodId, $dataToUpdate);
+	}
+
+	/**
+	 * @param int $branchId
+	 * @param string|null $from
+	 * @param string|null $to
+	 * @return array
+	 */
+	public function getSold(int $branchId, ?string $from, ?string $to): array
+	{
+		$foodSold = [];
+		$dishController = new \App\Application\Controllers\DishController();
+		$soldDishes = $dishController->getSold($branchId, $from, $to);		
+		
+		foreach ($soldDishes as $soldDish) {
+			$dish = $dishController->getDishById(intval($soldDish['id']), ['id', 'name', 'is_combo', 'serving', 'food_id']);
+			$dish->quantity = $soldDish['quantity'];
+
+			if ($dish->is_combo) {
+				$foodSold = $this->extractDishesFromCombo(intval($dish->id), intval($dish->quantity), $foodSold);
+			} else {
+				$foodSold = $this->subtractFood(intval($dish->food_id), floatval($dish->quantity * $dish->serving), $foodSold);
+			}
+		}
+		return $foodSold;
+	}
+
+	/**
+	 * @param int $comboId
+	 * @param int $quantity
+	 * @param array $foodSold
+	 * @return array
+	 * @throws Exception
+	 */
+	public function extractDishesFromCombo(int $comboId, int $quantity, array $foodSold): array
+	{
+		$dishController = new \App\Application\Controllers\DishController();
+		$dishes = $dishController->getDishesByCombo($comboId);
+		foreach ($dishes as $dish) {
+			if ($dish->is_combo) {
+				$foodSold = $this->extractDishesFromCombo(intval($dish->id), $quantity, $foodSold);
+			} else {
+				$serving = $dish->serving * $quantity;
+				$foodSold = $this->subtractFood(intval($dish->food_id), $serving, $foodSold);
+			}
+		}
+		return $foodSold;
+	}
+
+	/**
+	 * @param int $foodId
+	 * @param float $quantity
+	 * @param array $foodSold
+	 * @return array
+	 * @throws Exception
+	 */
+	private function subtractFood(int $foodId, float $quantity, array $foodSold): array
+	{
+		$id = array_search(intval($foodId), array_column($foodSold, 'id'));
+		if ($id !== false) {
+			$foodSold[$id]["quantity"] += $quantity;
+		} else {
+			$food = $this->getById($foodId, ['name']);
+			$foodSold[] = [
+				"id" => $foodId,
+				"name" => $food->name,
+				"quantity" => $quantity
+			];
+		}
+		return $foodSold;
 	}
 }

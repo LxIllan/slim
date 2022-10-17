@@ -6,7 +6,7 @@ namespace App\Application\Controllers;
 
 use App\Application\Model\Dish;
 use App\Application\DAO\DishDAO;
-
+use stdClass;
 class DishController
 {
 	/**
@@ -30,11 +30,12 @@ class DishController
 
 	/**
 	 * @param int $id
+	 * @param array $columns
 	 * @return Dish|null
 	 */
-	public function getDishById(int $id): Dish|null
+	public function getDishById(int $id, array $columns = []): Dish|null
 	{
-		return $this->dishDAO->getById($id);
+		return $this->dishDAO->getById($id, $columns);
 	}
 
 	/**
@@ -58,13 +59,28 @@ class DishController
 	}
 
 	/**
+	 * @param int $branchId
+	 * @param string|null $from
+	 * @param string|null $to
+	 * @return array
+	 */
+	public function getSold(int $branchId, ?string $from, ?string $to): array
+	{
+		if ((is_null($from)) && (is_null($to))) {
+			$from = date('Y-m-d');
+			$to = date('Y-m-d');
+		}
+		return $this->dishDAO->getSold($branchId, $from, $to);
+	}
+
+	/**
 	 * @param int $id
 	 * @param array $data
 	 * @return Dish|null
 	 */
 	public function editDish(int $id, array $data): Dish|null
 	{
-		return $this->dishDAO->editDish($id, $data);
+		return $this->dishDAO->edit($id, $data);
 	}
 
 	/**
@@ -73,7 +89,7 @@ class DishController
 	 */
 	public function deleteDish(int $id): bool
 	{
-		return $this->dishDAO->deleteDish($id);
+		return $this->dishDAO->delete($id);
 	}
 
 	/**

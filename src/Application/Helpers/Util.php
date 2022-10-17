@@ -276,4 +276,19 @@ class Util
 		$row = $connection->select($query)->fetch_array();
 		return floatval($row[0]);
 	}
+
+	/**
+	 * @param string $table
+	 * @param string $column
+	 * @return float
+	 */
+	public static function existColumn(string $table, string $column): bool
+	{
+		$connection = new \App\Application\Helpers\Connection();
+		$query = <<<SQL
+			SHOW COLUMNS FROM $table LIKE '$column'
+		SQL;
+		$result = $connection->select($query);
+		return $result->num_rows > 0;
+	}
 }

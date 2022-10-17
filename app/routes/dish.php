@@ -27,6 +27,20 @@ return function (App $app) {
 	});
 
 	/**
+	 * @api /dishes/sold
+	 * @method GET
+	 * @description Get dishes sold
+	 */
+	$app->get('/dishes/sold', function (Request $request, Response $response) {
+		$dishController = new DishController();
+		$jwt = $request->getAttribute("token");
+		$params = $request->getQueryParams();
+		$dishes = $dishController->getSold($jwt['branch_id'], $params['from'] ?? null, $params['to'] ?? null);
+		$response->getBody()->write(Util::encodeData($dishes, "dishes"));
+		return $response->withHeader('Content-Type', 'application/json');
+	});
+
+	/**
 	 * @api /dishes/{id}
 	 * @method GET
 	 * @description Get dish by id

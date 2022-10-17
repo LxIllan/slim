@@ -69,6 +69,20 @@ return function (App $app) {
 	});
 
 	/**
+	 * @api /foods/sold
+	 * @method GET
+	 * @description Get foods sold
+	 */
+	$app->get('/foods/sold', function (Request $request, Response $response) {
+		$foodController = new FoodController();
+		$jwt = $request->getAttribute("token");
+		$params = $request->getQueryParams();
+		$foods = $foodController->getSold($jwt['branch_id'], $params['from'] ?? null, $params['to'] ?? null);
+		$response->getBody()->write(Util::encodeData($foods, "foods"));
+		return $response->withHeader('Content-Type', 'application/json');
+	});
+
+	/**
 	 * @api /foods/{id}
 	 * @method GET
 	 * @description Get food by id

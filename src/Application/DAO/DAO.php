@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\DAO;
 
 use App\Application\Helpers\Connection;
-use App\Application\Model\Expense;
 use App\Application\Helpers\Util;
 use StdClass;
 
@@ -38,13 +37,15 @@ class DAO
 
 	/**
 	 * @param int $id
+	 * @param array $columns
 	 * @return StdClass|null
 	 */
-	public function getById(int $id): StdClass|null
+	public function getById(int $id, array $columns = []): StdClass|null
 	{
+		$columns = (empty($columns)) ? '*' : implode(',', $columns);
 		return $this->connection
-			->select("SELECT * FROM $this->table WHERE id = $id")
-			->fetch_object("App\Application\Model\${ucfirst($this->table)}");
+			->select("SELECT $columns FROM $this->table WHERE id = $id")
+			->fetch_object('App\Application\Model\\' . ucfirst($this->table));
 	}    
 
 	/**
@@ -64,11 +65,16 @@ class DAO
 	 */
 	public function delete(int $id): bool
 	{
-		$data = [
-			'is_deleted' => 1,
-			'deleted_at' => date('Y-m-d H:i:s')        
-		];
-		$query = Util::prepareUpdateQuery($id, $data, $this->table);        
-		return $this->connection->update($query);
+		if (Util::existColumn($this->table, 'is_deleted')) {
+			$data = [
+				'is_deleted' => 1,
+				'deleted_at' => date('Y-m-d H:i:s')
+			];
+			$query = Util::prepareUpdateQuery($id, $data, $this->table);
+			return $this->connection->update($query);
+		} else {
+			$query = Util::prepareDeleteQuery($id, $this->table);
+			return $this->connection->delete($query);
+		}
 	}
 }

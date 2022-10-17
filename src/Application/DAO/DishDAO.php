@@ -11,40 +11,17 @@ use App\Application\Model\Dish;
 use App\Application\Controllers\FoodController;
 use Exception;
 
-class DishDAO
+class DishDAO extends DAO
 {
-	private const TABLE_NAME = 'dish';
-
 	/**
-	 * @var Connection $connection
+	 * @var string $table
 	 */
-	private Connection $connection;
+	protected string $table = 'dish';
 
 	public function __construct()
 	{
-		$this->connection = new Connection();
-	}
-
-	/**
-	 * @param array $data
-	 * @return Dish|null
-	 */
-	public function create(array $data): Dish|null
-	{
-		$query = Util::prepareInsertQuery($data, self::TABLE_NAME);
-		return ($this->connection->insert($query)) ? $this->getById($this->connection->getLastId()) : null;
-	}
-
-	/**
-	 * @param int $id
-	 * @return Dish|null
-	 */
-	public function getById(int $id): Dish|null
-	{
-		return $this->connection
-			->select("SELECT * FROM dish WHERE id = $id")
-			->fetch_object('App\Application\Model\Dish');
-	}
+		parent::__construct();
+	}	
 
 	/**
 	 * @param int $foodId
@@ -86,27 +63,6 @@ class DishDAO
 			$dishes[] = $this->getById(intval($row['id']));
 		}
 		return $dishes;
-	}
-
-	/**
-	 * @param int $id
-	 * @param array $data
-	 * @return Dish|null
-	 */
-	public function editDish(int $id, array $data): Dish|null
-	{
-		$query = Util::prepareUpdateQuery($id, $data, self::TABLE_NAME);
-		return ($this->connection->update($query)) ? $this->getById($id) : null;
-	}
-
-	/**
-	 * @param int $id
-	 * @return bool
-	 */
-	public function deleteDish(int $id): bool
-	{
-		$query = Util::prepareDeleteQuery($id, self::TABLE_NAME);
-		return $this->connection->delete($query);
 	}
 
 	/**
@@ -190,12 +146,12 @@ class DishDAO
 	 */
 	public function deleteDishFromCombo(int $comboId, int $dishId): array
 	{
-		$query = <<<EOF
+		$query = <<<SQL
 			DELETE FROM dishes_in_combo 
 			WHERE combo_id = $comboId 
 			AND dish_id = $dishId
 			LIMIT 1
-		EOF;
+		SQL;
 
 		if ($this->connection->delete($query)) {
 			return $this->getDishesByCombo($comboId);
@@ -338,5 +294,31 @@ class DishDAO
 		}
 
 		return $this->connection->update(Util::prepareUpdateQuery($foodId, $dataToUpdate, 'food'));
+	}
+
+	/**
+	 * @param int $branchId
+	 * @param string|null $from
+	 * @param string|null $to
+	 * @return array
+	 */
+	public function getSold(int $branchId, ?string $from, ?string $to): array
+	{
+		$dishesSold = [];
+		$ticketController = new \App\Application\Controllers\TicketController();
+		$tickets = $ticketController->getAll($branchId, $from, $to)->items;
+		
+		foreach ($tickets as $ticket) {
+			foreach ($ticket["dishes"] as $dish) {
+				unset($dish["price"]);
+				$id = array_search(intval($dish["id"]), array_column($dishesSold, 'id'));
+				if ($id !== false) {
+					$dishesSold[$id]["quantity"] += $dish["quantity"];
+				} else {
+					$dishesSold[] = $dish;
+				}
+			}
+		}
+		return $dishesSold;
 	}
 }

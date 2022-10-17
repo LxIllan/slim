@@ -7,6 +7,7 @@ namespace App\Application\Controllers;
 use App\Application\Model\Food;
 use App\Application\DAO\FoodDAO;
 use App\Application\Controllers\DishController;
+use Exception;
 use StdClass;
 class FoodController
 {
@@ -28,7 +29,7 @@ class FoodController
 	{
 		$food = $this->foodDAO->create($data);
 		if ($food == null) {
-			return ["message" => "Error creating food"];
+			throw new Exception("Error creating food.");
 		}
 
 		$dishData = [
@@ -55,11 +56,12 @@ class FoodController
 
 	/**
 	 * @param int $id
+	 * @param array $columns
 	 * @return Food|null
 	 */
-	public function getById(int $id): Food|null
+	public function getById(int $id, array $columns = []): Food|null
 	{
-		return $this->foodDAO->getById($id);
+		return $this->foodDAO->getById($id, $columns);
 	}
 
 	/**
@@ -101,6 +103,21 @@ class FoodController
 			$to = date('Y-m-d', strtotime($from . "next Sunday"));
 		}
 		return $this->foodDAO->getSupplied($branchId, $from, $to, $isDeleted);
+	}
+
+	/**
+	 * @param int $branchId
+	 * @param string|null $from
+	 * @param string|null $to
+	 * @return array
+	 */
+	public function getSold(int $branchId, ?string $from, ?string $to): array
+	{
+		if ((is_null($from)) && (is_null($to))) {
+			$from = date('Y-m-d');
+			$to = date('Y-m-d');
+		}
+		return $this->foodDAO->getSold($branchId, $from, $to);
 	}
 
 	/**

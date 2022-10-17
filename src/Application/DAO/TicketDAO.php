@@ -36,7 +36,7 @@ class TicketDAO
 			->fetch_object('App\Application\Model\Ticket');
 		
 		$query = <<<SQL
-			SELECT dish.name, dishes_in_ticket.quantity, dishes_in_ticket.price
+			SELECT dish.id, dish.name, dishes_in_ticket.quantity, dishes_in_ticket.price
 			FROM dishes_in_ticket
 			JOIN dish ON dishes_in_ticket.dish_id = dish.id
 			WHERE dishes_in_ticket.ticket_id = $ticket->id
@@ -94,7 +94,7 @@ class TicketDAO
 			$ticketId = $row['id'];
 			$tickets->total += $row['total'];
 			$query = <<<SQL
-				SELECT dish.name, dishes_in_ticket.quantity, dishes_in_ticket.price
+				SELECT dish.id, dish.name, dishes_in_ticket.quantity, dishes_in_ticket.price
 				FROM dishes_in_ticket
 				JOIN dish ON dishes_in_ticket.dish_id = dish.id
 				WHERE dishes_in_ticket.ticket_id = $ticketId
