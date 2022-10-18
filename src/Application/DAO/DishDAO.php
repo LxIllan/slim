@@ -36,6 +36,20 @@ class DishDAO extends DAO
 	}
 
 	/**
+	 * @param int $comboId
+	 * @return Dish[]
+	 */
+	public function getDishesByCombo(int $comboId): array
+	{
+		$dishes = [];
+		$result = $this->connection->select("SELECT dish_id FROM dishes_in_combo WHERE combo_id = $comboId");
+		while ($row = $result->fetch_assoc()) {
+			$dishes[] = $this->getById(intval($row['dish_id']));
+		}
+		return $dishes;
+	}
+
+	/**
 	 * @param int $categoryId
 	 * @param int $branchId
 	 * @param bool $getAll
@@ -66,7 +80,7 @@ class DishDAO extends DAO
 	 * @param int $branchId
 	 * @return Dish[]
 	 */
-	public function getCombosByBranch(int $branchId): array
+	public function getCombos(int $branchId): array
 	{
 		$dishes = [];
 		$result = $this->connection
@@ -81,7 +95,7 @@ class DishDAO extends DAO
 	 * @param int $branchId
 	 * @return Dish[]
 	 */
-	public function getSpecialDishesByBranch(int $branchId): array
+	public function getSpecialDishes(int $branchId): array
 	{
 		$dishes = [];
 		$result = $this->connection
@@ -90,21 +104,7 @@ class DishDAO extends DAO
 			$dishes[] = $this->getById(intval($row['id']));
 		}
 		return $dishes;
-	}
-
-	/**
-	 * @param int $comboId
-	 * @return Dish[]
-	 */
-	public function getDishesByCombo(int $comboId): array
-	{
-		$dishes = [];
-		$result = $this->connection->select("SELECT dish_id FROM dishes_in_combo WHERE combo_id = $comboId");
-		while ($row = $result->fetch_assoc()) {
-			$dishes[] = $this->getById(intval($row['dish_id']));
-		}
-		return $dishes;
-	}
+	}	
 
 	/**
 	 * @param int $comboId

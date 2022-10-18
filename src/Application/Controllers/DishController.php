@@ -129,50 +129,69 @@ class DishController
 	}
 
 	/**
-	 * @param int $branchId
-	 * @return Dish[]
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function getCombosByBranch(int $branchId): array
+	public function getCombos(Request $request, Response $response): Response
 	{
-		return $this->dishDAO->getCombosByBranch($branchId);
+		$jwt = $request->getAttribute("token");
+		$combos = $this->dishDAO->getCombos($jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($combos, "combos"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $branchId
-	 * @return Dish[]
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function getSpecialDishesByBranch(int $branchId): array
+	public function getSpecialDishes(Request $request, Response $response): Response
 	{
-		return $this->dishDAO->getSpecialDishesByBranch($branchId);
+		$jwt = $request->getAttribute("token");
+		$specialDishes = $this->dishDAO->getSpecialDishes($jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($specialDishes, "special_dishes"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $comboId
-	 * @return Dish[]
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function getDishesByCombo(int $comboId): array
+	public function getDishesByCombo(Request $request, Response $response, array $args): Response
 	{
-		return $this->dishDAO->getDishesByCombo($comboId);
+		$dishes = $this->dishDAO->getDishesByCombo(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($dishes, "dishes"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $comboId
-	 * @param array $dishes
-	 * @return Dish[]
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function addDishToCombo(int $comboId, array $dishes): array
+	public function addDishToCombo(Request $request, Response $response, array $args): Response
 	{
-		return $this->dishDAO->addDishToCombo($comboId, $dishes);
+		$body = $request->getParsedBody();
+		$dishes = $this->dishDAO->addDishToCombo(intval($args['id']), $body['dishes']);
+		$response->getBody()->write(Util::encodeData($dishes, "dishes"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $comboId
-	 * @param int $dishId
-	 * @return Dish[]
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function deleteDishFromCombo(int $comboId, int $dishId): array
+	public function deleteDishFromCombo(Request $request, Response $response, array $args): Response
 	{
-		return $this->dishDAO->deleteDishFromCombo($comboId, $dishId);
+		$dishes = $this->dishDAO->deleteDishFromCombo(intval($args['id']), intval($args['dish_id']));
+		$response->getBody()->write(Util::encodeData($dishes, "dishes"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
