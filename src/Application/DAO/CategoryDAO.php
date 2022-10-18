@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\DAO;
 
 use App\Application\Model\Category;
-use App\Application\Controllers\DishController;
 
 class CategoryDAO extends DAO
 {
@@ -39,10 +38,10 @@ class CategoryDAO extends DAO
 	 */
 	public function getCategoriesWithDishes(int $branchId, bool $getAll): array
 	{
-		$dishesController = new DishController();
+		$dishDAO = new \App\Application\DAO\DishDAO();
 		$categories = $this->getCategories();
 		foreach ($categories as $category) {
-			$category->dishes = $dishesController->getDishesByCategory(intval($category->id), $branchId, $getAll);
+			$category->dishes = $dishDAO->getDishesByCategory(intval($category->id), $branchId, $getAll);
 		}
 		return $categories;
 	}

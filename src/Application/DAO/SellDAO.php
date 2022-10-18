@@ -8,8 +8,8 @@ use App\Application\Helpers\Connection;
 use App\Application\Helpers\Util;
 use App\Application\Helpers\EmailTemplate;
 use App\Application\Model\Ticket;
-use App\Application\Controllers\FoodController;
-use App\Application\Controllers\DishController;
+use App\Application\DAO\FoodDAO;
+use App\Application\DAO\DishDAO;
 
 use Exception;
 
@@ -22,20 +22,20 @@ class SellDAO
 	private Connection $connection;
 
 	/**
-	 * @var DishController
+	 * @var DishDAO
 	 */
-	private DishController $dishController;
+	private DishDAO $dishDAO;
 
 	/**
-	 * @var FoodController
+	 * @var FoodDAO
 	 */
-	private FoodController $foodController;	
+	private FoodDAO $foodDAO;	
 
 	public function __construct()
 	{
 		$this->connection = new Connection();
-		$this->dishController = new DishController();
-		$this->foodController = new FoodController();
+		$this->dishDAO = new DishDAO();
+		$this->foodDAO = new FoodDAO();
 	}
 
 	/**
@@ -49,7 +49,7 @@ class SellDAO
 	{
 		$result = $this->sellWithTicket($items, $userId, $branchId);
 		foreach ($items as $item) {
-			$dishToSell = $this->dishController->getDishById($item['dish_id']);
+			$dishToSell = $this->dishDAO->getById($item['dish_id']);
 			// $result = $this->registerSell(intval($dishToSell->id), intval($item['quantity']), floatval($dishToSell->price), $userId, $branchId);
 			if ($dishToSell->is_combo) {
 				$this->extractDishesFromCombo(intval($dishToSell->id), intval($item['quantity']));
@@ -65,7 +65,7 @@ class SellDAO
 	{
 		$total = 0;
 		foreach ($items as $item) {
-			$total += $this->dishController->getDishById($item['dish_id'])->price * $item['quantity'];
+			$total += $this->dishDAO->getById($item['dish_id'])->price * $item['quantity'];
 		}
 		return $total;
 	}
@@ -94,7 +94,7 @@ class SellDAO
 		if ($ticket) {
 			$ticketId = $ticket->id;
 			foreach ($items as $item) {
-				$dish = $this->dishController->getDishById($item['dish_id']);
+				$dish = $this->dishDAO->getById($item['dish_id']);
 				$dataToInsert = [
 					"ticket_id" => $ticketId,
 					"dish_id" => $dish->id,
@@ -118,7 +118,7 @@ class SellDAO
 	 */
 	public function extractDishesFromCombo(int $comboId, int $quantity): void
 	{
-		$dishes = $this->dishController->getDishesByCombo($comboId);
+		$dishes = $this->dishDAO->getDishesByCombo($comboId);
 		foreach ($dishes as $dish) {
 			if ($dish->is_combo) {
 				$this->extractDishesFromCombo(intval($dish->id), $quantity);
@@ -158,7 +158,7 @@ class SellDAO
 	 */
 	private function subtractFood(int $foodId, float $quantity): bool
 	{		
-		$food = $this->foodController->getById($foodId);
+		$food = $this->foodDAO->getById($foodId);
 
 		$newQuantity = $food->quantity - $quantity;
 		$dataToUpdate = [
@@ -166,8 +166,8 @@ class SellDAO
 		];
 
 		if (($newQuantity <= $food->quantity_notif) && ($food->is_notif_sent == 0)) {
-			$branchController = new \App\Application\Controllers\BranchController();
-			$branch = $branchController->getById(intval($food->branch_id));
+			$branchDAO = new \App\Application\DAO\BranchDAO();
+			$branch = $branchDAO->getById(intval($food->branch_id));
 			$data = [
 				'subject' => "Notificación de: $branch->location",
 				'food_name' => $food->name,

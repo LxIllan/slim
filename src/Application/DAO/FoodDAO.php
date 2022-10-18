@@ -24,7 +24,7 @@ class FoodDAO extends DAO
 	 * @param int $branchId
 	 * @return Food[]
 	 */
-	public function getByBranch(int $branchId): array
+	public function getAll(int $branchId): array
 	{
 		$food = [];
 		$result = $this->connection
@@ -192,11 +192,11 @@ class FoodDAO extends DAO
 	public function getSold(int $branchId, ?string $from, ?string $to): array
 	{
 		$foodSold = [];
-		$dishController = new \App\Application\Controllers\DishController();
-		$soldDishes = $dishController->getSold($branchId, $from, $to);		
+		$dishDAO = new \App\Application\DAO\DishDAO();
+		$soldDishes = $dishDAO->getSold($branchId, $from, $to);		
 		
 		foreach ($soldDishes as $soldDish) {
-			$dish = $dishController->getDishById(intval($soldDish['id']), ['id', 'name', 'is_combo', 'serving', 'food_id']);
+			$dish = $dishDAO->getById(intval($soldDish['id']), ['id', 'name', 'is_combo', 'serving', 'food_id']);
 			$dish->quantity = $soldDish['quantity'];
 
 			if ($dish->is_combo) {
@@ -217,8 +217,8 @@ class FoodDAO extends DAO
 	 */
 	public function extractDishesFromCombo(int $comboId, int $quantity, array $foodSold): array
 	{
-		$dishController = new \App\Application\Controllers\DishController();
-		$dishes = $dishController->getDishesByCombo($comboId);
+		$dishDAO = new \App\Application\DAO\DishDAO();
+		$dishes = $dishDAO->getDishesByCombo($comboId);
 		foreach ($dishes as $dish) {
 			if ($dish->is_combo) {
 				$foodSold = $this->extractDishesFromCombo(intval($dish->id), $quantity, $foodSold);

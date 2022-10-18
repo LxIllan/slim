@@ -12,7 +12,6 @@ return function (App $app) {
 	/**
 	 * @api /categories
 	 * @method GET
-	 * @description Get all categories
 	 */
 	$app->get('/categories', function (Request $request, Response $response) {
 		$categoryController = new CategoryController();        
@@ -30,16 +29,8 @@ return function (App $app) {
 	});
 
 	/**
-	 * @api /categories
+	 * @api /categories/{id}/dishes
 	 * @method GET
-	 * @description Get all categories
 	 */
-	$app->get('/categories/dishes', function (Request $request, Response $response) {
-		$categoryController = new CategoryController();
-		$jwt = $request->getAttribute("token");
-		$params = $request->getQueryParams();
-		$dishes = $categoryController->getCategoriesWithDishes($jwt['branch_id'], boolval($params['all']) ?? false);
-		$response->getBody()->write(Util::encodeData($dishes, "categories"));
-		return $response->withHeader('Content-Type', 'application/json');
-	});
+	$app->get('/categories/{id}/dishes', \App\Application\Controllers\DishController::class . ':getDishesByCategory');
 };

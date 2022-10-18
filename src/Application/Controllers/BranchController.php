@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Application\Controllers;
 
 use App\Application\DAO\BranchDAO;
-use App\Application\Model\Branch;
+use App\Application\Helpers\Util;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\HttpException;
 
 class BranchController
 {
@@ -20,48 +24,85 @@ class BranchController
 	}
 
 	/**
-	 * @param array $data
-	 * @return Branch|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function create(array $data): Branch|null
+	public function create(Request $request, Response $response): Response
 	{
-		return $this->branchDAO->create($data);
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();        
+		$body["branch_id"] = $jwt["branch_id"];
+		$branch = $this->branchDAO->create($body);
+		$response->getBody()->write(Util::encodeData($branch, "preference", 201));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $id
-	 * @param array $columns
-	 * @return Branch|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function getById(int $id, array $columns = []): Branch|null
+	public function getById(Request $request, Response $response, array $args): Response
 	{
-		return $this->branchDAO->getById($id, $columns);
+		$branch = $this->branchDAO->getById(intval($args['id']));
+		if ($branch) {
+			$response->getBody()->write(Util::encodeData($branch, "branch"));
+		return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
+		}
 	}
 
 	/**
-	 * @return Branch[]
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function getBranches(): array
+	public function getAll(Request $request, Response $response): Response
 	{
-		return $this->branchDAO->getAll();
+		$jwt = $request->getAttribute("token");
+		if (!Util::isAdmin($jwt)) {
+			throw new HttpException($request, "You don't have permission to access this resource", 403);
+		}
+		$branches = $this->branchDAO->getAll();
+		$response->getBody()->write(Util::encodeData($branches, "branches"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $id
-	 * @param array $data
-	 * @return Branch|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function edit(int $id, array $data): Branch|null
+	public function edit(Request $request, Response $response, array $args): Response
 	{
-		return $this->branchDAO->edit($id, $data);
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$branch = $this->branchDAO->edit(intval($args['id']), $body);
+		if ($branch) {
+			$response->getBody()->write(Util::encodeData($branch, "branch"));
+		return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
+		}
 	}
 
 	/**
-	 * @param int $id
-	 * @return bool
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
 	 */
-	public function delete(int $id): bool
+	public function delete(Request $request, Response $response, array $args): Response
 	{
-		return $this->branchDAO->delete($id);
+		$jwt = $request->getAttribute("token");
+		if (!Util::isAdmin($jwt)) {
+			throw new HttpException($request, "You don't have permission to access this resource", 403);
+		}
+		$wasDeleted = $this->branchDAO->delete(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($wasDeleted, "response"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 }

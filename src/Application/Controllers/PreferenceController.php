@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Application\Controllers;
 
 use App\Application\DAO\PreferenceDAO;
-use App\Application\Model\Preference;
+use App\Application\Helpers\Util;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpNotFoundException;
 
 class PreferenceController
 {
@@ -20,58 +23,82 @@ class PreferenceController
 	}
 
 	/**
-	 * @param array $data
-	 * @return Preference|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function create(array $data): Preference|null
+	public function create(Request $request, Response $response): Response
+	{		
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();        
+		$body["branch_id"] = $jwt["branch_id"];
+		$branch = $this->preferenceDAO->create($body);
+		$response->getBody()->write(Util::encodeData($branch, "preference", 201));
+		return $response->withHeader('Content-Type', 'application/json');
+	}	
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
+	 */
+	public function getById(Request $request, Response $response, array $args): Response
 	{
-		return $this->preferenceDAO->create($data);
+		$jwt = $request->getAttribute("token");
+		if (preg_match('(\d)', $args['id'])) {
+			$preference = $this->preferenceDAO->getById(intval($args['id']));
+		} else {
+			$preference = $this->preferenceDAO->getByKey($args['id'], $jwt["branch_id"]);
+		}
+		if ($preference) {
+			$response->getBody()->write(Util::encodeData($preference, "preference"));
+		return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
+		}
+	}	
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
+	 */
+	public function getAll(Request $request, Response $response): Response
+	{
+		$jwt = $request->getAttribute("token");
+		$preferences = $this->preferenceDAO->getAll($jwt["branch_id"]);
+		$response->getBody()->write(Util::encodeData($preferences, "preferences"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $id
-	 * @return Preference|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function getById(int $id): Preference|null
+	public function edit(Request $request, Response $response, array $args): Response
 	{
-		return $this->preferenceDAO->getById($id);
+		$body = $request->getParsedBody();
+		$preference = $this->preferenceDAO->edit(intval($args['id']), $body);
+		if ($preference) {
+			$response->getBody()->write(Util::encodeData($preference, "preference"));
+			return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
+		}
 	}
 
 	/**
-	 * @param string $key
-	 * @param int $branchId
-	 * @return Preference
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
 	 */
-	public function getByKey(string $key, int $branchId): Preference
+	public function delete(Request $request, Response $response, array $args): Response
 	{
-		return $this->preferenceDAO->getByKey($key, $branchId);
-	}
-
-	/**
-	 * @param int $branchId
-	 * @return Preference[]
-	 */
-	public function getAll(int $branchId): array
-	{
-		return $this->preferenceDAO->getAll($branchId);
-	}
-
-	/**
-	 * @param int $id
-	 * @param array $data
-	 * @return Preference|null
-	 */
-	public function edit(int $id, array $data): Preference|null
-	{
-		return $this->preferenceDAO->edit($id, $data);
-	}
-
-	/**
-	 * @param int $id
-	 * @return bool
-	 */
-	public function delete(int $id): bool
-	{
-		return $this->preferenceDAO->delete($id);
+		$wasDeleted = $this->preferenceDAO->delete(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
-use App\Application\Helpers\Connection;
 use App\Application\Helpers\Util;
 use App\Application\Helpers\EmailTemplate;
 use App\Application\Model\Product;
@@ -165,8 +164,8 @@ class ProductDAO extends DAO
 		$product = $this->edit($productId, $dataToUpdateProduct);
 
 		if (($newQuantity <= $product->quantity_notif) && ($product->is_notif_sent == 0)) {
-			$branchController = new \App\Application\Controllers\BranchController();
-			$branch = $branchController->getById(intval($product->branch_id));
+			$branchDAO = new \App\Application\DAO\BranchDAO();
+			$branch = $branchDAO->getById(intval($product->branch_id));
 			$data = [
 				'subject' => "Notificación de: $branch->name",
 				'food_name' => $product->name,

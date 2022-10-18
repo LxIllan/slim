@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Controllers\BranchController;
+use App\Application\DAO\BranchDAO;
 use App\Application\Helpers\EmailTemplate;
 use App\Application\DAO\UserDAO;
 use App\Application\Model\User;
@@ -34,8 +34,8 @@ class UserController
 		$data['password'] = $password;
 		$user = $this->userDAO->create($data);
 		if ($user) {
-			$branchController = new BranchController();
-			$branch = $branchController->getById(intval($data['branch_id']));
+			$branchDAO = new BranchDAO();
+			$branch = $branchDAO->getById(intval($data['branch_id']));
 			$dataToSendEmail = [
 				'subject' => "Bienvenido a $branch->name",
 				'email' => $user->email,
@@ -110,8 +110,8 @@ class UserController
 		$password = Util::generatePassword();
 		$user = $this->userDAO->resetPassword($userId, $password);
 		if ($user) {
-			$branchController = new BranchController();
-			$branch = $branchController->getById(intval($user->branch_id));
+			$branchDAO = new BranchDAO();
+			$branch = $branchDAO->getById(intval($user->branch_id));
 			$dataToSendEmail = [
 				'subject' => "Restablecer contraseña - $branch->name",
 				'email' => $user->email,

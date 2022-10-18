@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Model\Food;
 use App\Application\DAO\FoodDAO;
-use App\Application\Controllers\DishController;
+use App\Application\Helpers\Util;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpNotFoundException;
 use Exception;
-use StdClass;
+
 class FoodController
 {
 	/**
@@ -22,17 +24,23 @@ class FoodController
 	}
 
 	/**
-	 * @param array $data
-	 * @return array
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function create(array $data): array
+	public function create(Request $request, Response $response): Response
 	{
-		$food = $this->foodDAO->create($data);
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$body['branch_id'] = $jwt['branch_id'];
+
+		$food = $this->foodDAO->create($body);
 		if ($food == null) {
 			throw new Exception("Error creating food.");
 		}
 
-		$dishData = [
+		$dishDAO = new \App\Application\DAO\DishDAO();
+		$dish = $dishDAO->create([
 			"name" => $food->name,
 			"price" => $food->cost,
 			"food_id" => $food->id,
@@ -40,127 +48,147 @@ class FoodController
 			"sell_individually" => 0,
 			"category_id" => $food->category_id,
 			"branch_id" => $food->branch_id
-		];
+		]);
+		
+		$response->getBody()->write(Util::encodeData(["food" => $food, "dish" => $dish], "food", 201));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
 
-		$dishController = new DishController();
-		$dish = $dishController->createDish($dishData);
-		if ($dish == null) {
-			return [
-				"food" => $food,
-				"dish" => "Error creating dish"
-			];
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
+	 */
+	public function getById(Request $request, Response $response, array $args): Response
+	{
+		$food = $this->foodDAO->getById(intval($args['id']));        
+		if ($food) {
+			$response->getBody()->write(Util::encodeData($food, "food"));
+			return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
 		}
-
-		return ["food" => $food, "dish" => $dish];
 	}
 
 	/**
-	 * @param int $id
-	 * @param array $columns
-	 * @return Food|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function getById(int $id, array $columns = []): Food|null
+	public function getAll(Request $request, Response $response): Response
 	{
-		return $this->foodDAO->getById($id, $columns);
+		$jwt = $request->getAttribute("token");
+		$foods = $this->foodDAO->getAll($jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($foods, "foods"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $branchId
-	 * @return Food[]
+	 * @param Request $request
+	 * @param Response $response	 
+	 * @return Response
 	 */
-	public function getByBranch(int $branchId): array
+	public function getAltered(Request $request, Response $response): Response
 	{
-		return $this->foodDAO->getByBranch($branchId);
+		$jwt = $request->getAttribute("token");
+		$params = $request->getQueryParams();
+		$from = $params['from'] ?? date('Y-m-d', strtotime("this week"));
+		$to = $params['to'] ?? date('Y-m-d', strtotime($from . "next Sunday"));
+		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
+		$alteredFoods = $this->foodDAO->getAltered($jwt['branch_id'], $from, $to, $getDeleted);
+		$response->getBody()->write(Util::encodeData($alteredFoods, "altered_foods"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $branchId
-	 * @param string|null $from
-	 * @param string|null $to
-	 * @param bool $isDeleted
-	 * @return StdClass
+	 * @param Request $request
+	 * @param Response $response	 
+	 * @return Response
 	 */
-	public function getAltered(int $branchId, ?string $from, ?string $to, bool $isDeleted): StdClass
+	public function getSupplied(Request $request, Response $response): Response
 	{
-		if ((is_null($from)) && (is_null($to))) {
-			$from = date('Y-m-d', strtotime("this week"));
-			$to = date('Y-m-d', strtotime($from . "next Sunday"));
+		$jwt = $request->getAttribute("token");
+		$params = $request->getQueryParams();
+		$from = $params['from'] ?? date('Y-m-d', strtotime("this week"));
+		$to = $params['to'] ?? date('Y-m-d', strtotime($from . "next Sunday"));
+		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
+		$suppliedFoods = $this->foodDAO->getAltered($jwt['branch_id'], $from, $to, $getDeleted);
+		$response->getBody()->write(Util::encodeData($suppliedFoods, "supplied_foods"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response	 
+	 * @return Response
+	 */
+	public function getSold(Request $request, Response $response): Response
+	{
+		$jwt = $request->getAttribute("token");
+		$params = $request->getQueryParams();
+		$from = $params['from'] ?? date("Y-m-d");
+		$to = $params['to'] ?? date("Y-m-d");
+		$foods = $this->foodDAO->getSold($jwt['branch_id'], $from, $to);
+		$response->getBody()->write(Util::encodeData($foods, "foods"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
+	 */
+	public function edit(Request $request, Response $response, array $args): Response
+	{
+		$body = $request->getParsedBody();
+		$food = $this->foodDAO->edit(intval($args['id']), $body);
+		if ($food) {
+			$response->getBody()->write(Util::encodeData($food, "food"));
+			return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
 		}
-		return $this->foodDAO->getAltered($branchId, $from, $to, $isDeleted);
 	}
 
 	/**
-	 * @param int $branchId
-	 * @param string|null $from
-	 * @param string|null $to
-	 * @param bool $isDeleted
-	 * @return StdClass
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
 	 */
-	public function getSupplied(int $branchId, ?string $from, ?string $to, bool $isDeleted): StdClass
+	public function delete(Request $request, Response $response, array $args): Response
 	{
-		if ((is_null($from)) && (is_null($to))) {
-			$from = date('Y-m-d', strtotime("this week"));
-			$to = date('Y-m-d', strtotime($from . "next Sunday"));
-		}
-		return $this->foodDAO->getSupplied($branchId, $from, $to, $isDeleted);
+		$wasDeleted = $this->foodDAO->delete(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $branchId
-	 * @param string|null $from
-	 * @param string|null $to
-	 * @return array
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
 	 */
-	public function getSold(int $branchId, ?string $from, ?string $to): array
+	public function supply(Request $request, Response $response, array $args): Response
 	{
-		if ((is_null($from)) && (is_null($to))) {
-			$from = date('Y-m-d');
-			$to = date('Y-m-d');
-		}
-		return $this->foodDAO->getSold($branchId, $from, $to);
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$food = $this->foodDAO->supply(intval($args['id']), floatval($body['quantity']), $jwt['user_id'], $jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($food, "food"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $id
-	 * @param array $data
-	 * @return Food|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
 	 */
-	public function edit(int $id, array $data): Food|null
+	public function alter(Request $request, Response $response, array $args): Response
 	{
-		return $this->foodDAO->edit($id, $data);
-	}
-
-	/**
-	 * @param int $id
-	 * @return bool
-	 */
-	public function delete(int $id): bool
-	{
-		return $this->foodDAO->delete($id);
-	}
-
-	/**
-	 * @param int $foodId
-	 * @param float $quantity
-	 * @param int $userId
-	 * @param int $branchId
-	 * @return Food
-	 */
-	public function supply(int $foodId, float $quantity, int $userId, int $branchId): Food
-	{
-		return $this->foodDAO->supply($foodId, $quantity, $userId, $branchId);
-	}
-
-	/**
-	 * @param int $foodId
-	 * @param float $quantity
-	 * @param string $reason
-	 * @param int $userId
-	 * @param int $branchId
-	 * @return Food
-	 */
-	public function alter(int $foodId, float $quantity, string $reason, int $userId, int $branchId): Food
-	{
-		return $this->foodDAO->alter($foodId, $quantity, $reason, $userId, $branchId);
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$food = $this->foodDAO->alter(intval($args['id']), floatval($body['quantity']), $body['reason'], $jwt['user_id'], $jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($food, "food"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 }

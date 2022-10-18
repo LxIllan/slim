@@ -35,4 +35,15 @@ return function (App $app) {
 		$response->getBody()->write(json_encode('log out'));
 		return $response->withHeader('Content-Type', 'application/json');
 	});
+
+	/**
+	 * @api /branches/num-ticket
+	 * @method GET
+	 * @description Get num ticket by branch id
+	 */
+	$app->get('branches/check-jwt', function (Request $request, Response $response) {
+		$jwt = $request->getAttribute("token");
+		$response->getBody()->write(Util::encodeData($jwt, "jwt"));
+		return $response->withHeader('Content-Type', 'application/json');
+	});
 };

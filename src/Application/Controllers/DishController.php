@@ -6,7 +6,10 @@ namespace App\Application\Controllers;
 
 use App\Application\Model\Dish;
 use App\Application\DAO\DishDAO;
-use stdClass;
+use App\Application\Helpers\Util;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpNotFoundException;
 class DishController
 {
 	/**
@@ -20,76 +23,109 @@ class DishController
 	}
 
 	/**
-	 * @param array $data
-	 * @return Dish|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function createDish(array $data): Dish|null
+	public function create(Request $request, Response $response): Response
 	{
-		return $this->dishDAO->create($data);
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$body["branch_id"] = $jwt["branch_id"];
+		$dish = $this->dishDAO->create($body);
+		$response->getBody()->write(Util::encodeData($dish, "dish", 201));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $id
-	 * @param array $columns
-	 * @return Dish|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function getDishById(int $id, array $columns = []): Dish|null
+	public function getById(Request $request, Response $response, array $args): Response
 	{
-		return $this->dishDAO->getById($id, $columns);
-	}
-
-	/**
-	 * @param int $foodId
-	 * @return Dish[]
-	 */
-	public function getDishesByFood(int $foodId)
-	{
-		return $this->dishDAO->getDishesByFood($foodId);
-	}
-
-	/**
-	 * @param int $categoryId
-	 * @param int $branchId
-	 * @param bool $getAll
-	 * @return Dish[]
-	 */
-	public function getDishesByCategory(int $categoryId, int $branchId, bool $getAll): array
-	{
-		return $this->dishDAO->getDishesByCategory($categoryId, $branchId, $getAll);
-	}
-
-	/**
-	 * @param int $branchId
-	 * @param string|null $from
-	 * @param string|null $to
-	 * @return array
-	 */
-	public function getSold(int $branchId, ?string $from, ?string $to): array
-	{
-		if ((is_null($from)) && (is_null($to))) {
-			$from = date('Y-m-d');
-			$to = date('Y-m-d');
+		$dish = $this->dishDAO->getById(intval($args['id']));        
+		if ($dish) {
+			$response->getBody()->write(Util::encodeData($dish, "dish"));
+			return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
 		}
-		return $this->dishDAO->getSold($branchId, $from, $to);
 	}
 
 	/**
-	 * @param int $id
-	 * @param array $data
-	 * @return Dish|null
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function editDish(int $id, array $data): Dish|null
+	public function getDishesByFood(Request $request, Response $response, array $args): Response
 	{
-		return $this->dishDAO->edit($id, $data);
+		$dishes = $this->dishDAO->getDishesByFood(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($dishes, "dishes"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
-	 * @param int $id
-	 * @return bool
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function deleteDish(int $id): bool
+	public function getDishesByCategory(Request $request, Response $response, array $args): Response
 	{
-		return $this->dishDAO->delete($id);
+		$jwt = $request->getAttribute("token");
+		$dishes = $this->dishDAO->getDishesByCategory(intval($args['id']), $jwt['branch_id'], false);
+		$response->getBody()->write(Util::encodeData($dishes, "dishes"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response	 
+	 * @return Response
+	 */
+	public function getSold(Request $request, Response $response): Response
+	{
+		$jwt = $request->getAttribute("token");
+		$params = $request->getQueryParams();
+		$from = $params['from'] ?? date("Y-m-d");
+		$to = $params['to'] ?? date("Y-m-d");
+		$dishes = $this->dishDAO->getSold($jwt['branch_id'], $from, $to);
+		$response->getBody()->write(Util::encodeData($dishes, "dishes"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
+	 */
+	public function edit(Request $request, Response $response, array $args): Response
+	{
+		$body = $request->getParsedBody();
+		$dish = $this->dishDAO->edit(intval($args['id']), $body);
+		if ($dish) {
+			$response->getBody()->write(Util::encodeData($dish, "dish"));
+			return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
+		}
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
+	 */
+	public function delete(Request $request, Response $response, array $args): Response
+	{
+		$wasDeleted = $this->dishDAO->delete(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
@@ -140,14 +176,17 @@ class DishController
 	}
 
 	/**
-	 * @param array $items
-	 * @param int $userId
-	 * @param int $branchId
-	 * @return mixed
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function sell(array $items, int $userId, int $branchId): mixed
+	public function sell(Request $request, Response $response): Response
 	{
 		$sellDAO = new \App\Application\DAO\SellDAO();
-		return $sellDAO->sell($items, $userId, $branchId);
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$result = $sellDAO->sell($body['items'], $jwt['user_id'], $jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($result, "response"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 }
