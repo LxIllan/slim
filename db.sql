@@ -19,6 +19,10 @@ INSERT INTO branch (name, location, logo_path, ticket_number, phone_number, note
 CREATE TABLE category (
     id TINYINT(3) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     category VARCHAR(30) NOT NULL,
+    branch_id TINYINT(3) UNSIGNED NOT NULL,
+    FOREIGN KEY (branch_id)
+    REFERENCES branch (id) 
+    ON DELETE CASCADE ON UPDATE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP NULL DEFAULT NULL
