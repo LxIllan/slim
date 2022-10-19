@@ -56,7 +56,7 @@ class ExpenseController
 
 	/**
 	 * @param Request $request
-	 * @param Response $response	 
+	 * @param Response $response
 	 * @return Response
 	 */
 	public function getHistory(Request $request, Response $response): Response

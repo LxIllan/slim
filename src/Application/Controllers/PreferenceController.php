@@ -57,7 +57,7 @@ class PreferenceController
 		} else {
 			throw new HttpNotFoundException($request);
 		}
-	}	
+	}
 
 	/**
 	 * @param Request $request
