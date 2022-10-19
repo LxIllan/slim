@@ -60,7 +60,7 @@ return function (App $app) {
 		* @api /foods/{id}/dishes
 		* @method GET
 		*/
-		$group->get('/foods/{id}/dishes', \App\Application\Controllers\DishController::class . ':getDishesByFood');
+		$group->get('/{id}/dishes', \App\Application\Controllers\DishController::class . ':getDishesByFood');
 
 		/**
 		 * @api /foods/{id}/supply
