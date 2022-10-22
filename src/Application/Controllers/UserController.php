@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\DAO\BranchDAO;
-use App\Application\Helpers\EmailTemplate;
-use App\Application\DAO\UserDAO;
-use App\Application\Model\User;
-use App\Application\Helpers\Util;
 use Exception;
+use App\Application\DAO\UserDAO;
+use App\Application\Helpers\Util;
+use App\Application\DAO\BranchDAO;
+use Slim\Exception\HttpNotFoundException;
+use App\Application\Helpers\EmailTemplate;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class UserController
 {
@@ -24,18 +26,25 @@ class UserController
 	}
 
 	/**
-	 * @param array $data
-	 * @return User|null
-	 * @throws Exception
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
 	 */
-	public function create(array $data): User|null
+	public function create(Request $request, Response $response): Response
 	{
+		$body = $request->getParsedBody();
+		if ($this->userDAO->existEmail($body['email']) != 0) {
+			throw new Exception('Email already exists.');
+		}
 		$password = Util::generatePassword();
-		$data['password'] = $password;
-		$user = $this->userDAO->create($data);
+		$jwt = $request->getAttribute("token");
+		$body["branch_id"] = $jwt["branch_id"];
+		$body["hash"] = password_hash($password, PASSWORD_DEFAULT);
+		$user = $this->userDAO->create($body);
 		if ($user) {
+			unset($user->hash);
 			$branchDAO = new BranchDAO();
-			$branch = $branchDAO->getById(intval($data['branch_id']));
+			$branch = $branchDAO->getById(intval($body['branch_id']));
 			$dataToSendEmail = [
 				'subject' => "Bienvenido a $branch->name",
 				'email' => $user->email,
@@ -46,69 +55,92 @@ class UserController
 			if (!Util::sendMail($dataToSendEmail, EmailTemplate::PASSWORD_TO_NEW_USER)) {
 				throw new Exception('Error to send password to new user.');
 			}
+			$response->getBody()->write(Util::encodeData($user, "user", 201));
+			return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new Exception('Error to create user.');
+		}		
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
+	 */
+	public function getById(Request $request, Response $response, array $args): Response
+	{
+		$user = $this->userDAO->getById(intval($args['id']));        
+		if ($user) {
+			unset($user->hash);
+			$response->getBody()->write(Util::encodeData($user, "user"));
+			return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
 		}
-		return $user;
 	}
 
 	/**
-	 * @param int $id
-	 * @return User
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function getUserById(int $id): User
+	public function edit(Request $request, Response $response, array $args): Response
 	{
-		return $this->userDAO->getUserById($id);
-	}
-
-	/**
-	 * @param int $id
-	 * @param array $data
-	 * @return User|null
-	 */
-	public function edit(int $id, array $data): User|null
-	{
-		return $this->userDAO->edit($id, $data);
-	}
-
-	/**
-	 * @param int $id
-	 * @return User|null
-	 */
-	public function delete(int $id): User|null
-	{
-		return $this->userDAO->delete($id);
-	}
-
-	/**
-	 * @param int $branchId
-	 * @return User[]
-	 */
-	public function getCashiers(int $branchId): array
-	{
-		return $this->userDAO->getCashiers($branchId);
-	}
-
-	/**
-	 * @param string $email
-	 * @param string $password
-	 * @return array|null
-	 */
-	public function validateSession(string $email, string $password): array|null
-	{
-		if (!Util::validateEmail($email)) {
-			throw new Exception('Invalid email');
+		$body = $request->getParsedBody();
+		if (isset($body['email']) && ($this->userDAO->existEmail($body['email']) != intval($args['id']))) {
+			throw new Exception('Email already exists.');
 		}
-		return $this->userDAO->validateSession($email, $password);
+		$user = $this->userDAO->edit(intval($args['id']), $body);
+		if ($user) {
+			unset($user->hash);
+			$response->getBody()->write(Util::encodeData($user, "user"));
+			return $response->withHeader('Content-Type', 'application/json');
+		} else {
+			throw new HttpNotFoundException($request);
+		}
 	}
 
 	/**
-	 * @param int $userId
-	 * @return bool
-	 * @throws Exception
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
 	 */
-	public function resetPassword(int $userId): bool
+	public function delete(Request $request, Response $response, array $args): Response
+	{
+		$wasDeleted = $this->userDAO->delete(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
+	 */
+	public function getAll(Request $request, Response $response): Response
+	{
+		$params = $request->getQueryParams();
+		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
+		$token = $request->getAttribute("token");
+		$users = $this->userDAO->getAll($token['branch_id'], $getDeleted);
+		$response->getBody()->write(Util::encodeData($users, "users"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
+	 */
+	public function resetPassword(Request $request, Response $response, array $args): Response
 	{
 		$password = Util::generatePassword();
-		$user = $this->userDAO->resetPassword($userId, $password);
+		$user = $this->userDAO->resetPassword(intval($args['id']), $password);
 		if ($user) {
 			$branchDAO = new BranchDAO();
 			$branch = $branchDAO->getById(intval($user->branch_id));
@@ -117,26 +149,15 @@ class UserController
 				'email' => $user->email,
 				'branch_name' => $branch->name,
 				'password' => $password,
-				'user_name' => "$user->name"
+				'username' => "$user->name"
 			];
 			if (!Util::sendMail($dataToSendEmail, EmailTemplate::RESET_PASSWORD)) {
 				throw new Exception('Error to send password to new user.');
 			}
-			return true;
+			$wasUpdated = true;
 		}
-		return false;
-	}
-
-	/**
-	 * @param string $email
-	 * @return bool
-	 */
-	public function existEmail(string $email): bool
-	{
-		return $this->userDAO->existEmail($email);
-	}
-
-	public function getSiguienteId() {
-		return $this->userDAO->getSiguienteId();
+		$wasUpdated = false;
+		$response->getBody()->write(Util::encodeData($wasUpdated, "response"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 }

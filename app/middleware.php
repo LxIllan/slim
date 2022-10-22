@@ -25,7 +25,6 @@ return function (App $app) {
 		"path" => [
 			"/branches",
 			"/categories",
-			"/cashiers",
 			"/combos",
 			"/dishes",
 			"/expenses",
@@ -34,7 +33,6 @@ return function (App $app) {
 			"/logout",
 			"/preferences",        
 			"/products",
-			"/profile",
 			"/sell",
 			"/special-dishes",
 			"/tickets",

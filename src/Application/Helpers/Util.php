@@ -8,12 +8,6 @@ use App\Application\Helpers\EmailTemplate;
 
 class Util
 {
-	public const DISHES_ID = 1;
-	public const COMBOS_ID = 2;
-	public const DRINKS_ID = 3;
-	public const DESSERTS_D = 4;
-	public const EXTRAS_ID = 5;
-
 	/**
 	 * @param array $data
 	 * @param string $table
@@ -297,12 +291,11 @@ class Util
 	 * @param mixed $data
 	 * @return void
 	 */
-	public static function setLog(string $pwd, string $message, mixed $data = ""): void
+	public static function setLog(string $message, mixed $data = ""): void
 	{
 		$file = __DIR__ . "/../../../logs/system.log";
-		file_put_contents($file, date("[D, d M Y H:i:s]") . " " .
-			"$message -> " . json_encode($data) . " " .
-			"file:" . $pwd . '/' . basename(__FILE__) . "\r\n",
+		file_put_contents($file, date("[D M d H:i:s]") . " " .
+			"$message -> " . json_encode($data) . "\r\n",
 			FILE_APPEND | LOCK_EX);
 	}
 }
