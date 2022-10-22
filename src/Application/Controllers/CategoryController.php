@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
+use Exception;
 use App\Application\DAO\CategoryDAO;
 use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -28,10 +29,8 @@ class CategoryController
 	 * @return Response
 	 */
 	public function create(Request $request, Response $response): Response
-	{		
-		$jwt = $request->getAttribute("token");
-		$body = $request->getParsedBody();        
-		$body["branch_id"] = $jwt["branch_id"];
+	{
+		$body = $request->getParsedBody();
 		$category = $this->categoryDAO->create($body);
 		$response->getBody()->write(Util::encodeData($category, "category", 201));
 		return $response->withHeader('Content-Type', 'application/json');
@@ -62,12 +61,12 @@ class CategoryController
 	public function getAll(Request $request, Response $response): Response
 	{
 		$params = $request->getQueryParams();
-		$jwt = $request->getAttribute("token");
 		if (isset($params['dishes']) && Util::strToBool($params['dishes'])) {
+			$jwt = $request->getAttribute("token");
 			$getAll = isset($params['all']) ? Util::strToBool($params['all']) : false;
 			$categories = $this->categoryDAO->getCategoriesWithDishes($jwt['branch_id'], $getAll);
 		} else {
-			$categories = $this->categoryDAO->getAll($jwt['branch_id']);
+			$categories = $this->categoryDAO->getAll();
 		}
 		$response->getBody()->write(Util::encodeData($categories, "categories"));
 		return $response->withHeader('Content-Type', 'application/json');
@@ -80,7 +79,7 @@ class CategoryController
 	 * @return Response
 	 */
 	public function edit(Request $request, Response $response, array $args): Response
-	{
+	{		
 		$body = $request->getParsedBody();
 		$category = $this->categoryDAO->edit(intval($args['id']), $body);
 		if ($category) {
@@ -98,6 +97,9 @@ class CategoryController
 	 */
 	public function delete(Request $request, Response $response, array $args): Response
 	{
+		if ($args['id'] == Util::COMBOS_CATEGORY) {
+			throw new Exception("You can't delete this category.");
+		}
 		$wasDeleted = $this->categoryDAO->delete(intval($args['id']));
 		$response->getBody()->write(Util::encodeData($wasDeleted, "deleted"));
 		return $response->withHeader('Content-Type', 'application/json');

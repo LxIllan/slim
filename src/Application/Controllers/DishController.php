@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Model\Dish;
 use App\Application\DAO\DishDAO;
 use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -205,6 +204,21 @@ class DishController
 		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
 		$result = $sellDAO->sell($body['items'], $jwt['user_id'], $jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($result, "response"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
+	 */
+	public function courtesy(Request $request, Response $response): Response
+	{
+		$sellDAO = new \App\Application\DAO\SellDAO();
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$result = $sellDAO->courtesy($body['items'], $body['reason'], $jwt['user_id'], $jwt['branch_id']);
 		$response->getBody()->write(Util::encodeData($result, "response"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}

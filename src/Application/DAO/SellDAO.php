@@ -38,6 +38,52 @@ class SellDAO
 		$this->foodDAO = new FoodDAO();
 	}
 
+
+	/**
+	 * @param array $items
+	 * @param string $reason
+	 * @param int $userId
+	 * @param int $branchId
+	 * @return bool
+	 */
+	public function courtesy(array $items, string $reason, int $userId, int $branchId) {
+		$result = false;
+		foreach ($items as $item) {
+			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['id', 'is_combo', 'serving', 'food_id', 'price']);
+			$result = $this->registerCourtesy(intval($dishToSell->id), intval($item['quantity']), floatval($dishToSell->price), $reason, $userId, $branchId);
+			if ($dishToSell->is_combo) {
+				$this->extractDishesFromCombo(intval($dishToSell->id), intval($item['quantity']));
+			} else {
+				$serving = $dishToSell->serving * $item['quantity'];
+				$this->subtractFood(intval($dishToSell->food_id), $serving);
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * @param int $dishId
+	 * @param int $quantity
+	 * @param float $price
+	 * @param string $reason
+	 * @param int $userId
+	 * @param int $branchId
+	 * @return bool
+	 */
+	private function registerCourtesy(int $dishId, int $quantity, float $price, string $reason, int $userId, int $branchId): bool
+	{
+		$dataToInsert = [
+			"dish_id" => $dishId,
+			"quantity" => $quantity,
+			"price" => $price,
+			"reason" => $reason,
+			"user_id" => $userId,
+			"branch_id" => $branchId
+		];
+		$query = Util::prepareInsertQuery($dataToInsert, 'courtesy');
+		return $this->connection->insert($query);
+	}
+
 	/**
 	 * @param array $items
 	 * @param int $userId
@@ -49,8 +95,7 @@ class SellDAO
 	{
 		$result = $this->sellWithTicket($items, $userId, $branchId);
 		foreach ($items as $item) {
-			$dishToSell = $this->dishDAO->getById($item['dish_id']);
-			// $result = $this->registerSell(intval($dishToSell->id), intval($item['quantity']), floatval($dishToSell->price), $userId, $branchId);
+			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['id', 'is_combo', 'serving', 'food_id']);
 			if ($dishToSell->is_combo) {
 				$this->extractDishesFromCombo(intval($dishToSell->id), intval($item['quantity']));
 			} else {
@@ -127,27 +172,6 @@ class SellDAO
 				$this->subtractFood(intval($dish->food_id), $serving);
 			}
 		}
-	}
-
-	/**
-	 * @param int $dishId
-	 * @param int $quantity
-	 * @param float $price
-	 * @param int $userId
-	 * @param int $branchId
-	 * @return bool
-	 */
-	private function registerSell(int $dishId, int $quantity, float $price, int $userId, int $branchId): bool
-	{
-		$dataToInsert = [
-			"dish_id" => $dishId,
-			"quantity" => $quantity,
-			"price" => $price,
-			"user_id" => $userId,
-			"branch_id" => $branchId
-		];
-		$query = Util::prepareInsertQuery($dataToInsert, 'sale');
-		return $this->connection->insert($query);
 	}
 
 	/**

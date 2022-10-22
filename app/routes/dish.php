@@ -44,4 +44,10 @@ return function (App $app) {
 	 * @method POST
 	 */
 	$app->post('/sell', DishController::class . ':sell');
+
+	/**
+	 * @api /courtesy
+	 * @method POST
+	 */
+	$app->post('/courtesy', DishController::class . ':courtesy');
 };

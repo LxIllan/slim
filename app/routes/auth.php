@@ -21,7 +21,7 @@ return function (App $app) {
 	 * @method GET
 	 * @description Get num ticket by branch id
 	 */
-	$app->get('branches/check-jwt', function (Request $request, Response $response) {
+	$app->get('/branches/check-jwt', function (Request $request, Response $response) {
 		$jwt = $request->getAttribute("token");
 		$response->getBody()->write(Util::encodeData($jwt, "jwt"));
 		return $response->withHeader('Content-Type', 'application/json');
