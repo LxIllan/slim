@@ -46,6 +46,7 @@ class PreferenceController
 	public function getById(Request $request, Response $response, array $args): Response
 	{
 		$jwt = $request->getAttribute("token");
+		Util::setLog(__DIR__, __DIR__);
 		if (preg_match('(\d)', $args['id'])) {
 			$preference = $this->preferenceDAO->getById(intval($args['id']));
 		} else {
@@ -53,7 +54,7 @@ class PreferenceController
 		}
 		if ($preference) {
 			$response->getBody()->write(Util::encodeData($preference, "preference"));
-		return $response->withHeader('Content-Type', 'application/json');
+			return $response->withHeader('Content-Type', 'application/json');
 		} else {
 			throw new HttpNotFoundException($request);
 		}

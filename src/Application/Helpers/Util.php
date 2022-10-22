@@ -291,4 +291,18 @@ class Util
 		$result = $connection->select($query);
 		return $result->num_rows > 0;
 	}
+
+	/**
+	 * @param string $message
+	 * @param mixed $data
+	 * @return void
+	 */
+	public static function setLog(string $pwd, string $message, mixed $data = ""): void
+	{
+		$file = __DIR__ . "/../../../logs/system.log";
+		file_put_contents($file, date("[D, d M Y H:i:s]") . " " .
+			"$message -> " . json_encode($data) . " " .
+			"file:" . $pwd . '/' . basename(__FILE__) . "\r\n",
+			FILE_APPEND | LOCK_EX);
+	}
 }

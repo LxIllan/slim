@@ -69,7 +69,7 @@ return function (App $app) {
 	 * @method POST
 	 * @description Reset cashier password
 	 */
-	$app->post('/cashiers/reset-password', function (Request $request, Response $response) {
+	$app->post('/user/reset-password', function (Request $request, Response $response) {
 		$userController = new UserController();
 		$body = $request->getParsedBody();
 		$wasUpdated = $userController->resetPassword(intval($body['user_id']));
