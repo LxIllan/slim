@@ -66,9 +66,6 @@ $routes($app);
 $routes = require __DIR__ . '/../app/routes/food.php';
 $routes($app);
 
-$routes = require __DIR__ . '/../app/routes/history.php';
-$routes($app);
-
 $routes = require __DIR__ . '/../app/routes/preference.php';
 $routes($app);
 

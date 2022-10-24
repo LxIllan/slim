@@ -211,7 +211,7 @@ class Util
 	 * @param mixed $data
 	 * @return void
 	 */
-	public static function setLog(string $message, mixed $data = ""): void
+	public static function log(string $message, mixed $data = null): void
 	{
 		$file = __DIR__ . "/../../../logs/system.log";
 		file_put_contents($file, date("[D M d H:i:s]") . " " .

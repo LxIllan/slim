@@ -42,7 +42,7 @@ class DishDAO extends DAO
 	public function getDishesByCombo(int $comboId): array
 	{
 		$dishes = [];
-		$result = $this->connection->select("SELECT dish_id FROM dishes_in_combo WHERE combo_id = $comboId");
+		$result = $this->connection->select("SELECT dish_id FROM dishes_in_combo WHERE combo_id = $comboId ORDER BY name");
 		while ($row = $result->fetch_assoc()) {
 			$dishes[] = $this->getById(intval($row['dish_id']));
 		}
@@ -58,14 +58,14 @@ class DishDAO extends DAO
 	public function getDishesByCategory(int $categoryId, int $branchId, bool $getAll): array
 	{
 		$dishes = [];
-		$query = <<<EOF
+		$query = <<<SQL
 			SELECT id 
 			FROM dish 
 			WHERE category_id = $categoryId 
 				AND branch_id = $branchId 
 				AND sell_individually = true
 				ORDER BY name
-		EOF;
+		SQL;
 		if ($getAll) {
 			$query = str_replace('AND sell_individually = true', '', $query);
 		}
@@ -164,21 +164,23 @@ class DishDAO extends DAO
 	 */
 	public function getSold(int $branchId, ?string $from, ?string $to): array
 	{
-		$dishesSold = [];
-		$ticketDAO = new \App\Application\DAO\TicketDAO();
-		$tickets = $ticketDAO->getAll($branchId, $from, $to)->items;
-		
-		foreach ($tickets as $ticket) {
-			foreach ($ticket["dishes"] as $dish) {
-				unset($dish["price"]);
-				$id = array_search(intval($dish["id"]), array_column($dishesSold, 'id'));
-				if ($id !== false) {
-					$dishesSold[$id]["quantity"] += $dish["quantity"];
-				} else {
-					$dishesSold[] = $dish;
-				}
-			}
-		}
+		$query = <<<SQL
+			SELECT dishes_in_ticket.dish_id, dish.name, SUM(dishes_in_ticket.quantity) AS quantity
+			FROM dishes_in_ticket
+			INNER JOIN dish ON dish.id = dishes_in_ticket.dish_id
+			WHERE dishes_in_ticket.ticket_id IN (
+				SELECT id 
+				FROM ticket 
+				WHERE branch_id = $branchId 
+				AND DATE(date) BETWEEN '$from' AND '$to'
+			)
+			GROUP BY dishes_in_ticket.dish_id
+		SQL;
+
+		$result = $this->connection->select($query);
+		$dishesSold = $result->fetch_all(MYSQLI_ASSOC);
+		$result->free();
+		usort($dishesSold, fn($a, $b) => strcmp($a["name"], $b["name"]));
 		return $dishesSold;
 	}
 }
