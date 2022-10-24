@@ -4,51 +4,41 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
+use StdClass;
 use Exception;
-use App\Application\DAO\DishDAO;
-use App\Application\DAO\FoodDAO;
 use App\Application\Helpers\Util;
-use App\Application\Model\Ticket;
 use App\Application\Helpers\Connection;
 use App\Application\Helpers\EmailTemplate;
 
-class SellDAO
+class CourtesyDAO
 {
+	/**
+	 * @var string $table
+	 */
+	protected string $table = 'courtesy';
 
 	/**
-	 * @var Connection $connection
+	 * @var Connection
 	 */
 	private Connection $connection;
-
-	/**
-	 * @var DishDAO
-	 */
-	private DishDAO $dishDAO;
-
-	/**
-	 * @var FoodDAO
-	 */
-	private FoodDAO $foodDAO;	
 
 	public function __construct()
 	{
 		$this->connection = new Connection();
-		$this->dishDAO = new DishDAO();
-		$this->foodDAO = new FoodDAO();
 	}
 
 	/**
 	 * @param array $items
+	 * @param string $reason
 	 * @param int $userId
 	 * @param int $branchId
-	 * @return Ticket|null
-	 * @throws Exception
+	 * @return bool
 	 */
-	public function sell(array $items, int $userId, int $branchId): Ticket|null
-	{
-		$result = $this->sellWithTicket($items, $userId, $branchId);
+	public function courtesy(array $items, string $reason, int $userId, int $branchId) {
+		$result = false;
 		foreach ($items as $item) {
-			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['id', 'is_combo', 'serving', 'food_id']);
+			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['id', 'is_combo', 'serving', 'food_id', 'price']);
+			$result = $this->registerCourtesy(intval($dishToSell->id), intval($item['quantity']), floatval($dishToSell->price), $reason, $userId, $branchId);
 			if ($dishToSell->is_combo) {
 				$this->extractDishesFromCombo(intval($dishToSell->id), intval($item['quantity']));
 			} else {
@@ -59,55 +49,63 @@ class SellDAO
 		return $result;
 	}
 
-	private function calcTotalFromDishes(array $items): float
+	/**
+	 * @param int $dishId
+	 * @param int $quantity
+	 * @param float $price
+	 * @param string $reason
+	 * @param int $userId
+	 * @param int $branchId
+	 * @return bool
+	 */
+	private function registerCourtesy(int $dishId, int $quantity, float $price, string $reason, int $userId, int $branchId): bool
 	{
-		$total = 0;
-		foreach ($items as $item) {
-			$total += $this->dishDAO->getById($item['dish_id'])->price * $item['quantity'];
-		}
-		return $total;
+		$dataToInsert = [
+			"dish_id" => $dishId,
+			"quantity" => $quantity,
+			"price" => $price,
+			"reason" => $reason,
+			"user_id" => $userId,
+			"branch_id" => $branchId
+		];
+		$query = Util::prepareInsertQuery($dataToInsert, 'courtesy');
+		return $this->connection->insert($query);
 	}
 
 	/**
-	 * @param array $items
-	 * @param int $userId
 	 * @param int $branchId
-	 * @return Ticket|null
-	 * @throws Exception
+	 * @param string $from
+	 * @param string $to
+	 * @param bool $isDeleted
+	 * @return StdClass
 	 */
-	public function sellWithTicket(array $items, int $userId, int $branchId): Ticket|null
+	public function getAll(int $branchId, string $from, string $to, bool $isDeleted): StdClass
 	{
-		$TicketDAO = new \App\Application\DAO\TicketDAO();
-		$numTicket = $TicketDAO->getNextNumber($branchId);
-		$total = $this->calcTotalFromDishes($items);
-		$data = [
-			"ticket_number" => $numTicket,
-			"total" => $total,
-			"branch_id" => $branchId,
-			"user_id" => $userId
-		];
-		$query = Util::prepareInsertQuery($data, 'ticket');
-		$this->connection->insert($query);
-		$ticket = $TicketDAO->getById($this->connection->getLastId());
-		if ($ticket) {
-			$ticketId = $ticket->id;
-			foreach ($items as $item) {
-				$dish = $this->dishDAO->getById($item['dish_id']);
-				$dataToInsert = [
-					"ticket_id" => $ticketId,
-					"dish_id" => $dish->id,
-					"quantity" => $item['quantity'],
-					"price" => $dish->price * $item['quantity']
-				];
-				$query = Util::prepareInsertQuery($dataToInsert, 'dishes_in_ticket');
-				if (!$this->connection->insert($query)) {
-					return null;
-				}
-			}
-		}
-		return $TicketDAO->getById(intval($ticket->id));
-	}
+		$courtesies = new StdClass();
 
+		$query = <<<SQL
+			SELECT courtesy.id, courtesy.date, dish.name, courtesy.quantity, courtesy.price, courtesy.reason,
+				CONCAT(user.name, ' ' , user.last_name) AS cashier
+			FROM courtesy
+			INNER JOIN dish ON courtesy.dish_id = dish.id
+			INNER JOIN user ON courtesy.user_id = user.id
+			WHERE courtesy.branch_id = $branchId
+				AND DATE(courtesy.date) BETWEEN '$from' AND '$to'
+				AND courtesy.is_deleted = false
+			ORDER BY courtesy.date DESC
+		SQL;
+
+		if ($isDeleted) {
+			$query = str_replace('courtesy.is_deleted = false', 'courtesy.is_deleted = true', $query);
+		}
+
+		$result = $this->connection->select($query);
+		$courtesies->length = $result->num_rows;
+		while ($row = $result->fetch_assoc()) {
+			$courtesies->items[] = $row;
+		}
+		return $courtesies;
+	}
 	/**
 	 * @param int $comboId
 	 * @param int $quantity

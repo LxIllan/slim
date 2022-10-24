@@ -26,6 +26,7 @@ return function (App $app) {
 			"/branches",
 			"/categories",
 			"/combos",
+			"/courtesies",
 			"/courtesy",
 			"/dishes",
 			"/expenses",

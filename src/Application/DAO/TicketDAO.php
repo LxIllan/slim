@@ -80,7 +80,7 @@ class TicketDAO
 			JOIN user ON ticket.user_id = user.id
 			WHERE ticket.branch_id = $branchId
 				AND DATE(ticket.date) BETWEEN '$from' AND '$to'
-				ORDER BY date DESC
+				ORDER BY ticket.date DESC
 		SQL;
 
 		$result = $this->connection->select($query);
@@ -106,26 +106,5 @@ class TicketDAO
 			$tickets->items[] = $item;
 		}
 		return $tickets;
-	} 
-
-	/**
-	 * @param string $column
-	 * @param string $table
-	 * @param int $branchId
-	 * @param string $from
-	 * @param string $to
-	 * @return float
-	 */
-	private function getSumFromTable(string $column, string $table, int $branchId, string $from, string $to): float
-	{
-		$query = <<<SQL
-			SELECT SUM($column) 
-			FROM $table 
-			WHERE DATE(date) >= '$from'
-				AND DATE(date) <= '$to'
-				AND branch_id = $branchId
-		SQL;
-		$row = $this->connection->select($query)->fetch_array();
-		return floatval($row[0]);
-	}
+	} 	
 }

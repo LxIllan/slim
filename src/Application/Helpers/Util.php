@@ -17,25 +17,21 @@ class Util
 	 */
 	public static function prepareInsertQuery(array $data, string $table): string
 	{
-		$query = "INSERT INTO {$table}(";
+		$query = "INSERT INTO $table(";
 
 		foreach ($data as $key => $value) {
-			$query .= "`{$key}`, ";
+			$query .= "`$key`,";
 		}
 
-		$query = rtrim($query, ", ");
+		$query = rtrim($query, ",");
 		$query .= ") VALUES(";
 
 		foreach ($data as $key => $value) {
-			if (is_string($value)) {
-				$query .= "'{$value}', ";
-			} else {
-				$query .= "{$value}, ";
-			}
+			$query .= "'$value',";
 		}
 
-		$query = rtrim($query, ", ");
-		$query .= ");";
+		$query = rtrim($query, ",");
+		$query .= ")";
 		return $query;
 	}
 
@@ -50,15 +46,11 @@ class Util
 		$query = "UPDATE $table SET";
 
 		foreach ($data as $key => $value) {
-			if (is_string($value)) {
-				$query .= " `$key` = '$value',";
-			} else {
-				$query .= " `$key` = $value,";
-			}
+			$query .= " `$key` = '$value',";
 		}
 
 		$query = rtrim($query, ",");
-		$query .= " WHERE id = {$id}";
+		$query .= " WHERE id = $id";
 
 		return $query;
 	}

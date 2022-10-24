@@ -165,8 +165,8 @@ class DishDAO extends DAO
 	public function getSold(int $branchId, ?string $from, ?string $to): array
 	{
 		$dishesSold = [];
-		$ticketController = new \App\Application\Controllers\TicketController();
-		$tickets = $ticketController->getAll($branchId, $from, $to)->items;
+		$ticketDAO = new \App\Application\DAO\TicketDAO();
+		$tickets = $ticketDAO->getAll($branchId, $from, $to)->items;
 		
 		foreach ($tickets as $ticket) {
 			foreach ($ticket["dishes"] as $dish) {
