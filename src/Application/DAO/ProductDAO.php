@@ -26,7 +26,7 @@ class ProductDAO extends DAO
 	 * @param int $branchId
 	 * @return array
 	 */
-	public function getByBranch(int $branchId): array
+	public function getAll(int $branchId): array
 	{
 		$dishes = [];
 		$result = $this->connection
