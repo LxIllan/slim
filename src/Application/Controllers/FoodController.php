@@ -113,7 +113,7 @@ class FoodController
 		$from = $params['from'] ?? date('Y-m-d', strtotime("this week"));
 		$to = $params['to'] ?? date('Y-m-d', strtotime($from . "next Sunday"));
 		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
-		$suppliedFoods = $this->foodDAO->getAltered($jwt['branch_id'], $from, $to, $getDeleted);
+		$suppliedFoods = $this->foodDAO->getSupplied($jwt['branch_id'], $from, $to, $getDeleted);
 		$response->getBody()->write(Util::encodeData($suppliedFoods, "supplied_foods"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
