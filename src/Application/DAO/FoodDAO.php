@@ -18,7 +18,30 @@ class FoodDAO extends DAO
 	public function __construct()
 	{
 		parent::__construct();
-	}	
+	}
+
+	/**
+	 * @param int $id
+	 * @return bool
+	 */
+	public function delete(int $id): bool
+	{
+		$data = [
+			'is_deleted' => 1,
+			'deleted_at' => date('Y-m-d H:i:s')
+		];
+
+		$query = Util::prepareUpdateQuery($id, $data, $this->table);
+		if ($this->connection->update($query)) {
+			$dishDAO = new DishDAO();
+			$dishes = $dishDAO->getDishesByFood($id);
+			foreach ($dishes as $dish) {
+				$dishDAO->delete(intval($dish->id));
+			}
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * @param int $branchId
@@ -28,7 +51,7 @@ class FoodDAO extends DAO
 	{
 		$food = [];
 		$result = $this->connection
-			->select("SELECT id FROM $this->table WHERE branch_id = $branchId ORDER BY name");
+			->select("SELECT id FROM $this->table WHERE branch_id = $branchId AND is_deleted = 0 ORDER BY name");
 		while ($row = $result->fetch_array()) {
 			$food[] = $this->getById(intval($row['id']));
 		}
