@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
-use App\Application\Helpers\Util;
-use App\Application\Model\Food;
 use StdClass;
-
+use Exception;
+use App\Application\Model\Food;
+use App\Application\Helpers\Util;
 class FoodDAO extends DAO
 {
 	/**
@@ -104,7 +104,7 @@ class FoodDAO extends DAO
 	{
 		$food = [];
 		$result = $this->connection
-			->select("SELECT id FROM $this->food WHERE branch_id = $branchId AND is_showed_in_index = 1 ORDER BY name");
+			->select("SELECT id FROM $this->food WHERE branch_id = $branchId AND show_in_index = 1 ORDER BY name");
 		while ($row = $result->fetch_array()) {
 			$food[] = $this->getById(intval($row['id']));
 		}
@@ -139,6 +139,42 @@ class FoodDAO extends DAO
 			"quantity" => $newQuantity
 		];
 		return $this->edit($foodId, $dataToUpdate);
+	}
+
+	/**
+	 * @param int $id
+	 * @param string $table
+	 * @return bool
+	 */
+	public function cancelSuppliedOrAltered(int $id, string $table): bool
+	{
+		$table = "${table}_food";		
+		$suppliedFood = $this->connection->select("SELECT * FROM $table WHERE id = $id")->fetch_object();
+		
+		if (is_null($suppliedFood)) {
+			throw new Exception("Register not found.");
+		}
+		
+		if ($suppliedFood->is_deleted) {
+			throw new Exception("This register has already been cancelled.");
+		}
+		
+		$food = $this->getById(intval($suppliedFood->food_id));
+
+		$suppliedFood->quantity = floatval($suppliedFood->quantity) * -1;
+		$newQuantity = $food->quantity + $suppliedFood->quantity;
+		
+		$dataToUpdate = [
+			"quantity" => $newQuantity
+		];
+		$this->edit(intval($food->id), $dataToUpdate);
+
+		$dataToUpdate = [
+			"is_deleted" => 1,
+			"deleted_at" => date('Y-m-d H:i:s')
+		];
+		$query = Util::prepareUpdateQuery($id, $dataToUpdate, $table);
+		return $this->connection->update($query);
 	}
 
 	/**

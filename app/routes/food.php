@@ -73,5 +73,17 @@ return function (App $app) {
 		 * @method PUT
 		 */
 		$group->put('/{id}/alter', FoodController::class . ':alter');
+
+		/**
+		 * @api /foods/altered/{id}
+		 * @method DELETE
+		 */
+		$group->delete('/altered/{id}', FoodController::class . ':cancelSuppliedOrAltered');
+
+		/**
+		 * @api /foods/supplied/{id}
+		 * @method DELETE
+		 */	
+		$group->delete('/supplied/{id}', FoodController::class . ':cancelSuppliedOrAltered');
 	});
 };
