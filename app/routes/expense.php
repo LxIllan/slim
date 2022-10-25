@@ -20,7 +20,7 @@ return function (App $app) {
 		 * @api /expenses/history
 		 * @method GET
 		 */
-		$group->get('/history', ExpenseController::class . ':getHistory');
+		$group->get('/history', ExpenseController::class . ':getAll');
 
 		/**
 		 * @api /expenses/{id}

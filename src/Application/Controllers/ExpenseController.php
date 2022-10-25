@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\DAO\ExpenseDAO;
 use App\Application\Helpers\Util;
+use App\Application\DAO\ExpenseDAO;
+use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpNotFoundException;
 class ExpenseController
 {
 	/**
@@ -59,7 +59,7 @@ class ExpenseController
 	 * @param Response $response
 	 * @return Response
 	 */
-	public function getHistory(Request $request, Response $response): Response
+	public function getAll(Request $request, Response $response): Response
 	{
 		$jwt = $request->getAttribute("token");
 		$params = $request->getQueryParams();
@@ -67,7 +67,7 @@ class ExpenseController
 		$to = $params['to'] ?? date("Y-m-d");
 		$reason = $params['reason'] ?? '';
 		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
-		$expenses = $this->expenseDAO->getHistory($jwt['branch_id'], $from, $to, $reason, $getDeleted);
+		$expenses = $this->expenseDAO->getAll($jwt['branch_id'], $from, $to, $reason, $getDeleted);
 		$response->getBody()->write(Util::encodeData($expenses, "expenses"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}

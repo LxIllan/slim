@@ -77,11 +77,15 @@ class CourtesyDAO
 	 * @param string $from
 	 * @param string $to
 	 * @param bool $isDeleted
-	 * @return StdClass
+	 * @return StdClass|array
 	 */
-	public function getAll(int $branchId, string $from, string $to, bool $isDeleted): StdClass
+	public function getAll(int $branchId, string $from, string $to, bool $isDeleted): StdClass|array
 	{
-		$courtesies = new StdClass();
+		$total = Util::getSumFromTable($this->table, 'price', $branchId, $from, $to, "courtesy.is_deleted = '$isDeleted'");
+
+		if ($total == 0) {
+			return ['length' => 0];
+		}
 
 		$query = <<<SQL
 			SELECT courtesy.id, courtesy.date, dish.name, courtesy.quantity, courtesy.price, courtesy.reason,
@@ -91,21 +95,19 @@ class CourtesyDAO
 			INNER JOIN user ON courtesy.user_id = user.id
 			WHERE courtesy.branch_id = $branchId
 				AND DATE(courtesy.date) BETWEEN '$from' AND '$to'
-				AND courtesy.is_deleted = false
+				AND courtesy.is_deleted = '$isDeleted'
 			ORDER BY courtesy.date DESC
 		SQL;
-
-		if ($isDeleted) {
-			$query = str_replace('courtesy.is_deleted = false', 'courtesy.is_deleted = true', $query);
-		}
-
+		
+		$std = new StdClass();
 		$result = $this->connection->select($query);
-		$courtesies->length = $result->num_rows;
-		while ($row = $result->fetch_assoc()) {
-			$courtesies->items[] = $row;
-		}
-		return $courtesies;
+		$std->length = $result->num_rows;
+		$std->total = $total;
+		$std->items = $result->fetch_all(MYSQLI_ASSOC);
+		$result->free();
+		return $std;
 	}
+
 	/**
 	 * @param int $comboId
 	 * @param int $quantity

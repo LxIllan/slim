@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\DAO;
 
 use StdClass;
+use App\Application\Helpers\Util;
 
 class ExpenseDAO extends DAO
 {
@@ -16,7 +17,7 @@ class ExpenseDAO extends DAO
 	public function __construct()
 	{
 		parent::__construct();
-	}	
+	}
 
 	/**
 	 * @param int $branchId
@@ -26,10 +27,13 @@ class ExpenseDAO extends DAO
 	 * @param bool $isDeleted
 	 * @return StdClass
 	 */
-	public function getHistory(int $branchId, string $from, string $to, string $reason, bool $isDeleted): StdClass
+	public function getAll(int $branchId, string $from, string $to, string $reason, bool $isDeleted): StdClass
 	{
-		$expenses = new StdClass();
-		$expenses->amount = 0;        
+		$total = Util::getSumFromTable($this->table, 'amount', $branchId, $from, $to, "expense.is_deleted = '$isDeleted'");
+
+		if ($total == 0) {
+			return ['length' => 0];
+		}
 
 		$query = <<<SQL
 			SELECT expense.id, expense.date, expense.amount, expense.reason, 
@@ -37,29 +41,18 @@ class ExpenseDAO extends DAO
 			FROM expense
 			JOIN user ON expense.user_id = user.id
 			WHERE expense.branch_id = $branchId
-				AND DATE(expense.date) >= '$from'
-				AND DATE(expense.date) <= '$to'
+				AND DATE(expense.date) BETWEEN '$from' AND '$to'
 				AND expense.reason LIKE '%$reason%'
-				AND expense.is_deleted = false
+				AND expense.is_deleted = '$isDeleted'
 			ORDER BY date DESC
 		SQL;
 
-		if ($isDeleted) {
-			$query = str_replace('expense.is_deleted = false', 'expense.is_deleted = true', $query);
-		}
-
+		$std = new StdClass();
 		$result = $this->connection->select($query);
-		$expenses->length = $result->num_rows;
-
-		if ($expenses->length == 0) {
-			$expenses->items = [];
-			return $expenses;
-		}
-
-		while ($row = $result->fetch_assoc()) {
-			$expenses->items[] = $row;
-			$expenses->amount += floatval($row['amount']);
-		}
-		return $expenses;
+		$std->length = $result->num_rows;
+		$std->total = $total;
+		$std->items = $result->fetch_all(MYSQLI_ASSOC);
+		$result->free();
+		return $std;
 	}
 }
