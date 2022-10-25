@@ -40,71 +40,33 @@ class FoodDAO extends DAO
 	 * @param string $from
 	 * @param string $to
 	 * @param bool $isDeleted
+	 * @param string $table
 	 * @return StdClass
 	 */
-	public function getAltered(int $branchId, string $from, string $to, bool $isDeleted): StdClass
+	public function getSuppliedOrAltered(int $branchId, string $from, string $to, bool $isDeleted, string $table): StdClass
 	{
-		$alteredFood = new StdClass();;
+		$table = "${table}_food";
+		$reason = (str_contains($table, 'altered')) ? 'altered_food.reason,' : '';
 
 		$query = <<<SQL
-			SELECT altered_food.id, altered_food.date, food.name, altered_food.quantity, altered_food.reason,
-				altered_food.new_quantity, altered_food.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
-			FROM altered_food
-			INNER JOIN food ON food.id = altered_food.food_id
-			INNER JOIN user ON user.id = altered_food.user_id
+			SELECT $table.id, $table.date, food.name, $table.quantity, $reason
+				$table.new_quantity, $table.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
+			FROM $table
+			INNER JOIN food ON food.id = $table.food_id
+			INNER JOIN user ON user.id = $table.user_id
 			WHERE food.branch_id = $branchId 
-				AND DATE(altered_food.date) BETWEEN '$from' AND '$to'
-				AND altered_food.is_deleted = false
-			ORDER BY altered_food.date DESC
+				AND DATE($table.date) BETWEEN '$from' AND '$to'
+				AND $table.is_deleted = '$isDeleted'
+			ORDER BY $table.date DESC
 		SQL;
-		
-		if ($isDeleted) {
-			$query = str_replace('AND altered_food.is_deleted = false', 'AND altered_food.is_deleted = true', $query);
-		}
 
+		$std = new StdClass();
 		$result = $this->connection->select($query);
-
-		$alteredFood->length = $result->num_rows;
-		while ($row = $result->fetch_assoc()) {
-			$alteredFood->items[] = $row;
-		}
-		return $alteredFood;
-	}
-
-	/**
-	 * @param int $branchId
-	 * @param string $from
-	 * @param string $to
-	 * @param bool $isDeleted
-	 * @return StdClass
-	 */
-	public function getSupplied(int $branchId, string $from, string $to, bool $isDeleted): StdClass
-	{
-		$suppliedFood = new StdClass();
-
-		$query = <<<SQL
-			SELECT supplied_food.id, supplied_food.date, food.name, supplied_food.quantity, 
-				supplied_food.new_quantity, supplied_food.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
-			FROM supplied_food
-			INNER JOIN food ON food.id = supplied_food.food_id
-			INNER JOIN user ON user.id = supplied_food.user_id
-			WHERE food.branch_id = $branchId 
-				AND DATE(supplied_food.date) BETWEEN '$from' AND '$to'
-				AND supplied_food.is_deleted = false
-			ORDER BY supplied_food.date DESC
-		SQL;
-		
-		if ($isDeleted) {
-			$query = str_replace('AND supplied_food.is_deleted = false', 'AND supplied_food.is_deleted = true', $query);
-		}
-
-		$result = $this->connection->select($query);
-		$suppliedFood->length = $result->num_rows;
-		while ($row = $result->fetch_assoc()) {
-			$suppliedFood->items[] = $row;
-		}
-		return $suppliedFood;
-	}
+		$std->length = $result->num_rows;
+		$std->items = $result->fetch_all(MYSQLI_ASSOC);
+		$result->free();
+		return $std;
+	}	
 
 	/**
 	 * @param int $branchId
@@ -193,7 +155,7 @@ class FoodDAO extends DAO
 	{
 		$foodSold = [];
 		$dishDAO = new \App\Application\DAO\DishDAO();
-		$soldDishes = $dishDAO->getSold($branchId, $from, $to);		
+		$soldDishes = $dishDAO->getSold($branchId, $from, $to);
 		
 		foreach ($soldDishes as $soldDish) {
 			$dish = $dishDAO->getById(intval($soldDish['id']), ['id', 'name', 'is_combo', 'serving', 'food_id']);

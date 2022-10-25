@@ -89,32 +89,17 @@ class FoodController
 	 * @param Response $response	 
 	 * @return Response
 	 */
-	public function getAltered(Request $request, Response $response): Response
+	public function getSuppliedOrAltered(Request $request, Response $response): Response
 	{
 		$jwt = $request->getAttribute("token");
 		$params = $request->getQueryParams();
 		$from = $params['from'] ?? date('Y-m-d', strtotime("this week"));
 		$to = $params['to'] ?? date('Y-m-d', strtotime($from . "next Sunday"));
 		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
-		$alteredFoods = $this->foodDAO->getAltered($jwt['branch_id'], $from, $to, $getDeleted);
-		$response->getBody()->write(Util::encodeData($alteredFoods, "altered_foods"));
-		return $response->withHeader('Content-Type', 'application/json');
-	}
-
-	/**
-	 * @param Request $request
-	 * @param Response $response	 
-	 * @return Response
-	 */
-	public function getSupplied(Request $request, Response $response): Response
-	{
-		$jwt = $request->getAttribute("token");
-		$params = $request->getQueryParams();
-		$from = $params['from'] ?? date('Y-m-d', strtotime("this week"));
-		$to = $params['to'] ?? date('Y-m-d', strtotime($from . "next Sunday"));
-		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
-		$suppliedFoods = $this->foodDAO->getSupplied($jwt['branch_id'], $from, $to, $getDeleted);
-		$response->getBody()->write(Util::encodeData($suppliedFoods, "supplied_foods"));
+		$uri = explode('/', $request->getUri()->getPath());
+		$option = end($uri);
+		$suppliedFoods = $this->foodDAO->getSuppliedOrAltered($jwt['branch_id'], $from, $to, $getDeleted, $option);
+		$response->getBody()->write(Util::encodeData($suppliedFoods, "${option}_foods"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 

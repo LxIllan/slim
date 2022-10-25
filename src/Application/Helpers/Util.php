@@ -4,11 +4,22 @@ declare(strict_types=1);
 
 namespace App\Application\Helpers;
 
+use \stdClass;
 use App\Application\Helpers\EmailTemplate;
 
 class Util
 {
 	public const COMBOS_CATEGORY = 1;
+
+	/**
+	 * @param int $id
+	 * @param string $table
+	 * @return string
+	 */
+	public static function prepareDeleteQuery(int $id, string $table): string
+	{
+		return "DELETE FROM $table WHERE id = $id";
+	}
 
 	/**
 	 * @param array $data
@@ -33,7 +44,7 @@ class Util
 		$query = rtrim($query, ",");
 		$query .= ")";
 		return $query;
-	}
+	}	
 
 	/**
 	 * @param int $id
@@ -53,17 +64,7 @@ class Util
 		$query .= " WHERE id = $id";
 
 		return $query;
-	}
-
-	/**
-	 * @param int $id
-	 * @param string $table
-	 * @return string
-	 */
-	public static function prepareDeleteQuery(int $id, string $table): string
-	{
-		return "DELETE FROM $table WHERE id = $id";
-	}
+	}	
 
 	/**
 	 * @param array $data
@@ -169,23 +170,45 @@ class Util
 		return boolval($jwt['root']);
 	}
 
+	// /**
+	//  * @param int $id
+	//  * @param array $data
+	//  * @param string $table
+	//  * @return stdClass
+	//  */
+	// public static function getHistory(string $query): StdClass
+	// {
+	// 	$connection = new \App\Application\Helpers\Connection();
+	// 	$std = new StdClass();
+		
+	// 	$result = $connection->select($query);
+	// 	$std->length = $result->num_rows;
+	// 	$std->items = $result->fetch_all(MYSQLI_ASSOC);
+	// 	$result->free();
+	// 	return $std;
+	// }
+
 	/**
 	 * @param string $column
 	 * @param string $table
 	 * @param int $branchId
 	 * @param string $from
 	 * @param string $to
+	 * @param string $condition
 	 * @return float
 	 */
-	public static function getSumFromTable(string $column, string $table, int $branchId, string $from, string $to): float
+	public static function getSumFromTable(string $table, string $column, int $branchId, string $from, string $to, string $condition = ''): float
 	{
+		if (strlen($condition) > 0) {
+			$condition = "AND $condition";
+		}
 		$connection = new \App\Application\Helpers\Connection();
 		$query = <<<SQL
 			SELECT SUM($column)
 			FROM $table
-			WHERE DATE(date) >= '$from'
-				AND DATE(date) <= '$to'
+			WHERE DATE($table.date) BETWEEN '$from' AND '$to'
 				AND branch_id = $branchId
+				$condition
 		SQL;
 		$row = $connection->select($query)->fetch_array();
 		return floatval($row[0]);

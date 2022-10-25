@@ -33,8 +33,8 @@ class CourtesyController
 		$from = $params['from'] ?? date("Y-m-d");
 		$to = $params['to'] ?? date("Y-m-d");
 		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
-		$tickets = $this->courtesyDAO->getAll($jwt['branch_id'], $from, $to, $getDeleted);
-		$response->getBody()->write(Util::encodeData($tickets, "tickets"));
+		$courtesies = $this->courtesyDAO->getAll($jwt['branch_id'], $from, $to, $getDeleted);
+		$response->getBody()->write(Util::encodeData($courtesies, "courtesies"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 

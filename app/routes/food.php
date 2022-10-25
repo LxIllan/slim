@@ -24,13 +24,13 @@ return function (App $app) {
 		 * @api /foods/altered
 		 * @method GET
 		 */
-		$group->get('/altered', FoodController::class . ':getAltered');
+		$group->get('/altered', FoodController::class . ':getSuppliedOrAltered');
 
 		/**
 		 * @api /foods/supplied
 		 * @method GET
 		 */	
-		$group->get('/supplied', FoodController::class . ':getSupplied');
+		$group->get('/supplied', FoodController::class . ':getSuppliedOrAltered');
 
 		/**
 		 * @api /foods/sold
