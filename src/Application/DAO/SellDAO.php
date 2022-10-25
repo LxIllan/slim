@@ -63,7 +63,7 @@ class SellDAO
 	{
 		$total = 0;
 		foreach ($items as $item) {
-			$total += $this->dishDAO->getById($item['dish_id'])->price * $item['quantity'];
+			$total += $this->dishDAO->getById($item['dish_id'], ['price'])->price * $item['quantity'];
 		}
 		return $total;
 	}

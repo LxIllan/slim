@@ -32,7 +32,16 @@ class FoodDAO extends DAO
 				'deleted_at' => date('Y-m-d H:i:s')
 			];
 			$query = Util::prepareUpdateQuery($id, $data, $this->table);
-			return $this->connection->update($query);
+			if ($this->connection->update($query)) {
+				$dishDAO = new DishDAO();
+				$dishes = $dishDAO->getDishesByFood($id);
+				foreach ($dishes as $dish) {
+					$dishDAO->delete(intval($dish->id));
+				}
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			$query = Util::prepareDeleteQuery($id, $this->table);
 			return $this->connection->delete($query);
