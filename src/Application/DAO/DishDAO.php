@@ -42,10 +42,11 @@ class DishDAO extends DAO
 	public function getDishesByCombo(int $comboId): array
 	{
 		$dishes = [];
-		$result = $this->connection->select("SELECT dish_id FROM dishes_in_combo WHERE combo_id = $comboId ORDER BY name");
+		$result = $this->connection->select("SELECT dish_id FROM dishes_in_combo WHERE combo_id = $comboId");
 		while ($row = $result->fetch_assoc()) {
 			$dishes[] = $this->getById(intval($row['dish_id']));
 		}
+		usort($dishes, fn($a, $b) => strcmp($a->name, $b->name));
 		return $dishes;
 	}
 
