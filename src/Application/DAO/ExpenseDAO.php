@@ -25,9 +25,9 @@ class ExpenseDAO extends DAO
 	 * @param string $to
 	 * @param string $reason
 	 * @param bool $isDeleted
-	 * @return StdClass
+	 * @return StdClass|array
 	 */
-	public function getAll(int $branchId, string $from, string $to, string $reason, bool $isDeleted): StdClass
+	public function getAll(int $branchId, string $from, string $to, string $reason, bool $isDeleted): StdClass|array
 	{
 		$total = Util::getSumFromTable($this->table, 'amount', $branchId, $from, $to, "expense.is_deleted = '$isDeleted'");
 
