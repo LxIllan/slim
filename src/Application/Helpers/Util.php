@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Helpers;
 
-use \stdClass;
+use Slim\Psr7\UploadedFile;
 use App\Application\Helpers\EmailTemplate;
 
 class Util
@@ -64,7 +64,28 @@ class Util
 		$query .= " WHERE id = $id";
 
 		return $query;
-	}	
+	}
+
+	/**
+	 * @param string $folder
+	 * @param UploadedFile $uploadedFile
+	 * @return string
+	 */
+	public static function moveUploadedFile(string $folder, UploadedFile $uploadedFile)
+	{
+		$directory = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' .
+			DIRECTORY_SEPARATOR.  'images' . DIRECTORY_SEPARATOR . $folder;
+		
+		if (!file_exists($directory)) {
+			mkdir($directory, 0777, true);
+		}
+
+		$basename = bin2hex(random_bytes(8));
+		$extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+		$filename = sprintf('%s.%s', $basename, $extension);
+		$uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+		return "$directory" . DIRECTORY_SEPARATOR . "$filename";
+	}
 
 	/**
 	 * @param array $data

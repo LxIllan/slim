@@ -1,8 +1,11 @@
+.env
 .idea/
+.phpunit.result.cache
 .vscode/
-/coverage/
-/vendor/
 /logs/*
 !/logs/README.md
-.phpunit.result.cache
-.env
+/public/images/branch/*
+!/public/images/branch/default.jpg
+/public/images/user/*
+!/public/images/user/default.jpg
+/vendor/

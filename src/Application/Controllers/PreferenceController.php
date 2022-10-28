@@ -46,7 +46,6 @@ class PreferenceController
 	public function getById(Request $request, Response $response, array $args): Response
 	{
 		$jwt = $request->getAttribute("token");
-		Util::setLog(__DIR__, __DIR__);
 		if (preg_match('(\d)', $args['id'])) {
 			$preference = $this->preferenceDAO->getById(intval($args['id']));
 		} else {
