@@ -9,6 +9,7 @@ use App\Application\DAO\UserDAO;
 use App\Application\Helpers\Util;
 use App\Application\DAO\BranchDAO;
 use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\HttpForbiddenException;
 use App\Application\Helpers\EmailTemplate;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -88,11 +89,23 @@ class UserController
 	 */
 	public function edit(Request $request, Response $response, array $args): Response
 	{
+		$jwt = $request->getAttribute("token");
+		if (($jwt['user_id'] != intval($args['id'])) || !(Util::isAdmin($jwt))) {
+			throw new HttpForbiddenException($request);
+		}
+
 		$body = $request->getParsedBody();
 		if (isset($body['email']) && ($this->userDAO->existEmail($body['email']) != intval($args['id']))) {
 			throw new Exception('Email already exists.');
 		}
+
+		if (isset($body['password'])) {
+			$body['hash'] = password_hash($body['password'], PASSWORD_DEFAULT);
+			unset($body['password']);
+		}
+
 		$user = $this->userDAO->edit(intval($args['id']), $body);
+		
 		if ($user) {
 			unset($user->hash);
 			$response->getBody()->write(Util::encodeData($user, "user"));
