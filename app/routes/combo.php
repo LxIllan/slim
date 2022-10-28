@@ -42,7 +42,6 @@ return function (App $app) {
 		 * @api /combos/{id}/dishes
 		 * @method POST
 		 */
-		$group->post('/{id}/add-dish', DishController::class . ':addDishToCombo');
 		$group->post('/{id}/dishes', DishController::class . ':addDishToCombo');
 
 		/**
@@ -55,7 +54,6 @@ return function (App $app) {
 		 * @api /combos/{id}/dishes/{dish_id}
 		 * @method DELETE
 		 */
-		$group->delete('/{id}/delete-dish/{dish_id}', DishController::class . ':deleteDishFromCombo');
 		$group->delete('/{id}/dishes/{dish_id}', DishController::class . ':deleteDishFromCombo');
 	});
 };
