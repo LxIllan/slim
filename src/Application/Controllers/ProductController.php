@@ -9,6 +9,7 @@ use App\Application\DAO\ProductDAO;
 use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+
 class ProductController
 {
 	/**
@@ -71,49 +72,19 @@ class ProductController
 	 * @param Response $response	 
 	 * @return Response
 	 */
-	public function getAltered(Request $request, Response $response): Response
-	{		
-		$jwt = $request->getAttribute("token");
-		$params = $request->getQueryParams();
-		$from = $params['from'] ?? date("Y-m-d");
-		$to = $params['to'] ?? date("Y-m-d");
-		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
-		$alteredProducts = $this->productDAO->getAltered($jwt['branch_id'], $from, $to, $getDeleted);
-		$response->getBody()->write(Util::encodeData($alteredProducts, "altered_products"));
-		return $response->withHeader('Content-Type', 'application/json');
-	}
-
-	/**
-	 * @param Request $request
-	 * @param Response $response	 
-	 * @return Response
-	 */
-	public function getSupplied(Request $request, Response $response): Response
+	public function getSuppliedOrAlteredOrUsed(Request $request, Response $response): Response
 	{
 		$jwt = $request->getAttribute("token");
 		$params = $request->getQueryParams();
+		// $from = $params['from'] ?? date('Y-m-d', strtotime("this week"));
+		// $to = $params['to'] ?? date('Y-m-d', strtotime($from . "next Sunday"));
 		$from = $params['from'] ?? date("Y-m-d");
 		$to = $params['to'] ?? date("Y-m-d");
 		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
-		$suppliedProducts = $this->productDAO->getSupplied($jwt['branch_id'], $from, $to, $getDeleted);
-		$response->getBody()->write(Util::encodeData($suppliedProducts, "supplied_products"));
-		return $response->withHeader('Content-Type', 'application/json');
-	}
-
-	/**
-	 * @param Request $request
-	 * @param Response $response	 
-	 * @return Response
-	 */
-	public function getUsed(Request $request, Response $response): Response
-	{
-		$jwt = $request->getAttribute("token");
-		$params = $request->getQueryParams();
-		$from = $params['from'] ?? date("Y-m-d");
-		$to = $params['to'] ?? date("Y-m-d");
-		$getDeleted = isset($params['deleted']) ? Util::strToBool($params['deleted']) : false;
-		$usedProducts = $this->productDAO->getUsed($jwt['branch_id'], $from, $to, $getDeleted);
-		$response->getBody()->write(Util::encodeData($usedProducts, "used_products"));
+		$uri = explode('/', $request->getUri()->getPath());
+		$table = end($uri);
+		$suppliedProducts = $this->productDAO->getSuppliedOrAlteredOrUsed($jwt['branch_id'], $from, $to, $getDeleted, $table);
+		$response->getBody()->write(Util::encodeData($suppliedProducts, "${table}_products"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 
@@ -133,21 +104,6 @@ class ProductController
 		} else {
 			throw new HttpNotFoundException($request);
 		}
-	}    
-
-	/**
-	 * @param Request $request
-	 * @param Response $response
-	 * @param array $args
-	 * @return Response
-	 */
-	public function use(Request $request, Response $response, array $args): Response
-	{
-		$jwt = $request->getAttribute("token");
-		$body = $request->getParsedBody();
-		$product = $this->productDAO->use(intval($args['id']), intval($body['quantity']), $jwt['user_id']);
-		$response->getBody()->write(Util::encodeData($product, "product"));
-		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
@@ -156,9 +112,14 @@ class ProductController
 	 * @param array $args
 	 * @return Response
 	 */
-	public function disuse(Request $request, Response $response, array $args): Response
+	public function alter(Request $request, Response $response, array $args): Response
 	{
-		$product = $this->productDAO->disuse(intval($args['id']));
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$uri = explode('/', $request->getUri()->getPath());
+		$method = end($uri);
+		Util::log('method', $method);
+		$product = $this->productDAO->alter(intval($args['id']), floatval($body['quantity']), $body['reason'], $jwt['user_id'], $jwt['branch_id']);
 		$response->getBody()->write(Util::encodeData($product, "product"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
@@ -184,12 +145,26 @@ class ProductController
 	 * @param array $args
 	 * @return Response
 	 */
-	public function alter(Request $request, Response $response, array $args): Response
+	public function use(Request $request, Response $response, array $args): Response
 	{
 		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
-		$product = $this->productDAO->alter(intval($args['id']), floatval($body['quantity']), $body['reason'], $jwt['user_id'], $jwt['branch_id']);
+		$product = $this->productDAO->use(intval($args['id']), intval($body['quantity']), $jwt['user_id']);
 		$response->getBody()->write(Util::encodeData($product, "product"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 */
+	public function cancelSuppliedOrAlteredOrUsed(Request $request, Response $response, array $args): Response
+	{
+		$jwt = $request->getAttribute("token");
+		$table = explode('/', $request->getUri()->getPath())[2];
+		$food = $this->productDAO->cancelSuppliedOrAlteredOrUsed(intval($args['id']), $table);
+		$response->getBody()->write(Util::encodeData($food, "food"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 

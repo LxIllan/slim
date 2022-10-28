@@ -42,199 +42,34 @@ class ProductDAO extends DAO
 	 * @param string $from
 	 * @param string $to
 	 * @param bool $isDeleted
+	 * @param string $table
 	 * @return StdClass
 	 */
-	public function getAltered(int $branchId, string $from, string $to, bool $isDeleted): StdClass
+	public function getSuppliedOrAlteredOrUsed(int $branchId, string $from, string $to, bool $isDeleted, string $table): StdClass
 	{
-		$alteredProduct = new StdClass();;
+		$table = "${table}_product";
+		$reason = (str_contains($table, 'altered')) ? "$table.reason," : '';
+		$newQuantity = (str_contains($table, 'used')) ? '' : "$table.new_quantity,";
+		$cost = (str_contains($table, 'used')) ? '' : "$table.cost,";
 
 		$query = <<<SQL
-			SELECT altered_product.id, altered_product.date, product.name, altered_product.quantity, altered_product.reason,
-				altered_product.new_quantity, altered_product.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
-			FROM altered_product
-			INNER JOIN product ON product.id = altered_product.product_id
-			INNER JOIN user ON user.id = altered_product.user_id
+			SELECT $table.id, $table.date, product.name, $table.quantity, $reason
+			$newQuantity $cost CONCAT(user.name, ' ', user.last_name) AS cashier
+			FROM $table
+			INNER JOIN product ON product.id = $table.product_id
+			INNER JOIN user ON user.id = $table.user_id
 			WHERE product.branch_id = $branchId 
-				AND DATE(altered_product.date) BETWEEN '$from' AND '$to'
-				AND altered_product.is_deleted = false
-			ORDER BY altered_product.date DESC
-		SQL;
-		
-		if ($isDeleted) {
-			$query = str_replace('AND altered_product.is_deleted = false', 'AND altered_product.is_deleted = true', $query);
-		}
-
-		$result = $this->connection->select($query);
-
-		$alteredProduct->length = $result->num_rows;
-		while ($row = $result->fetch_assoc()) {
-			$alteredProduct->items[] = $row;
-		}
-		return $alteredProduct;
-	}
-
-	/**
-	 * @param int $branchId
-	 * @param string $from
-	 * @param string $to
-	 * @param bool $isDeleted
-	 * @return StdClass
-	 */
-	public function getSupplied(int $branchId, string $from, string $to, bool $isDeleted): StdClass
-	{
-		$suppliedProduct = new StdClass();
-
-		$query = <<<SQL
-			SELECT supplied_product.id, supplied_product.date, product.name, supplied_product.quantity, 
-				supplied_product.new_quantity, supplied_product.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
-			FROM supplied_product
-			INNER JOIN product ON product.id = supplied_product.product_id
-			INNER JOIN user ON user.id = supplied_product.user_id
-			WHERE product.branch_id = $branchId 
-				AND DATE(supplied_product.date) BETWEEN '$from' AND '$to'
-				AND supplied_product.is_deleted = false
-			ORDER BY supplied_product.date DESC
-		SQL;
-		
-		if ($isDeleted) {
-			$query = str_replace('AND supplied_product.is_deleted = false', 'AND supplied_product.is_deleted = true', $query);
-		}
-
-		$result = $this->connection->select($query);
-		$suppliedProduct->length = $result->num_rows;
-		while ($row = $result->fetch_assoc()) {
-			$suppliedProduct->items[] = $row;
-		}
-		return $suppliedProduct;
-	}
-
-	/**
-	 * @param int $branchId
-	 * @param string $from
-	 * @param string $to
-	 * @param bool $isDeleted
-	 * @return StdClass
-	 */
-	public function getUsed(int $branchId, string $from, string $to, bool $isDeleted): StdClass
-	{
-		$usedProducts = new StdClass();
-
-		$query = <<<SQL
-			SELECT used_product.id, used_product.date, product.name, used_product.quantity,
-				CONCAT(user.name, ' ' , user.last_name) AS cashier
-			FROM used_product
-			INNER JOIN product ON used_product.product_id = product.id
-			INNER JOIN user ON used_product.user_id = user.id
-			WHERE used_product.branch_id = $branchId
-				AND DATE(used_product.date) >= '$from'
-				AND DATE(used_product.date) <= '$to'
-				AND used_product.is_deleted = false
-			ORDER BY date DESC
+				AND DATE($table.date) BETWEEN '$from' AND '$to'
+				AND $table.is_deleted = '$isDeleted'
+			ORDER BY $table.date DESC
 		SQL;
 
-		if ($isDeleted) {
-			$query = str_replace('used_product.is_deleted = false', 'used_product.is_deleted = true', $query);
-		}
-
+		$std = new StdClass();
 		$result = $this->connection->select($query);
-		$usedProducts->length = $result->num_rows;
-		while ($row = $result->fetch_assoc()) {
-			$usedProducts->items[] = $row;
-		}
-		return $usedProducts;
-	}	
-
-	/**
-	 * @param int $productId
-	 * @param int $quantity
-	 * @param int $userId
-	 * @return Product|null
-	 * @throws Exception
-	 */
-	public function use(int $productId, int $quantity, int $userId): Product|null
-	{
-		$product = $this->getById($productId);
-
-		$newQuantity = $product->quantity - $quantity;
-
-		$dataToUpdateProduct = [
-			"quantity" => $newQuantity
-		];
-
-		$product = $this->edit($productId, $dataToUpdateProduct);
-
-		if (($newQuantity <= $product->quantity_notif) && ($product->is_notif_sent == 0)) {
-			$branchDAO = new \App\Application\DAO\BranchDAO();
-			$branch = $branchDAO->getById(intval($product->branch_id));
-			$data = [
-				'subject' => "Notificación de: $branch->name",
-				'food_name' => $product->name,
-				'quantity' => $newQuantity,
-				'branch_name' => $branch->name,
-				'email' => $branch->admin_email
-			];
-			if (Util::sendMail($data, EmailTemplate::NOTIFICATION_TO_ADMIN)) {
-				$dataToUpdateProduct = ["is_notif_sent" => true];
-				$product = $this->edit($productId, $dataToUpdateProduct);
-			} else {
-				throw new Exception('Error to send email notification to admin.');
-			}
-		}
-
-		$dataToInsertToUsedProduct = [
-			"product_id" => $productId,
-			"quantity" => $quantity,
-			"user_id" => $userId,
-			"branch_id" => $product->branch_id
-		];
-
-		$query = Util::prepareInsertQuery($dataToInsertToUsedProduct, 'used_product');
-		$this->connection->insert($query);
-
-		return $product;
-	}
-
-	/**
-	 * @param int $id
-	 * @return Product|null
-	 * @throws Exception
-	 */
-	public function disuse(int $id): Product|null
-	{
-		$usedProduct = $this->connection
-			->select("SELECT * FROM used_product WHERE id = $id")
-			->fetch_object();
-		
-		if ($usedProduct->is_deleted) {
-			throw new Exception('The product is already disused.');
-		}
-
-		$data = [
-			'is_deleted' => 1,
-			'deleted_at' => date('Y-m-d H:i:s')
-		];
-		
-		$query = Util::prepareUpdateQuery($id, $data, 'used_product');
-		if ($this->connection->update($query)) {
-			$result = $this->connection
-				->select("SELECT product_id, quantity FROM used_product WHERE id = $id")
-				->fetch_assoc();
-
-			$productId = intval($result['product_id']);
-			$quantity = intval($result['quantity']);
-
-			$product = $this->getById(intval($result['product_id']));
-				
-			$newQuantity = $product->quantity + $quantity;
-
-			$dataToUpdateProduct = [
-				"quantity" => $newQuantity
-			];
-
-			$product = $this->edit($productId, $dataToUpdateProduct);
-			return $product;
-		}        
-		return null;
+		$std->length = $result->num_rows;
+		$std->items = $result->fetch_all(MYSQLI_ASSOC);
+		$result->free();
+		return $std;
 	}
 
 	/**
@@ -297,5 +132,96 @@ class ProductDAO extends DAO
 			"quantity" => $newQuantity
 		];
 		return $this->edit($productId, $dataToUpdate);
+	}
+
+	/**
+	 * @param int $productId
+	 * @param int $quantity
+	 * @param int $userId
+	 * @return Product|null
+	 * @throws Exception
+	 */
+	public function use(int $productId, int $quantity, int $userId): Product|null
+	{
+		$product = $this->getById($productId);
+
+		$newQuantity = $product->quantity - $quantity;
+
+		$dataToUpdateProduct = [
+			"quantity" => $newQuantity
+		];
+
+		$product = $this->edit($productId, $dataToUpdateProduct);
+
+		if (($newQuantity <= $product->quantity_notif) && ($product->is_notif_sent == 0)) {
+			$branchDAO = new \App\Application\DAO\BranchDAO();
+			$branch = $branchDAO->getById(intval($product->branch_id));
+			$data = [
+				'subject' => "Notificación de: $branch->name",
+				'food_name' => $product->name,
+				'quantity' => $newQuantity,
+				'branch_name' => $branch->name,
+				'email' => $branch->admin_email
+			];
+			if (Util::sendMail($data, EmailTemplate::NOTIFICATION_TO_ADMIN)) {
+				$dataToUpdateProduct = ["is_notif_sent" => true];
+				$product = $this->edit($productId, $dataToUpdateProduct);
+			} else {
+				throw new Exception('Error to send email notification to admin.');
+			}
+		}
+
+		$dataToInsertToUsedProduct = [
+			"product_id" => $productId,
+			"quantity" => $quantity,
+			"user_id" => $userId,
+			"branch_id" => $product->branch_id
+		];
+
+		$query = Util::prepareInsertQuery($dataToInsertToUsedProduct, 'used_product');
+		$this->connection->insert($query);
+
+		return $product;
+	}
+
+	/**
+	 * @param int $id
+	 * @param string $table
+	 * @return Product|null
+	 */
+	public function cancelSuppliedOrAlteredOrUsed(int $id, string $table): Product|null
+	{
+		$table = "{$table}_product";
+
+		$suppliedProduct = $this->connection
+			->select("SELECT * FROM $table WHERE id = $id")
+			->fetch_object();
+		
+		if (is_null($suppliedProduct)) {
+			throw new Exception("Register not found.");
+		}
+		
+		if ($suppliedProduct->is_deleted) {
+			throw new Exception("This register has already been cancelled.");
+		}
+		
+		$data = [
+			"is_deleted" => 1,
+			"deleted_at" => date('Y-m-d H:i:s')
+		];
+
+		$query = Util::prepareUpdateQuery($id, $data, $table);
+		if ($this->connection->update($query)) {
+			$product = $this->getById(intval($suppliedProduct->product_id));
+			
+			$suppliedProduct->quantity *= (str_contains($table, 'used')) ? 1 : -1;
+			$newQuantity = $product->quantity + $suppliedProduct->quantity;
+
+			$dataToUpdateProduct = [
+				"quantity" => $newQuantity
+			];
+			return $this->edit(intval($product->id), $dataToUpdateProduct);
+		}
+		return null;
 	}
 }

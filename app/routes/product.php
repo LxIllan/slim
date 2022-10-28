@@ -12,7 +12,7 @@ return function (App $app) {
 		 * @api /products
 		 * @method GET
 		 */
-		$group->get('', ProductController::class . ':getAll');		
+		$group->get('', ProductController::class . ':getAll');
 
 		/**
 		 * @api /products
@@ -24,19 +24,19 @@ return function (App $app) {
 		 * @api /products/altered
 		 * @method GET
 		 */
-		$group->get('/altered', ProductController::class . ':getAltered');
+		$group->get('/altered', ProductController::class . ':getSuppliedOrAltered');
 
 		/**
 		 * @api /products/supplied
 		 * @method GET
 		 */
-		$group->get('/supplied', ProductController::class . ':getSupplied');
+		$group->get('/supplied', ProductController::class . ':getSuppliedOrAltered');
 
 		/**
 		 * @api /products/used
 		 * @method GET
 		 */
-		$group->get('/used', ProductController::class . ':getUsed');
+		$group->get('/used', ProductController::class . ':getSuppliedOrAlteredOrUsed');
 
 		/**
 		 * @api /products/{id}
@@ -63,12 +63,6 @@ return function (App $app) {
 		$group->put('/{id}/alter', ProductController::class . ':alter');
 
 		/**
-		 * @api /products/{id}/disuse
-		 * @method POST
-		 */
-		$group->post('/{id}/disuse', ProductController::class . ':disuse');
-
-		/**
 		 * @api /products/{id}/supply
 		 * @method PUT
 		 */
@@ -76,8 +70,26 @@ return function (App $app) {
 
 		/**
 		 * @api /products/{id}/use
-		 * @method POST
+		 * @method PUT
 		 */
-		$group->post('/{id}/use', ProductController::class . ':use');
+		$group->put('/{id}/use', ProductController::class . ':use');
+
+		/**
+		 * @api /products/altered/{id}
+		 * @method DELETE
+		 */
+		$group->delete('/altered/{id}', ProductController::class . ':cancelSuppliedOrAlteredOrUsed');
+
+		/**
+		 * @api /products/supplied/{id}
+		 * @method DELETE
+		 */	
+		$group->delete('/supplied/{id}', ProductController::class . ':cancelSuppliedOrAlteredOrUsed');
+
+		/**
+		 * @api /products/used/{id}
+		 * @method DELETE
+		 */
+		$group->delete('/used/{id}', ProductController::class . ':cancelSuppliedOrAlteredOrUsed');
 	});
 };
