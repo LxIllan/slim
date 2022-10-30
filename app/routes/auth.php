@@ -42,15 +42,15 @@ return function (App $app) {
 
 		$uploadedFiles = $request->getUploadedFiles();
 		Util::log('uploadedFiles', $body);
-		$uploadedFile = $uploadedFiles['photo_path'];
-		$photoPath = 'dd';
+		$uploadedFile = $uploadedFiles['file'];
+		$photoPath = 'Error';
 		if ($uploadedFile->getSize() > 0) {
 			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
 				$photoPath = Util::moveUploadedFile($folder, $uploadedFile);
 			}
 		}
-		Util::log('photo_path', $photoPath);
-		$response->getBody()->write(json_encode($photoPath));
+		Util::log('file', $photoPath);		
+		$response->getBody()->write(Util::encodeData($photoPath, "photo_path"));
 		return $response->withHeader('Content-Type', 'application/json');
 	});
 };
