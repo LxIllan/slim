@@ -84,7 +84,10 @@ class Util
 		$extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
 		$filename = sprintf('%s.%s', $basename, $extension);
 		$uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-		return "$directory" . DIRECTORY_SEPARATOR . "$filename";
+
+		$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+		$photoPath .= "/public/images/$folder/$filename";
+		return $photoPath;
 	}
 
 	/**
