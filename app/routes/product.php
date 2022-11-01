@@ -24,13 +24,13 @@ return function (App $app) {
 		 * @api /products/altered
 		 * @method GET
 		 */
-		$group->get('/altered', ProductController::class . ':cancelSuppliedOrAlteredOrUsed');
+		$group->get('/altered', ProductController::class . ':getSuppliedOrAlteredOrUsed');
 
 		/**
 		 * @api /products/supplied
 		 * @method GET
 		 */
-		$group->get('/supplied', ProductController::class . ':cancelSuppliedOrAlteredOrUsed');
+		$group->get('/supplied', ProductController::class . ':getSuppliedOrAlteredOrUsed');
 
 		/**
 		 * @api /products/used
