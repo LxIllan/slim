@@ -41,6 +41,21 @@ class UserController
 		$jwt = $request->getAttribute("token");
 		$body["branch_id"] = $jwt["branch_id"];
 		$body["hash"] = password_hash($password, PASSWORD_DEFAULT);
+
+		$uploadedFiles = $request->getUploadedFiles();
+		
+		if (!empty($uploadedFiles)) {
+			$uploadedFile = $uploadedFiles['image'];
+			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+				$photoPath = Util::moveUploadedFile('user', $uploadedFile);
+			}
+		} else {
+			$photoPath = 'default.png';
+			$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+			$photoPath .= "/public/images/user/default.jpg";
+		}
+		$body["photo_path"] = $photoPath;
+
 		$user = $this->userDAO->create($body);
 		if ($user) {
 			unset($user->hash);
@@ -60,7 +75,7 @@ class UserController
 			return $response->withHeader('Content-Type', 'application/json');
 		} else {
 			throw new Exception('Error to create user.');
-		}		
+		}
 	}
 
 	/**
@@ -102,6 +117,13 @@ class UserController
 		if (isset($body['password'])) {
 			$body['hash'] = password_hash($body['password'], PASSWORD_DEFAULT);
 			unset($body['password']);
+		}
+
+		if (!empty($uploadedFiles)) {
+			$uploadedFile = $uploadedFiles['image'];
+			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+				$body["photo_path"] = Util::moveUploadedFile('user', $uploadedFile);
+			}
 		}
 
 		$user = $this->userDAO->edit(intval($args['id']), $body);
