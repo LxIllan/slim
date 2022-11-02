@@ -222,7 +222,7 @@ class FoodDAO extends DAO
 		$soldDishes = $dishDAO->getSold($branchId, $from, $to);
 		
 		foreach ($soldDishes as $soldDish) {
-			$dish = $dishDAO->getById(intval($soldDish['id']), ['id', 'name', 'is_combo', 'serving', 'food_id']);
+			$dish = $dishDAO->getById(intval($soldDish['dish_id']), ['id', 'name', 'is_combo', 'serving', 'food_id']);
 			$dish->quantity = $soldDish['quantity'];
 
 			if ($dish->is_combo) {
