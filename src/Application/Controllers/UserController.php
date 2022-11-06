@@ -54,6 +54,7 @@ class UserController
 			$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
 			$photoPath .= "/public/images/user/default.jpg";
 		}
+		unset($body['image']);
 		$body["photo_path"] = $photoPath;
 
 		$user = $this->userDAO->create($body);
@@ -126,6 +127,7 @@ class UserController
 				$body["photo_path"] = Util::moveUploadedFile('user', $uploadedFile);
 			}
 		}
+		unset($body['image']);
 
 		$user = $this->userDAO->edit(intval($args['id']), $body);
 		
