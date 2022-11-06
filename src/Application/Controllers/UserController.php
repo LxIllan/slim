@@ -106,7 +106,8 @@ class UserController
 	public function edit(Request $request, Response $response, array $args): Response
 	{
 		$jwt = $request->getAttribute("token");
-		if (($jwt['user_id'] != intval($args['id'])) || !(Util::isAdmin($jwt))) {
+		$authorized = $jwt['user_id'] == intval($args['id']) || Util::isAdmin($jwt);
+		if (!$authorized) {
 			throw new HttpForbiddenException($request);
 		}
 
