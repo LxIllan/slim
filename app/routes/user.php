@@ -30,7 +30,7 @@ return function (App $app) {
 		 * @api /users/{id}
 		 * @method PUT
 		 */
-		$group->put('/{id}', UserController::class . ':edit');
+		$group->post('/{id}', UserController::class . ':edit');
 
 		/**
 		 * @api /users/{id}

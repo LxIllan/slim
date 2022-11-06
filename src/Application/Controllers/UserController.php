@@ -119,6 +119,7 @@ class UserController
 			unset($body['password']);
 		}
 
+		$uploadedFiles = $request->getUploadedFiles();
 		if (!empty($uploadedFiles)) {
 			$uploadedFile = $uploadedFiles['image'];
 			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
