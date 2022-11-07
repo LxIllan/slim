@@ -42,6 +42,7 @@ class DAO
 	 */
 	public function getById(int $id, array $columns = []): StdClass|null
 	{
+		$columns = (empty($columns)) ? [] : array_merge(['id'], $columns);
 		$columns = (empty($columns)) ? '*' : implode(',', $columns);
 		return $this->connection
 			->select("SELECT $columns FROM $this->table WHERE id = $id")
