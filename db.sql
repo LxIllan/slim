@@ -117,9 +117,9 @@ INSERT INTO dishes_in_combo (combo_id, dish_id) VALUES
 CREATE TABLE product (
 	id SMALLINT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(30) NOT NULL,
-	quantity FLOAT(6,2) NOT NULL,
-	quantity_notif TINYINT(3) UNSIGNED NULL DEFAULT 0,
-	is_notif_sent BOOLEAN NULL DEFAULT 0,
+	qty FLOAT(6,2) NOT NULL,
+	qty_notify TINYINT(3) UNSIGNED NULL DEFAULT 0,
+	is_notify_sent BOOLEAN NULL DEFAULT 0,
 	cost FLOAT(6,2) NOT NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -130,7 +130,7 @@ CREATE TABLE product (
 	ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO product (id, name, quantity, quantity_notif, cost, branch_id) VALUES
+INSERT INTO product (id, name, qty, qty_notify, cost, branch_id) VALUES
 	(1, 'Carbón', 25, 5, 60, 1),
 	(2, 'Rollo ticket', 10, 2, 10, 1),
 	(3, 'Charola', 10, 3, 20, 1);
@@ -175,7 +175,7 @@ CREATE TABLE expense (
 CREATE TABLE used_product (
 	id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	product_id SMALLINT(5) UNSIGNED NOT NULL,
-	quantity TINYINT(3) UNSIGNED NOT NULL,
+	qty TINYINT(3) UNSIGNED NOT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	is_deleted BOOLEAN NULL DEFAULT 0,
 	user_id TINYINT(3) UNSIGNED NOT NULL,
@@ -217,8 +217,8 @@ CREATE TABLE supplied_food (
 CREATE TABLE supplied_product (
 	id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	product_id SMALLINT(5) UNSIGNED NOT NULL,
-	quantity FLOAT(6,2) NOT NULL,
-	new_quantity FLOAT(6,2) NOT NULL,
+	qty FLOAT(6,2) NOT NULL,
+	new_qty FLOAT(6,2) NOT NULL,
 	cost FLOAT(7,2) NOT NULL,
 	date TIMESTAMP NOT NULL,
 	is_deleted BOOLEAN NULL DEFAULT 0,
@@ -262,9 +262,9 @@ CREATE TABLE altered_food (
 CREATE TABLE altered_product (
 	id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	product_id SMALLINT(5) UNSIGNED NOT NULL,
-	quantity FLOAT(6,2) NOT NULL,
+	qty FLOAT(6,2) NOT NULL,
 	reason VARCHAR(100) NOT NULL,
-	new_quantity FLOAT(6,2) NOT NULL,
+	new_qty FLOAT(6,2) NOT NULL,
 	cost FLOAT(7,2) NOT NULL,
 	date TIMESTAMP NOT NULL,
 	is_deleted BOOLEAN NULL DEFAULT 0,

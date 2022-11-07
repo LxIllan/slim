@@ -49,12 +49,12 @@ class ProductDAO extends DAO
 	{
 		$table = "${table}_product";
 		$reason = (str_contains($table, 'altered')) ? "$table.reason," : '';
-		$newQuantity = (str_contains($table, 'used')) ? '' : "$table.new_quantity,";
+		$newQty = (str_contains($table, 'used')) ? '' : "$table.new_qty,";
 		$cost = (str_contains($table, 'used')) ? '' : "$table.cost,";
 
 		$query = <<<SQL
-			SELECT $table.id, $table.date, product.name, $table.quantity, $reason
-			$newQuantity $cost CONCAT(user.name, ' ', user.last_name) AS cashier
+			SELECT $table.id, $table.date, product.name, $table.qty, $reason
+			$newQty $cost CONCAT(user.name, ' ', user.last_name) AS cashier
 			FROM $table
 			INNER JOIN product ON product.id = $table.product_id
 			INNER JOIN user ON user.id = $table.user_id
@@ -74,23 +74,23 @@ class ProductDAO extends DAO
 
 	/**
 	 * @param int $productId
-	 * @param float $quantity
+	 * @param float $qty
 	 * @param string $reason
 	 * @param int $userId
 	 * @param int $branchId
 	 * @return Product
 	 */
-	public function alter(int $productId, float $quantity, string $reason, int $userId, int $branchId): Product
+	public function alter(int $productId, float $qty, string $reason, int $userId, int $branchId): Product
 	{
 		$product = $this->getById($productId);
-		$newQuantity = $product->quantity + $quantity;
-		$cost = $product->cost * $quantity;
+		$newQty = $product->qty + $qty;
+		$cost = $product->cost * $qty;
 
 		$dataToInsert = [
 			"product_id" => $productId,
-			"quantity" => $quantity,
+			"qty" => $qty,
 			"reason" => $reason,
-			"new_quantity" => $newQuantity,
+			"new_qty" => $newQty,
 			"cost" => $cost,
 			"user_id" => $userId,
 			"branch_id" => $branchId
@@ -99,28 +99,28 @@ class ProductDAO extends DAO
 		$this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'altered_product'));
 
 		$dataToUpdate = [
-			"quantity" => $newQuantity
+			"qty" => $newQty
 		];
 		return $this->edit($productId, $dataToUpdate);
 	}
 
 	/**
 	 * @param int $productId
-	 * @param float $quantity
+	 * @param float $qty
 	 * @param int $userId
 	 * @param int $branchId
 	 * @return Product
 	 */
-	public function supply(int $productId, float $quantity, int $userId, int $branchId): Product
+	public function supply(int $productId, float $qty, int $userId, int $branchId): Product
 	{
 		$product = $this->getById($productId);
-		$newQuantity = $product->quantity + $quantity;
-		$cost = $product->cost * $quantity;
+		$newQty = $product->qty + $qty;
+		$cost = $product->cost * $qty;
 
 		$dataToInsert = [
 			"product_id" => $productId,
-			"quantity" => $quantity,
-			"new_quantity" => $newQuantity,
+			"qty" => $qty,
+			"new_qty" => $newQty,
 			"cost" => $cost,
 			"user_id" => $userId,
 			"branch_id" => $branchId
@@ -129,42 +129,42 @@ class ProductDAO extends DAO
 		$this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'supplied_product'));
 
 		$dataToUpdate = [
-			"quantity" => $newQuantity
+			"qty" => $newQty
 		];
 		return $this->edit($productId, $dataToUpdate);
 	}
 
 	/**
 	 * @param int $productId
-	 * @param int $quantity
+	 * @param int $qty
 	 * @param int $userId
 	 * @return Product|null
 	 * @throws Exception
 	 */
-	public function use(int $productId, int $quantity, int $userId): Product|null
+	public function use(int $productId, int $qty, int $userId): Product|null
 	{
 		$product = $this->getById($productId);
 
-		$newQuantity = $product->quantity - $quantity;
+		$newQty = $product->qty - $qty;
 
 		$dataToUpdateProduct = [
-			"quantity" => $newQuantity
+			"qty" => $newQty
 		];
 
 		$product = $this->edit($productId, $dataToUpdateProduct);
 
-		if (($newQuantity <= $product->quantity_notif) && ($product->is_notif_sent == 0)) {
+		if (($newQty <= $product->qty_notify) && ($product->is_notify_sent == 0)) {
 			$branchDAO = new \App\Application\DAO\BranchDAO();
 			$branch = $branchDAO->getById(intval($product->branch_id));
 			$data = [
 				'subject' => "Notificación de: $branch->name",
 				'food_name' => $product->name,
-				'quantity' => $newQuantity,
+				'qty' => $newQty,
 				'branch_name' => $branch->name,
 				'email' => $branch->admin_email
 			];
 			if (Util::sendMail($data, EmailTemplate::NOTIFICATION_TO_ADMIN)) {
-				$dataToUpdateProduct = ["is_notif_sent" => true];
+				$dataToUpdateProduct = ["is_notify_sent" => true];
 				$product = $this->edit($productId, $dataToUpdateProduct);
 			} else {
 				throw new Exception('Error to send email notification to admin.');
@@ -173,7 +173,7 @@ class ProductDAO extends DAO
 
 		$dataToInsertToUsedProduct = [
 			"product_id" => $productId,
-			"quantity" => $quantity,
+			"qty" => $qty,
 			"user_id" => $userId,
 			"branch_id" => $product->branch_id
 		];
@@ -214,11 +214,11 @@ class ProductDAO extends DAO
 		if ($this->connection->update($query)) {
 			$product = $this->getById(intval($suppliedProduct->product_id));
 			
-			$suppliedProduct->quantity *= (str_contains($table, 'used')) ? 1 : -1;
-			$newQuantity = $product->quantity + $suppliedProduct->quantity;
+			$suppliedProduct->qty *= (str_contains($table, 'used')) ? 1 : -1;
+			$newQty = $product->qty + $suppliedProduct->qty;
 
 			$dataToUpdateProduct = [
-				"quantity" => $newQuantity
+				"qty" => $newQty
 			];
 			return $this->edit(intval($product->id), $dataToUpdateProduct);
 		}

@@ -119,7 +119,7 @@ class ProductController
 		$uri = explode('/', $request->getUri()->getPath());
 		$method = end($uri);
 		Util::log('method', $method);
-		$product = $this->productDAO->alter(intval($args['id']), floatval($body['quantity']), $body['reason'], $jwt['user_id'], $jwt['branch_id']);
+		$product = $this->productDAO->alter(intval($args['id']), floatval($body['qty']), $body['reason'], $jwt['user_id'], $jwt['branch_id']);
 		$response->getBody()->write(Util::encodeData($product, "product"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
@@ -134,7 +134,7 @@ class ProductController
 	{
 		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
-		$product = $this->productDAO->supply(intval($args['id']), floatval($body['quantity']), $jwt['user_id'], $jwt['branch_id']);
+		$product = $this->productDAO->supply(intval($args['id']), floatval($body['qty']), $jwt['user_id'], $jwt['branch_id']);
 		$response->getBody()->write(Util::encodeData($product, "product"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
@@ -149,7 +149,7 @@ class ProductController
 	{
 		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
-		$product = $this->productDAO->use(intval($args['id']), intval($body['quantity']), $jwt['user_id']);
+		$product = $this->productDAO->use(intval($args['id']), intval($body['qty']), $jwt['user_id']);
 		$response->getBody()->write(Util::encodeData($product, "product"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
@@ -161,10 +161,9 @@ class ProductController
 	 */
 	public function cancelSuppliedOrAlteredOrUsed(Request $request, Response $response, array $args): Response
 	{
-		$jwt = $request->getAttribute("token");
 		$table = explode('/', $request->getUri()->getPath())[2];
-		$food = $this->productDAO->cancelSuppliedOrAlteredOrUsed(intval($args['id']), $table);
-		$response->getBody()->write(Util::encodeData($food, "food"));
+		$product = $this->productDAO->cancelSuppliedOrAlteredOrUsed(intval($args['id']), $table);
+		$response->getBody()->write(Util::encodeData($product, "product"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 
