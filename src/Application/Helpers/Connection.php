@@ -87,6 +87,7 @@ class Connection
 	 */
 	private function sentence(string $query): bool|\mysqli_result
 	{
-		return $this->mysqli->query($query);
+		$result = $this->mysqli->query($query);
+		return (is_bool($result)) ? ($this->mysqli->affected_rows > 0) : $result;
 	}
 }
