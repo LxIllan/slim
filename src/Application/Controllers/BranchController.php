@@ -8,6 +8,7 @@ use App\Application\DAO\BranchDAO;
 use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpException;
 
@@ -34,7 +35,7 @@ class BranchController
 		$body = $request->getParsedBody();        
 		$body["branch_id"] = $jwt["branch_id"];
 		$branch = $this->branchDAO->create($body);
-		$response->getBody()->write(Util::encodeData($branch, "preference", 201));
+		$response->getBody()->write(Util::encodeData($branch, "branch", 201));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 
@@ -64,7 +65,7 @@ class BranchController
 	{
 		$jwt = $request->getAttribute("token");
 		if (!Util::isAdmin($jwt)) {
-			throw new HttpException($request, "You don't have permission to access this resource", 403);
+			throw new HttpForbiddenException($request);
 		}
 		$branches = $this->branchDAO->getAll();
 		$response->getBody()->write(Util::encodeData($branches, "branches"));
@@ -113,7 +114,7 @@ class BranchController
 	{
 		$jwt = $request->getAttribute("token");
 		if (!Util::isAdmin($jwt)) {
-			throw new HttpException($request, "You don't have permission to access this resource", 403);
+			throw new HttpForbiddenException($request);
 		}
 		$wasDeleted = $this->branchDAO->delete(intval($args['id']));
 		$response->getBody()->write(Util::encodeData($wasDeleted, "response"));
