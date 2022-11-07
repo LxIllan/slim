@@ -185,8 +185,8 @@ class FoodController
 	public function cancelSuppliedOrAltered(Request $request, Response $response, array $args): Response
 	{
 		$table = explode('/', $request->getUri()->getPath())[2];
-		$deleted = $this->foodDAO->cancelSuppliedOrAltered(intval($args['id']), $table);
-		$response->getBody()->write(Util::encodeData($deleted, "deleted"));
+		$food = $this->foodDAO->cancelSuppliedOrAltered(intval($args['id']), $table);
+		$response->getBody()->write(Util::encodeData($food, "food"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 }
