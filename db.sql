@@ -34,10 +34,10 @@ INSERT INTO category (name) VALUES
 CREATE TABLE food (
 	id SMALLINT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(30) NOT NULL,
-	quantity FLOAT(6,2) NOT NULL,
-	pieces_per_package FLOAT(5,2) NULL DEFAULT 0,
-	quantity_notif TINYINT(3) UNSIGNED NULL DEFAULT 0,
-	is_notif_sent  BOOLEAN NULL DEFAULT 0,
+	qty FLOAT(6,2) NOT NULL,
+	pieces_in_package FLOAT(5,2) NULL DEFAULT 1,
+	qty_notify TINYINT(3) UNSIGNED NULL DEFAULT 0,
+	is_notify_sent  BOOLEAN NULL DEFAULT 0,
 	cost FLOAT(6,2) NOT NULL,
 	showed_in_index BOOLEAN NULL DEFAULT 1,
 	category_id TINYINT(3) UNSIGNED NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE food (
 	ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO food (name, quantity, quantity_notif, is_notif_sent, cost, showed_in_index, category_id, branch_id) VALUES
+INSERT INTO food (name, qty, qty_notify, is_notify_sent, cost, showed_in_index, category_id, branch_id) VALUES
 	('Pollo', 44.00, 30, 0, 130.00, 1, 1, 1),
 	('Costilla', 42.16, 0, 0, 149.70, 1, 1, 1),
 	('Chorizo', 431, 0, 0, 48.00, 1, 1, 1),
@@ -195,8 +195,8 @@ CREATE TABLE used_product (
 CREATE TABLE supplied_food (
 	id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	food_id SMALLINT(5) UNSIGNED NOT NULL,
-	quantity FLOAT(6,2) NOT NULL,
-	new_quantity FLOAT(6,2) NOT NULL,
+	qty FLOAT(6,2) NOT NULL,
+	new_qty FLOAT(6,2) NOT NULL,
 	cost FLOAT(7,2) NOT NULL,
 	date TIMESTAMP NOT NULL,
 	is_deleted BOOLEAN NULL DEFAULT 0,
@@ -239,9 +239,9 @@ CREATE TABLE supplied_product (
 CREATE TABLE altered_food (
 	id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	food_id SMALLINT(5) UNSIGNED NOT NULL,
-	quantity FLOAT(6,2) NOT NULL,
+	qty FLOAT(6,2) NOT NULL,
 	reason VARCHAR(100) NOT NULL,
-	new_quantity FLOAT(6,2) NOT NULL,
+	new_qty FLOAT(6,2) NOT NULL,
 	cost FLOAT(7,2) NOT NULL,
 	date TIMESTAMP NOT NULL,
 	is_deleted BOOLEAN NULL DEFAULT 0,

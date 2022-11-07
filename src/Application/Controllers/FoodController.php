@@ -158,7 +158,7 @@ class FoodController
 	{
 		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
-		$food = $this->foodDAO->supply(intval($args['id']), floatval($body['quantity']), $jwt['user_id'], $jwt['branch_id']);
+		$food = $this->foodDAO->supply(intval($args['id']), floatval($body['qty']), $jwt['user_id'], $jwt['branch_id']);
 		$response->getBody()->write(Util::encodeData($food, "food"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
@@ -172,7 +172,7 @@ class FoodController
 	{
 		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
-		$food = $this->foodDAO->alter(intval($args['id']), floatval($body['quantity']), $body['reason'], $jwt['user_id'], $jwt['branch_id']);
+		$food = $this->foodDAO->alter(intval($args['id']), floatval($body['qty']), $body['reason'], $jwt['user_id'], $jwt['branch_id']);
 		$response->getBody()->write(Util::encodeData($food, "food"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
@@ -184,10 +184,9 @@ class FoodController
 	 */
 	public function cancelSuppliedOrAltered(Request $request, Response $response, array $args): Response
 	{
-		$jwt = $request->getAttribute("token");
 		$table = explode('/', $request->getUri()->getPath())[2];
-		$food = $this->foodDAO->cancelSuppliedOrAltered(intval($args['id']), $table);
-		$response->getBody()->write(Util::encodeData($food, "food"));
+		$deleted = $this->foodDAO->cancelSuppliedOrAltered(intval($args['id']), $table);
+		$response->getBody()->write(Util::encodeData($deleted, "deleted"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 }

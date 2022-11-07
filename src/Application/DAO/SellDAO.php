@@ -48,11 +48,11 @@ class SellDAO
 	{
 		$result = $this->sellWithTicket($items, $userId, $branchId);
 		foreach ($items as $item) {
-			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['id', 'is_combo', 'serving', 'food_id']);
+			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['is_combo', 'serving', 'food_id']);
 			if ($dishToSell->is_combo) {
-				$this->extractDishesFromCombo(intval($dishToSell->id), intval($item['quantity']));
+				$this->extractDishesFromCombo(intval($dishToSell->id), intval($item['qty']));
 			} else {
-				$serving = $dishToSell->serving * $item['quantity'];
+				$serving = $dishToSell->serving * $item['qty'];
 				$this->subtractFood(intval($dishToSell->food_id), $serving);
 			}
 		}
@@ -63,7 +63,7 @@ class SellDAO
 	{
 		$total = 0;
 		foreach ($items as $item) {
-			$total += $this->dishDAO->getById($item['dish_id'], ['price'])->price * $item['quantity'];
+			$total += $this->dishDAO->getById($item['dish_id'], ['price'])->price * $item['qty'];
 		}
 		return $total;
 	}
@@ -92,12 +92,12 @@ class SellDAO
 		if ($ticket) {
 			$ticketId = $ticket->id;
 			foreach ($items as $item) {
-				$dish = $this->dishDAO->getById($item['dish_id']);
+				$dish = $this->dishDAO->getById($item['dish_id'], ['price']);
 				$dataToInsert = [
 					"ticket_id" => $ticketId,
 					"dish_id" => $dish->id,
-					"quantity" => $item['quantity'],
-					"price" => $dish->price * $item['quantity']
+					"quantity" => $item['qty'],
+					"price" => $dish->price * $item['qty']
 				];
 				$query = Util::prepareInsertQuery($dataToInsert, 'dishes_in_ticket');
 				if (!$this->connection->insert($query)) {
@@ -110,18 +110,18 @@ class SellDAO
 
 	/**
 	 * @param int $comboId
-	 * @param int $quantity
+	 * @param int $qty
 	 * @return void
 	 * @throws Exception
 	 */
-	public function extractDishesFromCombo(int $comboId, int $quantity): void
+	public function extractDishesFromCombo(int $comboId, int $qty): void
 	{
 		$dishes = $this->dishDAO->getDishesByCombo($comboId);
 		foreach ($dishes as $dish) {
 			if ($dish->is_combo) {
-				$this->extractDishesFromCombo(intval($dish->id), $quantity);
+				$this->extractDishesFromCombo(intval($dish->id), $qty);
 			} else {
-				$serving = $dish->serving * $quantity;
+				$serving = $dish->serving * $qty;
 				$this->subtractFood(intval($dish->food_id), $serving);
 			}
 		}
@@ -129,32 +129,32 @@ class SellDAO
 
 	/**
 	 * @param int $foodId
-	 * @param float $quantity
+	 * @param float $qty
 	 * @return bool
 	 * @throws Exception
 	 */
-	private function subtractFood(int $foodId, float $quantity): bool
+	private function subtractFood(int $foodId, float $qty): bool
 	{		
 		$food = $this->foodDAO->getById($foodId);
 
-		$newQuantity = $food->quantity - $quantity;
+		$newQty = $food->qty - $qty;
 		$dataToUpdate = [
-			"quantity" => $newQuantity
+			"qty" => $newQty
 		];
 
-		if (($newQuantity <= $food->quantity_notif) && ($food->is_notif_sent == 0)) {
+		if (($newQty <= $food->qty_notify) && ($food->is_notify_sent == 0)) {
 			$branchDAO = new \App\Application\DAO\BranchDAO();
 			$branch = $branchDAO->getById(intval($food->branch_id));
 			$data = [
-				'subject' => "Notificación de: $branch->location",
+				'subject' => "Notificación de: $branch->name",
 				'food_name' => $food->name,
-				'quantity' => $newQuantity,
+				'qty' => $newQty,
 				'branch_name' => $branch->name,
-				'branch_location' => $branch->location,
+				'branch_location' => $branch->name,
 				'email' => $branch->admin_email
 			];
 			if (Util::sendMail($data, EmailTemplate::NOTIFICATION_TO_ADMIN)) {
-				$dataToUpdate["is_notif_sent"] = true;
+				$dataToUpdate["is_notify_sent"] = true;
 			} else {
 				throw new Exception('Error to send email notification to admin.');
 			}

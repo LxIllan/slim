@@ -77,8 +77,8 @@ class FoodDAO extends DAO
 		$reason = (str_contains($table, 'altered')) ? 'altered_food.reason,' : '';
 
 		$query = <<<SQL
-			SELECT $table.id, $table.date, food.name, $table.quantity, $reason
-				$table.new_quantity, $table.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
+			SELECT $table.id, $table.date, food.name, $table.qty, $reason
+				$table.new_qty, $table.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
 			FROM $table
 			INNER JOIN food ON food.id = $table.food_id
 			INNER JOIN user ON user.id = $table.user_id
@@ -113,21 +113,21 @@ class FoodDAO extends DAO
 
 	/**
 	 * @param int $foodId
-	 * @param float $quantity
+	 * @param float $qty
 	 * @param int $userId
 	 * @param int $branchId
 	 * @return Food
 	 */
-	public function supply(int $foodId, float $quantity, int $userId, int $branchId): Food
+	public function supply(int $foodId, float $qty, int $userId, int $branchId): Food
 	{
 		$food = $this->getById($foodId);
-		$newQuantity = $food->quantity + $quantity;
-		$cost = $food->cost * $quantity;
+		$newQty = $food->qty + $qty;
+		$cost = $food->cost * $qty;
 
 		$dataToInsert = [
 			"food_id" => $foodId,
-			"quantity" => $quantity,
-			"new_quantity" => $newQuantity,
+			"qty" => $qty,
+			"new_qty" => $newQty,
 			"cost" => $cost,
 			"user_id" => $userId,
 			"branch_id" => $branchId
@@ -136,7 +136,8 @@ class FoodDAO extends DAO
 		$this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'supplied_food'));
 
 		$dataToUpdate = [
-			"quantity" => $newQuantity
+			"qty" => $newQty,
+			"is_notify_sent" => false
 		];
 		return $this->edit($foodId, $dataToUpdate);
 	}
@@ -148,7 +149,7 @@ class FoodDAO extends DAO
 	 */
 	public function cancelSuppliedOrAltered(int $id, string $table): bool
 	{
-		$table = "${table}_food";		
+		$table = "${table}_food";
 		$suppliedFood = $this->connection->select("SELECT * FROM $table WHERE id = $id")->fetch_object();
 		
 		if (is_null($suppliedFood)) {
@@ -161,11 +162,11 @@ class FoodDAO extends DAO
 		
 		$food = $this->getById(intval($suppliedFood->food_id));
 
-		$suppliedFood->quantity = floatval($suppliedFood->quantity) * -1;
-		$newQuantity = $food->quantity + $suppliedFood->quantity;
+		$suppliedFood->qty = floatval($suppliedFood->qty) * -1;
+		$newQty = $food->qty + $suppliedFood->qty;
 		
 		$dataToUpdate = [
-			"quantity" => $newQuantity
+			"qty" => $newQty
 		];
 		$this->edit(intval($food->id), $dataToUpdate);
 
@@ -179,23 +180,23 @@ class FoodDAO extends DAO
 
 	/**
 	 * @param int $foodId
-	 * @param float $quantity
+	 * @param float $qty
 	 * @param string $reason
 	 * @param int $userId
 	 * @param int $branchId
 	 * @return Food
 	 */
-	public function alter(int $foodId, float $quantity, string $reason, int $userId, int $branchId): Food
+	public function alter(int $foodId, float $qty, string $reason, int $userId, int $branchId): Food
 	{
 		$food = $this->getById($foodId);
-		$newQuantity = $food->quantity + $quantity;
-		$cost = $food->cost * $quantity;
+		$newQty = $food->qty + $qty;
+		$cost = $food->cost * $qty;
 
 		$dataToInsert = [
 			"food_id" => $foodId,
-			"quantity" => $quantity,
+			"qty" => $qty,
 			"reason" => $reason,
-			"new_quantity" => $newQuantity,
+			"new_qty" => $newQty,
 			"cost" => $cost,
 			"user_id" => $userId,
 			"branch_id" => $branchId
@@ -204,7 +205,7 @@ class FoodDAO extends DAO
 		$this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'altered_food'));
 
 		$dataToUpdate = [
-			"quantity" => $newQuantity
+			"qty" => $newQty
 		];
 		return $this->edit($foodId, $dataToUpdate);
 	}
@@ -222,13 +223,13 @@ class FoodDAO extends DAO
 		$soldDishes = $dishDAO->getSold($branchId, $from, $to);
 		
 		foreach ($soldDishes as $soldDish) {
-			$dish = $dishDAO->getById(intval($soldDish['dish_id']), ['id', 'name', 'is_combo', 'serving', 'food_id']);
-			$dish->quantity = $soldDish['quantity'];
+			$dish = $dishDAO->getById(intval($soldDish['dish_id']), ['name', 'is_combo', 'serving', 'food_id']);
+			$dish->qty = $soldDish['qty'];
 
 			if ($dish->is_combo) {
-				$foodSold = $this->extractDishesFromCombo(intval($dish->id), intval($dish->quantity), $foodSold);
+				$foodSold = $this->extractDishesFromCombo(intval($dish->id), intval($dish->qty), $foodSold);
 			} else {
-				$foodSold = $this->subtractFood(intval($dish->food_id), floatval($dish->quantity * $dish->serving), $foodSold);
+				$foodSold = $this->subtractFood(intval($dish->food_id), floatval($dish->qty * $dish->serving), $foodSold);
 			}
 		}
 		return $foodSold;
@@ -236,20 +237,20 @@ class FoodDAO extends DAO
 
 	/**
 	 * @param int $comboId
-	 * @param int $quantity
+	 * @param int $qty
 	 * @param array $foodSold
 	 * @return array
 	 * @throws Exception
 	 */
-	public function extractDishesFromCombo(int $comboId, int $quantity, array $foodSold): array
+	public function extractDishesFromCombo(int $comboId, int $qty, array $foodSold): array
 	{
 		$dishDAO = new \App\Application\DAO\DishDAO();
 		$dishes = $dishDAO->getDishesByCombo($comboId);
 		foreach ($dishes as $dish) {
 			if ($dish->is_combo) {
-				$foodSold = $this->extractDishesFromCombo(intval($dish->id), $quantity, $foodSold);
+				$foodSold = $this->extractDishesFromCombo(intval($dish->id), $qty, $foodSold);
 			} else {
-				$serving = $dish->serving * $quantity;
+				$serving = $dish->serving * $qty;
 				$foodSold = $this->subtractFood(intval($dish->food_id), $serving, $foodSold);
 			}
 		}
@@ -258,22 +259,22 @@ class FoodDAO extends DAO
 
 	/**
 	 * @param int $foodId
-	 * @param float $quantity
+	 * @param float $qty
 	 * @param array $foodSold
 	 * @return array
 	 * @throws Exception
 	 */
-	private function subtractFood(int $foodId, float $quantity, array $foodSold): array
+	private function subtractFood(int $foodId, float $qty, array $foodSold): array
 	{
 		$id = array_search(intval($foodId), array_column($foodSold, 'id'));
 		if ($id !== false) {
-			$foodSold[$id]["quantity"] += $quantity;
+			$foodSold[$id]["qty"] += $qty;
 		} else {
 			$food = $this->getById($foodId, ['name']);
 			$foodSold[] = [
 				"id" => $foodId,
 				"name" => $food->name,
-				"quantity" => $quantity
+				"qty" => $qty
 			];
 		}
 		return $foodSold;

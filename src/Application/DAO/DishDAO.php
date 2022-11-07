@@ -166,7 +166,7 @@ class DishDAO extends DAO
 	public function getSold(int $branchId, ?string $from, ?string $to): array
 	{
 		$query = <<<SQL
-			SELECT dishes_in_ticket.dish_id, dish.name, SUM(dishes_in_ticket.quantity) AS quantity
+			SELECT dishes_in_ticket.dish_id, dish.name, SUM(dishes_in_ticket.quantity) AS qty
 			FROM dishes_in_ticket
 			INNER JOIN dish ON dish.id = dishes_in_ticket.dish_id
 			WHERE dishes_in_ticket.ticket_id IN (
