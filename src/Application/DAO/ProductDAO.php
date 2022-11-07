@@ -202,7 +202,7 @@ class ProductDAO extends DAO
 		}
 		
 		if ($suppliedProduct->is_deleted) {
-			throw new Exception("This register has already been cancelled.");
+			throw new Exception("This register has already been canceled.");
 		}
 		
 		$data = [

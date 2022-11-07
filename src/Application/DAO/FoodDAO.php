@@ -157,7 +157,7 @@ class FoodDAO extends DAO
 		}
 		
 		if ($suppliedFood->is_deleted) {
-			throw new Exception("This register has already been cancelled.");
+			throw new Exception("This register has already been canceled.");
 		}
 		
 		$food = $this->getById(intval($suppliedFood->food_id));
