@@ -79,12 +79,27 @@ class BranchController
 	 */
 	public function edit(Request $request, Response $response, array $args): Response
 	{
-		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
+
+		$uploadedFiles = $request->getUploadedFiles();
+		
+		if (!empty($uploadedFiles)) {
+			$uploadedFile = $uploadedFiles['image'];
+			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+				$photoPath = Util::moveUploadedFile('branch', $uploadedFile);
+			}
+		} 
+		if (isset($photoPath)) {
+			$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+			$photoPath .= "/public/images/branch/default.jpg";
+		}	
+		unset($body['image']);
+		$body["logo_path"] = $photoPath;
+
 		$branch = $this->branchDAO->edit(intval($args['id']), $body);
 		if ($branch) {
 			$response->getBody()->write(Util::encodeData($branch, "branch"));
-		return $response->withHeader('Content-Type', 'application/json');
+			return $response->withHeader('Content-Type', 'application/json');
 		} else {
 			throw new HttpNotFoundException($request);
 		}

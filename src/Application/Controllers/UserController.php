@@ -49,8 +49,8 @@ class UserController
 			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
 				$photoPath = Util::moveUploadedFile('user', $uploadedFile);
 			}
-		} else {
-			$photoPath = 'default.png';
+		} 
+		if (isset($photoPath)) {
 			$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
 			$photoPath .= "/public/images/user/default.jpg";
 		}

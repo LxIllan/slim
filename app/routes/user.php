@@ -28,7 +28,7 @@ return function (App $app) {
 
 		/**
 		 * @api /users/{id}
-		 * @method PUT
+		 * @method POST
 		 */
 		$group->post('/{id}', UserController::class . ':edit');
 

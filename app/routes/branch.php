@@ -28,9 +28,9 @@ return function (App $app) {
 
 		/**
 		 * @api /branches/{id}
-		 * @method PUT
+		 * @method POST
 		 */
-		$group->put('/{id}', BranchController::class . ':edit');
+		$group->post('/{id}', BranchController::class . ':edit');
 
 		/**
 		 * @api /branches/{id}
