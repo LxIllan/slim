@@ -146,11 +146,11 @@ class CourtesyDAO
 			$branchDAO = new \App\Application\DAO\BranchDAO();
 			$branch = $branchDAO->getById(intval($food->branch_id));
 			$data = [
-				'subject' => "Notificación de: $branch->location",
+				'subject' => "Notificación de: $branch->name",
 				'food_name' => $food->name,
 				'quantity' => $newQuantity,
 				'branch_name' => $branch->name,
-				'branch_location' => $branch->location,
+				'branch_location' => $branch->name,
 				'email' => $branch->admin_email
 			];
 			if (Util::sendMail($data, EmailTemplate::NOTIFICATION_TO_ADMIN)) {
