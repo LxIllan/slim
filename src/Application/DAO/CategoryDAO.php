@@ -24,7 +24,7 @@ class CategoryDAO extends DAO
 	public function getAll(): array
 	{
 		$categories = [];
-		$result = $this->connection->select("SELECT id FROM $this->table ORDER BY category");
+		$result = $this->connection->select("SELECT id FROM $this->table ORDER BY name");
 		while ($row = $result->fetch_assoc()) {
 			$categories[] = $this->getById(intval($row['id']));
 		}
