@@ -11,8 +11,8 @@ CREATE TABLE branch (
 	deleted_at TIMESTAMP NULL DEFAULT NULL
 );
 
-INSERT INTO branch (name, location, logo, ticket_number, phone_number, note, admin_email) VALUES
-	('Pollo Rey', 'Santa Cruz', 'img/logo/1.jpg', 1, '333 333 3333', 'Write notes here!', 'Fernando.Illan@syss.tech')
+INSERT INTO branch (name, logo, ticket_number, phone, note, admin_email) VALUES
+	('Pollo Rey', 'img/logo/1.jpg', 1, '333 333 3333', 'Write notes here!', 'Fernando.Illan@syss.tech')
 
 CREATE TABLE category (
 	id TINYINT(3) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -74,7 +74,7 @@ CREATE TABLE dish (
 	is_prepared_dish BOOLEAN NULL DEFAULT 0,
 	is_combo BOOLEAN NULL DEFAULT 0,
 	sell_individually BOOLEAN NULL DEFAULT 0,
-	food_id SMALLINT(5) UNSIGNED NOT NULL,
+	food_id SMALLINT(5) UNSIGNED NULL,
 	category_id TINYINT(3) UNSIGNED NOT NULL,
 	branch_id TINYINT(3) UNSIGNED NOT NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
