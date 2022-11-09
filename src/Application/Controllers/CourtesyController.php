@@ -26,6 +26,21 @@ class CourtesyController
 	 * @param Response $response
 	 * @return Response
 	 */
+	public function create(Request $request, Response $response): Response
+	{
+		$sellDAO = new \App\Application\DAO\SellDAO();
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$result = $sellDAO->courtesy($body['items'], $body['reason'], $jwt['user_id'], $jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($result, "response"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
+	 */
 	public function getAll(Request $request, Response $response): Response
 	{
 		$jwt = $request->getAttribute("token");
@@ -38,12 +53,15 @@ class CourtesyController
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 
-	// /**
-	//  * @param int $id
-	//  * @return bool
-	//  */
-	// public function delete(int $id): bool
-	// {
-	//     return $this->courtesyDAO->delete($id);
-	// }
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param array $args
+	 * @return Response
+	 */
+	public function cancel(Request $request, Response $response, $args): Response
+	{
+		$response->getBody()->write(Util::encodeData($args['id'], "id"));
+		return $response->withHeader('Content-Type', 'application/json');
+	}
 }

@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 use Slim\App;
 use App\Application\Controllers\TicketController;
-use App\Application\Controllers\CourtesyController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
 	$app->group('/tickets', function (Group $group) {
+		/**
+		 * @api /tickets
+		 * @method POST
+		 */
+		$group->post('', TicketController::class . ':create');
+
 		/**
 		 * @api /tickets
 		 * @method GET
@@ -20,7 +25,11 @@ return function (App $app) {
 		 * @method GET
 		 */
 		$group->get('/{id}', TicketController::class . ':getById');
-	});
 
-	$app->get('/courtesies', CourtesyController::class . ':getAll');
+		/**
+		 * @api /tickets/{id}
+		 * @method DELETE
+		 */
+		$group->delete('/{id}', TicketController::class . ':cancel');
+	});
 };

@@ -6,9 +6,9 @@ namespace App\Application\Controllers;
 
 use App\Application\DAO\DishDAO;
 use App\Application\Helpers\Util;
+use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpNotFoundException;
 class DishController
 {
 	/**
@@ -190,36 +190,6 @@ class DishController
 	{
 		$dishes = $this->dishDAO->deleteDishFromCombo(intval($args['id']), intval($args['dish_id']));
 		$response->getBody()->write(Util::encodeData($dishes, "dishes"));
-		return $response->withHeader('Content-Type', 'application/json');
-	}
-
-	/**
-	 * @param Request $request
-	 * @param Response $response
-	 * @return Response
-	 */
-	public function sell(Request $request, Response $response): Response
-	{
-		$sellDAO = new \App\Application\DAO\SellDAO();
-		$jwt = $request->getAttribute("token");
-		$body = $request->getParsedBody();
-		$result = $sellDAO->sell($body['items'], $jwt['user_id'], $jwt['branch_id']);
-		$response->getBody()->write(Util::encodeData($result, "response"));
-		return $response->withHeader('Content-Type', 'application/json');
-	}
-
-	/**
-	 * @param Request $request
-	 * @param Response $response
-	 * @return Response
-	 */
-	public function courtesy(Request $request, Response $response): Response
-	{
-		$courtesyDAO = new \App\Application\DAO\courtesyDAO();
-		$jwt = $request->getAttribute("token");
-		$body = $request->getParsedBody();
-		$result = $courtesyDAO->courtesy($body['items'], $body['reason'], $jwt['user_id'], $jwt['branch_id']);
-		$response->getBody()->write(Util::encodeData($result, "response"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 }

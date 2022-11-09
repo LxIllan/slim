@@ -12,7 +12,7 @@ return function (App $app) {
 		 * @api /dishes
 		 * @method POST
 		 */
-		$group->post('', DishController::class . ':create');		
+		$group->post('', DishController::class . ':create');
 
 		/**
 		 * @api /dishes/sold
@@ -38,16 +38,4 @@ return function (App $app) {
 		 */
 		$group->delete('/{id}', DishController::class . ':delete');
 	});
-
-	/**
-	 * @api /sell
-	 * @method POST
-	 */
-	$app->post('/sell', DishController::class . ':sell');
-
-	/**
-	 * @api /courtesy
-	 * @method POST
-	 */
-	$app->post('/courtesy', DishController::class . ':courtesy');
 };

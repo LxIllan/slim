@@ -20,33 +20,33 @@ class FoodDAO extends DAO
 		parent::__construct();
 	}
 
-	/**
-	 * @param int $id
-	 * @return bool
-	 */
-	public function delete(int $id): bool
-	{
-		if ($id == 1) {
-			$data = [
-				'is_deleted' => 1,
-				'deleted_at' => date('Y-m-d H:i:s')
-			];
-			$query = Util::prepareUpdateQuery($id, $data, $this->table);
-			if ($this->connection->update($query)) {
-				$dishDAO = new DishDAO();
-				$dishes = $dishDAO->getDishesByFood($id);
-				foreach ($dishes as $dish) {
-					$dishDAO->delete(intval($dish->id));
-				}
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			$query = Util::prepareDeleteQuery($id, $this->table);
-			return $this->connection->delete($query);
-		}
-	}
+	// /**
+	//  * @param int $id
+	//  * @return bool
+	//  */
+	// public function delete(int $id): bool
+	// {
+	// 	if ($id == 1) {
+	// 		$data = [
+	// 			'is_deleted' => 1,
+	// 			'deleted_at' => date('Y-m-d H:i:s')
+	// 		];
+	// 		$query = Util::prepareUpdateQuery($id, $data, $this->table);
+	// 		if ($this->connection->update($query)) {
+	// 			$dishDAO = new DishDAO();
+	// 			$dishes = $dishDAO->getDishesByFood($id);
+	// 			foreach ($dishes as $dish) {
+	// 				$dishDAO->delete(intval($dish->id));
+	// 			}
+	// 			return true;
+	// 		} else {
+	// 			return false;
+	// 		}
+	// 	} else {
+	// 		$query = Util::prepareDeleteQuery($id, $this->table);
+	// 		return $this->connection->delete($query);
+	// 	}
+	// }
 
 	/**
 	 * @param int $branchId

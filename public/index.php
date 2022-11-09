@@ -54,6 +54,9 @@ $routes($app);
 $routes = require __DIR__ . '/../app/routes/category.php';
 $routes($app);
 
+$routes = require __DIR__ . '/../app/routes/courtesy.php';
+$routes($app);
+
 $routes = require __DIR__ . '/../app/routes/combo.php';
 $routes($app);
 
