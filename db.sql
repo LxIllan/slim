@@ -1,7 +1,7 @@
 CREATE TABLE branch (
 	id TINYINT(3) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(45) NOT NULL,
-	logo_path VARCHAR(200) DEFAULT NULL,
+	logo VARCHAR(200) DEFAULT NULL,
 	ticket_number INT(11) UNSIGNED NULL DEFAULT 1,
 	phone CHAR(15) NOT NULL,
 	note TEXT DEFAULT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE branch (
 	deleted_at TIMESTAMP NULL DEFAULT NULL
 );
 
-INSERT INTO branch (name, location, logo_path, ticket_number, phone_number, note, admin_email) VALUES
+INSERT INTO branch (name, location, logo, ticket_number, phone_number, note, admin_email) VALUES
 	('Pollo Rey', 'Santa Cruz', 'img/logo/1.jpg', 1, '333 333 3333', 'Write notes here!', 'Fernando.Illan@syss.tech')
 
 CREATE TABLE category (
@@ -143,7 +143,7 @@ CREATE TABLE user (
 	phone VARCHAR(25) NOT NULL,
 	address VARCHAR(50) NOT NULL,
 	hash VARCHAR(255) NOT NULL,
-	photo_path VARCHAR(200) NOT NULL,
+	photo VARCHAR(200) NOT NULL,
 	enabled BOOLEAN NULL DEFAULT 0,
 	root BOOLEAN NULL DEFAULT 0,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -9,8 +9,8 @@ use App\Application\DAO\UserDAO;
 use App\Application\Helpers\Util;
 use App\Application\DAO\BranchDAO;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Exception\HttpForbiddenException;
 use App\Application\Helpers\EmailTemplate;
+use Slim\Exception\HttpForbiddenException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -55,7 +55,7 @@ class UserController
 			$photoPath .= "/public/images/user/default.jpg";
 		}
 		unset($body['image']);
-		$body["photo_path"] = $photoPath;
+		$body["photo"] = $photoPath;
 
 		$user = $this->userDAO->create($body);
 		if ($user) {
@@ -125,7 +125,7 @@ class UserController
 		if (!empty($uploadedFiles)) {
 			$uploadedFile = $uploadedFiles['image'];
 			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-				$body["photo_path"] = Util::moveUploadedFile('user', $uploadedFile);
+				$body["photo"] = Util::moveUploadedFile('user', $uploadedFile);
 			}
 		}
 		unset($body['image']);
