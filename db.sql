@@ -140,7 +140,7 @@ CREATE TABLE user (
 	name VARCHAR(45) NOT NULL,
 	last_name VARCHAR(45) NOT NULL,
 	email VARCHAR(75) NOT NULL,
-	phone_number VARCHAR(25) NOT NULL,
+	phone VARCHAR(25) NOT NULL,
 	address VARCHAR(50) NOT NULL,
 	hash VARCHAR(255) NOT NULL,
 	photo_path VARCHAR(200) NOT NULL,
