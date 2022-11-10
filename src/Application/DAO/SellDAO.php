@@ -97,7 +97,7 @@ class SellDAO
 				$dataToInsert = [
 					"ticket_id" => $ticketId,
 					"dish_id" => $dish->id,
-					"quantity" => $item['qty'],
+					"qty" => $item['qty'],
 					"price" => $dish->price * $item['qty']
 				];
 				$query = Util::prepareInsertQuery($dataToInsert, 'dishes_in_ticket');
@@ -175,11 +175,11 @@ class SellDAO
 		$result = [];
 		foreach ($items as $item) {
 			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['is_combo', 'serving', 'food_id', 'price']);
-			$result = $this->registerCourtesy(intval($dishToSell->id), intval($item['quantity']), floatval($dishToSell->price), $reason, $userId, $branchId);
+			$result = $this->registerCourtesy(intval($dishToSell->id), intval($item['qty']), floatval($dishToSell->price), $reason, $userId, $branchId);
 			if ($dishToSell->is_combo) {
-				$this->extractDishesFromCombo(intval($dishToSell->id), intval($item['quantity']));
+				$this->extractDishesFromCombo(intval($dishToSell->id), intval($item['qty']));
 			} else {
-				$serving = $dishToSell->serving * $item['quantity'];
+				$serving = $dishToSell->serving * $item['qty'];
 				$this->subtractFood(intval($dishToSell->food_id), $serving);
 			}
 		}
@@ -188,19 +188,19 @@ class SellDAO
 
 	/**
 	 * @param int $dishId
-	 * @param int $quantity
+	 * @param int $qty
 	 * @param float $price
 	 * @param string $reason
 	 * @param int $userId
 	 * @param int $branchId
 	 * @return array
 	 */
-	private function registerCourtesy(int $dishId, int $quantity, float $price, string $reason, int $userId, int $branchId): array
+	private function registerCourtesy(int $dishId, int $qty, float $price, string $reason, int $userId, int $branchId): array
 	{
 		$dataToInsert = [
 			"dish_id" => $dishId,
-			"quantity" => $quantity,
-			"price" => $price * $quantity,
+			"qty" => $qty,
+			"price" => $price * $qty,
 			"reason" => $reason,
 			"user_id" => $userId,
 			"branch_id" => $branchId
@@ -229,7 +229,7 @@ class SellDAO
 		}
 
 		$query = <<<SQL
-			SELECT courtesy.id, courtesy.date, dish.name, courtesy.quantity, courtesy.price, courtesy.reason,
+			SELECT courtesy.id, courtesy.date, dish.name, courtesy.qty, courtesy.price, courtesy.reason,
 				CONCAT(user.name, ' ' , user.last_name) AS cashier
 			FROM courtesy
 			INNER JOIN dish ON courtesy.dish_id = dish.id

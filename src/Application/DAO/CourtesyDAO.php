@@ -42,7 +42,7 @@ class CourtesyDAO
 		}
 
 		$query = <<<SQL
-			SELECT courtesy.id, courtesy.date, dish.name, courtesy.quantity, courtesy.price, courtesy.reason,
+			SELECT courtesy.id, courtesy.date, dish.name, courtesy.qty, courtesy.price, courtesy.reason,
 				CONCAT(user.name, ' ' , user.last_name) AS cashier
 			FROM courtesy
 			INNER JOIN dish ON courtesy.dish_id = dish.id
@@ -84,9 +84,9 @@ class CourtesyDAO
 		$dish = $dishDAO->getById(intval($courtesy->dish_id), ['is_combo', 'serving', 'food_id']);
 
 		if ($dish->is_combo) {
-			$this->extractDishesFromCombo(intval($dish->id), intval($courtesy->quantity));
+			$this->extractDishesFromCombo(intval($dish->id), intval($courtesy->qty));
 		} else {
-			$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $courtesy->quantity));
+			$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $courtesy->qty));
 		}
 
 		$dataToUpdate = [
