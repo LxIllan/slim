@@ -168,10 +168,11 @@ class SellDAO
 	 * @param string $reason
 	 * @param int $userId
 	 * @param int $branchId
-	 * @return bool
+	 * @return array
 	 */
-	public function courtesy(array $items, string $reason, int $userId, int $branchId) {
-		$result = false;
+	public function courtesy(array $items, string $reason, int $userId, int $branchId): array
+	{
+		$result = [];
 		foreach ($items as $item) {
 			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['is_combo', 'serving', 'food_id', 'price']);
 			$result = $this->registerCourtesy(intval($dishToSell->id), intval($item['quantity']), floatval($dishToSell->price), $reason, $userId, $branchId);
@@ -192,20 +193,24 @@ class SellDAO
 	 * @param string $reason
 	 * @param int $userId
 	 * @param int $branchId
-	 * @return bool
+	 * @return array
 	 */
-	private function registerCourtesy(int $dishId, int $quantity, float $price, string $reason, int $userId, int $branchId): bool
+	private function registerCourtesy(int $dishId, int $quantity, float $price, string $reason, int $userId, int $branchId): array
 	{
 		$dataToInsert = [
 			"dish_id" => $dishId,
 			"quantity" => $quantity,
-			"price" => $price,
+			"price" => $price * $quantity,
 			"reason" => $reason,
 			"user_id" => $userId,
 			"branch_id" => $branchId
 		];
-		$query = Util::prepareInsertQuery($dataToInsert, 'courtesy');
-		return $this->connection->insert($query);
+		
+		if ($this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'courtesy'))) {
+			return $dataToInsert;
+		} else {
+			throw new Exception('Error to register courtesy.');
+		}
 	}
 
 	/**
