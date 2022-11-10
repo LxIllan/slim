@@ -77,7 +77,8 @@ class TicketController
 	 */
 	public function cancel(Request $request, Response $response, $args): Response
 	{
-		$response->getBody()->write(Util::encodeData($args['id'], "id"));
+		$result = $this->ticketDAO->cancel(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($result, "deleted"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 }
