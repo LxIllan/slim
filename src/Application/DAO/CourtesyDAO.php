@@ -8,7 +8,6 @@ use StdClass;
 use Exception;
 use App\Application\Helpers\Util;
 use App\Application\Helpers\Connection;
-use App\Application\Helpers\EmailTemplate;
 
 class CourtesyDAO
 {
@@ -61,5 +60,75 @@ class CourtesyDAO
 		$std->items = $result->fetch_all(MYSQLI_ASSOC);
 		$result->free();
 		return $std;
+	}
+
+	/**
+	 * @param int $id
+	 * @return bool
+	 */
+	public function cancel(int $id): bool
+	{
+		$courtesy = $this->connection
+			->select("SELECT * FROM $this->table WHERE id = $id")
+			->fetch_object();
+
+		if (is_null($courtesy)) {
+			throw new Exception("Register not found.");
+		}
+
+		if ($courtesy->is_deleted) {
+			throw new Exception("This register has already been canceled.");
+		}
+
+		$dishDAO = new DishDAO();
+		$dish = $dishDAO->getById(intval($courtesy->dish_id), ['is_combo', 'serving', 'food_id']);
+
+		if ($dish->is_combo) {
+			$this->extractDishesFromCombo(intval($dish->id), intval($courtesy->quantity));
+		} else {
+			$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $courtesy->quantity));
+		}
+
+		$dataToUpdate = [
+			"is_deleted" => 1,
+			"deleted_at" => date('Y-m-d H:i:s')
+		];
+		
+		return $this->connection->update(
+			Util::prepareUpdateQuery($id, $dataToUpdate, $this->table)
+		);
+	}
+
+	/**
+	 * @param int $comboId
+	 * @param int $qty
+	 * @return void
+	 */
+	public function extractDishesFromCombo(int $comboId, int $qty): void
+	{
+		$dishes = $this->dishDAO->getDishesByCombo($comboId);
+		foreach ($dishes as $dish) {
+			if ($dish->is_combo) {
+				$this->extractDishesFromCombo(intval($dish->id), $qty);
+			} else {
+				$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $qty));
+			}
+		}
+	}
+
+	/**
+	 * @param int $foodId
+	 * @param float $qty
+	 * @return bool
+	 * @throws Exception
+	 */
+	private function addQtyFood(int $foodId, float $qty): bool
+	{
+		$foodDAO = new FoodDAO();
+		$food = $foodDAO->getById($foodId, ['qty']);
+		$newQty = $food->qty + $qty;
+		return $this->connection->update(
+			Util::prepareUpdateQuery($foodId, ["qty" => $newQty], 'food')
+		);
 	}
 }

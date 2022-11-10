@@ -31,8 +31,8 @@ class CourtesyController
 		$sellDAO = new \App\Application\DAO\SellDAO();
 		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
-		$result = $sellDAO->courtesy($body['items'], $body['reason'], $jwt['user_id'], $jwt['branch_id']);
-		$response->getBody()->write(Util::encodeData($result, "response"));
+		$courtesy = $sellDAO->courtesy($body['items'], $body['reason'], $jwt['user_id'], $jwt['branch_id']);
+		$response->getBody()->write(Util::encodeData($courtesy, "courtesy", 201));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 
@@ -61,7 +61,8 @@ class CourtesyController
 	 */
 	public function cancel(Request $request, Response $response, $args): Response
 	{
-		$response->getBody()->write(Util::encodeData($args['id'], "id"));
+		$result = $this->courtesyDAO->cancel(intval($args['id']));
+		$response->getBody()->write(Util::encodeData($result, "deleted"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 }
