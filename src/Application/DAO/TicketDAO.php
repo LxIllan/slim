@@ -42,7 +42,7 @@ class TicketDAO
 		}
 		
 		$query = <<<SQL
-			SELECT dish.id, dish.name, dishes_in_ticket.quantity, dishes_in_ticket.price
+			SELECT dish.id, dish.name, dishes_in_ticket.qty, dishes_in_ticket.price
 			FROM dishes_in_ticket
 			JOIN dish ON dishes_in_ticket.dish_id = dish.id
 			WHERE dishes_in_ticket.ticket_id = $ticket->id
@@ -99,7 +99,7 @@ class TicketDAO
 			$ticketId = $row['id'];
 			$tickets->total += $row['total'];
 			$query = <<<SQL
-				SELECT dish.id, dish.name, dishes_in_ticket.quantity, dishes_in_ticket.price
+				SELECT dish.id, dish.name, dishes_in_ticket.qty, dishes_in_ticket.price
 				FROM dishes_in_ticket
 				JOIN dish ON dishes_in_ticket.dish_id = dish.id
 				WHERE dishes_in_ticket.ticket_id = $ticketId
@@ -129,9 +129,9 @@ class TicketDAO
 		foreach ($ticket->dishes as $dishInTicket) {
 			$dish = $dishDAO->getById(intval($dishInTicket['id']), ['is_combo', 'serving', 'food_id']);
 			if ($dish->is_combo) {
-				$this->extractDishesFromCombo(intval($dish->id), intval($dishInTicket['quantity']));
+				$this->extractDishesFromCombo(intval($dish->id), intval($dishInTicket['qty']));
 			} else {
-				$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $dishInTicket['quantity']));
+				$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $dishInTicket['qty']));
 			}
 		}
 

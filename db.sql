@@ -330,7 +330,7 @@ INSERT INTO ticket (ticket_number, date, branch_id, user_id) VALUES
 CREATE TABLE dishes_in_ticket (
 	  ticket_id INT(11) UNSIGNED NOT NULL,
 	  dish_id SMALLINT(5) UNSIGNED NOT NULL,
-	  quantity TINYINT(3) UNSIGNED NOT NULL,
+	  qty TINYINT(3) UNSIGNED NOT NULL,
 	  price FLOAT(7,2) NOT NULL,
 	  FOREIGN KEY (ticket_id)
 		  REFERENCES ticket (id)
