@@ -38,7 +38,7 @@ class CourtesyDAO
 		$dishDAO = new DishDAO();
 		$result = [];
 		foreach ($items as $item) {
-			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['is_combo', 'serving', 'food_id', 'price']);
+			$dishToSell = $dishDAO->getById($item['dish_id'], ['is_combo', 'serving', 'food_id', 'price']);
 			$result = $this->registerCourtesy(intval($dishToSell->id), intval($item['qty']), floatval($dishToSell->price), $reason, $userId, $branchId);
 			if ($dishToSell->is_combo) {
 				$dishDAO->extractDishesFromCombo(intval($dishToSell->id), intval($item['qty']), 'subtractQtyFood');

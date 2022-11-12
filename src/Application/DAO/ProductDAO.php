@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
-use App\Application\Helpers\Util;
-use App\Application\Helpers\EmailTemplate;
-use App\Application\Model\Product;
 use StdClass;
 use Exception;
+use App\Application\Helpers\Util;
+use App\Application\Model\Product;
+use App\Application\Helpers\EmailTemplate;
 
 class ProductDAO extends DAO
 {
@@ -20,7 +20,7 @@ class ProductDAO extends DAO
 	public function __construct()
 	{
 		parent::__construct();
-	}	
+	}
 
 	/**
 	 * @param int $branchId
@@ -34,6 +34,7 @@ class ProductDAO extends DAO
 		while ($row = $result->fetch_assoc()) {
 			$dishes[] = $this->getById(intval($row['id']));
 		}
+		$result->free();
 		return $dishes;
 	}
 
@@ -58,7 +59,7 @@ class ProductDAO extends DAO
 			FROM $table
 			INNER JOIN product ON product.id = $table.product_id
 			INNER JOIN user ON user.id = $table.user_id
-			WHERE product.branch_id = $branchId 
+			WHERE product.branch_id = $branchId
 				AND DATE($table.date) BETWEEN '$from' AND '$to'
 				AND $table.is_deleted = '$isDeleted'
 			ORDER BY $table.date DESC
@@ -129,7 +130,8 @@ class ProductDAO extends DAO
 		$this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'supplied_product'));
 
 		$dataToUpdate = [
-			"qty" => $newQty
+			"qty" => $newQty,
+			"is_notify_sent" => false
 		];
 		return $this->edit($productId, $dataToUpdate);
 	}
@@ -154,7 +156,7 @@ class ProductDAO extends DAO
 		$product = $this->edit($productId, $dataToUpdateProduct);
 
 		if (($newQty <= $product->qty_notify) && ($product->is_notify_sent == 0)) {
-			$branchDAO = new \App\Application\DAO\BranchDAO();
+			$branchDAO = new BranchDAO();
 			$branch = $branchDAO->getById(intval($product->branch_id));
 			$data = [
 				'subject' => "Notificación de: $branch->name",
@@ -196,15 +198,15 @@ class ProductDAO extends DAO
 		$suppliedProduct = $this->connection
 			->select("SELECT * FROM $table WHERE id = $id")
 			->fetch_object();
-		
+
 		if (is_null($suppliedProduct)) {
 			throw new Exception("Register not found.");
 		}
-		
+
 		if ($suppliedProduct->is_deleted) {
 			throw new Exception("This register has already been canceled.");
 		}
-		
+
 		$data = [
 			"is_deleted" => 1,
 			"deleted_at" => date('Y-m-d H:i:s')
@@ -213,7 +215,7 @@ class ProductDAO extends DAO
 		$query = Util::prepareUpdateQuery($id, $data, $table);
 		if ($this->connection->update($query)) {
 			$product = $this->getById(intval($suppliedProduct->product_id));
-			
+
 			$suppliedProduct->qty *= (str_contains($table, 'used')) ? 1 : -1;
 			$newQty = $product->qty + $suppliedProduct->qty;
 

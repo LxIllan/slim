@@ -33,6 +33,7 @@ class DishDAO extends DAO
 		while ($row = $result->fetch_assoc()) {
 			$dishes[] = $this->getById(intval($row['id']));
 		}
+		$result->free();
 		return $dishes;
 	}
 
@@ -47,6 +48,7 @@ class DishDAO extends DAO
 		while ($row = $result->fetch_assoc()) {
 			$dishes[] = $this->getById(intval($row['dish_id']));
 		}
+		$result->free();
 		usort($dishes, fn ($a, $b) => strcmp($a->name, $b->name));
 		return $dishes;
 	}
@@ -75,6 +77,7 @@ class DishDAO extends DAO
 		while ($row = $result->fetch_assoc()) {
 			$dishes[] = $this->getById(intval($row['id']));
 		}
+		$result->free();
 		return $dishes;
 	}
 
@@ -90,6 +93,7 @@ class DishDAO extends DAO
 		while ($row = $result->fetch_assoc()) {
 			$dishes[] = $this->getById(intval($row['id']));
 		}
+		$result->free();
 		return $dishes;
 	}
 
@@ -105,6 +109,7 @@ class DishDAO extends DAO
 		while ($row = $result->fetch_assoc()) {
 			$dishes[] = $this->getById(intval($row['id']));
 		}
+		$result->free();
 		return $dishes;
 	}
 
@@ -238,7 +243,9 @@ class DishDAO extends DAO
 				throw new Exception('Error to send email notification to admin.');
 			}
 		}
-		return $this->connection->update(Util::prepareUpdateQuery($foodId, $dataToUpdate, 'food'));
+		return $this->connection->update(
+			Util::prepareUpdateQuery($foodId, $dataToUpdate, 'food')
+		);
 	}
 
 	/**

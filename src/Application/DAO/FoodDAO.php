@@ -61,6 +61,7 @@ class FoodDAO extends DAO
 		while ($row = $result->fetch_array()) {
 			$food[] = $this->getById(intval($row['id']));
 		}
+		$result->free();
 		return $food;
 	}
 
@@ -109,6 +110,7 @@ class FoodDAO extends DAO
 		while ($row = $result->fetch_array()) {
 			$food[] = $this->getById(intval($row['id']));
 		}
+		$result->free();
 		return $food;
 	}
 
@@ -220,7 +222,7 @@ class FoodDAO extends DAO
 	public function getSold(int $branchId, ?string $from, ?string $to): array
 	{
 		$foodSold = [];
-		$dishDAO = new \App\Application\DAO\DishDAO();
+		$dishDAO = new DishDAO();
 		$soldDishes = $dishDAO->getSold($branchId, $from, $to);
 
 		foreach ($soldDishes as $soldDish) {

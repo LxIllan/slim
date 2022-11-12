@@ -181,8 +181,10 @@ class TicketDAO
 			while ($rowDish = $resultDish->fetch_assoc()) {
 				$item['dishes'][] = $rowDish;
 			}
+			$resultDish->free();
 			$tickets->items[] = $item;
 		}
+		$result->free();
 		return $tickets;
 	}
 

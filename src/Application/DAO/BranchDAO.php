@@ -25,10 +25,10 @@ class BranchDAO extends DAO
 	{
 		$branches = [];
 		$result = $this->connection->select("SELECT id FROM $this->table");
-
 		while ($row = $result->fetch_assoc()) {
 			$branches[] = $this->getById(intval($row['id']));
 		}
+		$result->free();
 		return $branches;
 	}
 }

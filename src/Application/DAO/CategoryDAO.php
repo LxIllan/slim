@@ -26,8 +26,9 @@ class CategoryDAO extends DAO
 		$categories = [];
 		$result = $this->connection->select("SELECT id FROM $this->table ORDER BY name");
 		while ($row = $result->fetch_assoc()) {
-			$categories[] = $this->getById(intval($row['id']));
+			$categories[] = $this->getById(intval($row['id']), ['name']);
 		}
+		$result->free();
 		return $categories;
 	}
 
@@ -38,7 +39,7 @@ class CategoryDAO extends DAO
 	 */
 	public function getCategoriesWithDishes(int $branchId, bool $getAll): array
 	{
-		$dishDAO = new \App\Application\DAO\DishDAO();
+		$dishDAO = new DishDAO();
 		$categories = $this->getAll();
 		foreach ($categories as $category) {
 			$category->dishes = $dishDAO->getDishesByCategory(intval($category->id), $branchId, $getAll);
