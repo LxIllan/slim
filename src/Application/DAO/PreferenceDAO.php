@@ -35,12 +35,8 @@ class PreferenceDAO extends DAO
 	 */
 	public function getAll(int $branchId): array
 	{
-		$preferences = [];
-		$result = $this->connection->select("SELECT id FROM $this->table WHERE branch_id = $branchId");
-
-		while ($row = $result->fetch_assoc()) {
-			$preferences[] = $this->getById(intval($row['id']));
-		}
-		return $preferences;
+		return $this->connection
+			->select("SELECT id, `key`, `value` FROM $this->table WHERE branch_id = $branchId")
+			->fetch_all(MYSQLI_ASSOC);
 	}
 }
