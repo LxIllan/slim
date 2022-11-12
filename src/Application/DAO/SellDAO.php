@@ -39,77 +39,6 @@ class SellDAO
 	}
 
 	/**
-	 * @param array $items
-	 * @param int $userId
-	 * @param int $branchId
-	 * @return Ticket|null
-	 * @throws Exception
-	 */
-	public function sell(array $items, int $userId, int $branchId): Ticket|null
-	{
-		$result = $this->sellWithTicket($items, $userId, $branchId);
-		foreach ($items as $item) {
-			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['is_combo', 'serving', 'food_id']);
-			if ($dishToSell->is_combo) {
-				$this->extractDishesFromCombo(intval($dishToSell->id), intval($item['qty']));
-			} else {
-				$serving = $dishToSell->serving * $item['qty'];
-				$this->subtractFood(intval($dishToSell->food_id), $serving);
-			}
-		}
-		return $result;
-	}
-
-	private function calcTotalFromDishes(array $items): float
-	{
-		$total = 0;
-		foreach ($items as $item) {
-			$total += $this->dishDAO->getById($item['dish_id'], ['price'])->price * $item['qty'];
-		}
-		return $total;
-	}
-
-	/**
-	 * @param array $items
-	 * @param int $userId
-	 * @param int $branchId
-	 * @return Ticket|null
-	 * @throws Exception
-	 */
-	public function sellWithTicket(array $items, int $userId, int $branchId): Ticket|null
-	{
-		$TicketDAO = new \App\Application\DAO\TicketDAO();
-		$numTicket = $TicketDAO->getNextNumber($branchId);
-		$total = $this->calcTotalFromDishes($items);
-		$data = [
-			"ticket_number" => $numTicket,
-			"total" => $total,
-			"branch_id" => $branchId,
-			"user_id" => $userId
-		];
-		$query = Util::prepareInsertQuery($data, 'ticket');
-		$this->connection->insert($query);
-		$ticket = $TicketDAO->getById($this->connection->getLastId());
-		if ($ticket) {
-			$ticketId = $ticket->id;
-			foreach ($items as $item) {
-				$dish = $this->dishDAO->getById($item['dish_id'], ['price']);
-				$dataToInsert = [
-					"ticket_id" => $ticketId,
-					"dish_id" => $dish->id,
-					"qty" => $item['qty'],
-					"price" => $dish->price * $item['qty']
-				];
-				$query = Util::prepareInsertQuery($dataToInsert, 'dishes_in_ticket');
-				if (!$this->connection->insert($query)) {
-					return null;
-				}
-			}
-		}
-		return $TicketDAO->getById(intval($ticket->id));
-	}
-
-	/**
 	 * @param int $comboId
 	 * @param int $qty
 	 * @return void
@@ -135,7 +64,7 @@ class SellDAO
 	 * @throws Exception
 	 */
 	private function subtractFood(int $foodId, float $qty): bool
-	{		
+	{
 		$food = $this->foodDAO->getById($foodId);
 
 		$newQty = $food->qty - $qty;
@@ -205,7 +134,7 @@ class SellDAO
 			"user_id" => $userId,
 			"branch_id" => $branchId
 		];
-		
+
 		if ($this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'courtesy'))) {
 			return $dataToInsert;
 		} else {
@@ -239,7 +168,7 @@ class SellDAO
 				AND courtesy.is_deleted = '$isDeleted'
 			ORDER BY courtesy.date DESC
 		SQL;
-		
+
 		$std = new StdClass();
 		$result = $this->connection->select($query);
 		$std->length = $result->num_rows;

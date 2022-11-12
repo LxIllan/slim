@@ -29,10 +29,9 @@ class TicketController
 	 */
 	public function create(Request $request, Response $response): Response
 	{
-		$sellDAO = new \App\Application\DAO\SellDAO();
 		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
-		$result = $sellDAO->sell($body['items'], $jwt['user_id'], $jwt['branch_id']);
+		$result = $this->ticketDAO->create($body['items'], $jwt['user_id'], $jwt['branch_id']);
 		$response->getBody()->write(Util::encodeData($result, "ticket", 201));
 		return $response->withHeader('Content-Type', 'application/json');
 	}

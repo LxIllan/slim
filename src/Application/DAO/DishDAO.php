@@ -7,6 +7,7 @@ namespace App\Application\DAO;
 use Exception;
 use App\Application\Model\Dish;
 use App\Application\Helpers\Util;
+use App\Application\Helpers\EmailTemplate;
 
 class DishDAO extends DAO
 {
@@ -183,5 +184,77 @@ class DishDAO extends DAO
 		$result->free();
 		usort($dishesSold, fn ($a, $b) => strcmp($a["name"], $b["name"]));
 		return $dishesSold;
+	}
+
+	/**
+	 * @param int $comboId
+	 * @param int $qty
+	 * @return void
+	 * @throws Exception
+	 */
+	public function extractDishesFromCombo(int $comboId, int $qty, callable $function): void
+	{
+		$dishes = $this->dishDAO->getDishesByCombo($comboId);
+		foreach ($dishes as $dish) {
+			if ($dish->is_combo) {
+				$this->extractDishesFromCombo(intval($dish->id), $qty, $function);
+			} else {
+				$serving = $dish->serving * $qty;
+				call_user_func($function, intval($dish->food_id), $serving);
+				// $this->subtractFood(intval($dish->food_id), $serving);
+			}
+		}
+	}
+
+	/**
+	 * @param int $foodId
+	 * @param float $qty
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function subtractQtyFood(int $foodId, float $qty): bool
+	{
+		$foodDAO = new FoodDAO($this->connection);
+		$food = $foodDAO->getById($foodId);
+
+		$newQty = $food->qty - $qty;
+		$dataToUpdate = [
+			"qty" => $newQty
+		];
+
+		if (($newQty <= $food->qty_notify) && ($food->is_notify_sent == 0)) {
+			$branchDAO = new BranchDAO();
+			$branch = $branchDAO->getById(intval($food->branch_id));
+			$data = [
+				'subject' => "Notificación de: $branch->name",
+				'food_name' => $food->name,
+				'qty' => $newQty,
+				'branch_name' => $branch->name,
+				'branch_location' => $branch->name,
+				'email' => $branch->admin_email
+			];
+			if (Util::sendMail($data, EmailTemplate::NOTIFICATION_TO_ADMIN)) {
+				$dataToUpdate["is_notify_sent"] = true;
+			} else {
+				throw new Exception('Error to send email notification to admin.');
+			}
+		}
+		return $this->connection->update(Util::prepareUpdateQuery($foodId, $dataToUpdate, 'food'));
+	}
+
+	/**
+	 * @param int $foodId
+	 * @param float $qty
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function addQtyFood(int $foodId, float $qty): bool
+	{
+		$foodDAO = new FoodDAO();
+		$food = $foodDAO->getById($foodId, ['qty']);
+		$newQty = $food->qty + $qty;
+		return $this->connection->update(
+			Util::prepareUpdateQuery($foodId, ["qty" => $newQty], 'food')
+		);
 	}
 }

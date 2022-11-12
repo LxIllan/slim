@@ -28,6 +28,79 @@ class TicketDAO
 	}
 
 	/**
+	 * @param array $items
+	 * @param int $userId
+	 * @param int $branchId
+	 * @return Ticket|null
+	 * @throws Exception
+	 */
+	public function create(array $items, int $userId, int $branchId): Ticket|null
+	{
+		$dishDAO = new DishDAO();
+		$result = $this->sellWithTicket($items, $userId, $branchId);
+		foreach ($items as $item) {
+			$dishToSell = $dishDAO->getById($item['dish_id'], ['is_combo', 'serving', 'food_id']);
+			if ($dishToSell->is_combo) {
+				$dishDAO->extractDishesFromCombo(intval($dishToSell->id), intval($item['qty']), 'subtractQtyFood');
+			} else {
+				$serving = $dishToSell->serving * $item['qty'];
+				$dishDAO->subtractQtyFood(intval($dishToSell->food_id), $serving);
+			}
+		}
+		return $result;
+	}
+
+	private function calcTotalFromDishes(array $items): float
+	{
+		$dishDAO = new DishDAO();
+		$total = 0;
+		foreach ($items as $item) {
+			$total += $dishDAO->getById($item['dish_id'], ['price'])->price * $item['qty'];
+		}
+		return $total;
+	}
+
+	/**
+	 * @param array $items
+	 * @param int $userId
+	 * @param int $branchId
+	 * @return Ticket|null
+	 * @throws Exception
+	 */
+	public function sellWithTicket(array $items, int $userId, int $branchId): Ticket|null
+	{
+		$dishDAO = new DishDAO();
+		$numTicket = $this->getNextNumber($branchId);
+		$total = $this->calcTotalFromDishes($items);
+		$data = [
+			"ticket_number" => $numTicket,
+			"total" => $total,
+			"branch_id" => $branchId,
+			"user_id" => $userId
+		];
+		$query = Util::prepareInsertQuery($data, 'ticket');
+		$this->connection->insert($query);
+		$ticket = $this->getById($this->connection->getLastId());
+		if ($ticket) {
+			$ticketId = $ticket->id;
+			foreach ($items as $item) {
+				$dish = $dishDAO->getById($item['dish_id'], ['price']);
+				$dataToInsert = [
+					"ticket_id" => $ticketId,
+					"dish_id" => $dish->id,
+					"qty" => $item['qty'],
+					"price" => $dish->price * $item['qty']
+				];
+				$query = Util::prepareInsertQuery($dataToInsert, 'dishes_in_ticket');
+				if (!$this->connection->insert($query)) {
+					return null;
+				}
+			}
+		}
+		return $this->getById(intval($ticket->id));
+	}
+
+	/**
 	 * @param int $id
 	 * @return Ticket|null
 	 */
@@ -129,9 +202,9 @@ class TicketDAO
 		foreach ($ticket->dishes as $dishInTicket) {
 			$dish = $dishDAO->getById(intval($dishInTicket['id']), ['is_combo', 'serving', 'food_id']);
 			if ($dish->is_combo) {
-				$this->extractDishesFromCombo(intval($dish->id), intval($dishInTicket['qty']));
+				$dishDAO->extractDishesFromCombo(intval($dish->id), intval($dishInTicket['qty']), 'addQtyFood');
 			} else {
-				$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $dishInTicket['qty']));
+				$dishDAO->addQtyFood(intval($dish->food_id), floatval($dish->serving * $dishInTicket['qty']));
 			}
 		}
 
@@ -142,39 +215,6 @@ class TicketDAO
 
 		return $this->connection->update(
 			Util::prepareUpdateQuery($id, $dataToUpdate, $this->table)
-		);
-	}
-
-	/**
-	 * @param int $comboId
-	 * @param int $qty
-	 * @return void
-	 */
-	public function extractDishesFromCombo(int $comboId, int $qty): void
-	{
-		$dishes = $this->dishDAO->getDishesByCombo($comboId);
-		foreach ($dishes as $dish) {
-			if ($dish->is_combo) {
-				$this->extractDishesFromCombo(intval($dish->id), $qty);
-			} else {
-				$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $qty));
-			}
-		}
-	}
-
-	/**
-	 * @param int $foodId
-	 * @param float $qty
-	 * @return bool
-	 * @throws Exception
-	 */
-	private function addQtyFood(int $foodId, float $qty): bool
-	{
-		$foodDAO = new FoodDAO();
-		$food = $foodDAO->getById($foodId, ['qty']);
-		$newQty = $food->qty + $qty;
-		return $this->connection->update(
-			Util::prepareUpdateQuery($foodId, ["qty" => $newQty], 'food')
 		);
 	}
 }
