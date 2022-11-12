@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
+use Exception;
 use App\Application\DAO\FoodDAO;
 use App\Application\Helpers\Util;
+use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpNotFoundException;
-use Exception;
 
 class FoodController
 {
@@ -49,7 +49,7 @@ class FoodController
 			"category_id" => $food->category_id,
 			"branch_id" => $food->branch_id
 		]);
-		
+
 		$response->getBody()->write(Util::encodeData(["food" => $food, "dish" => $dish], "food", 201));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
@@ -62,7 +62,7 @@ class FoodController
 	 */
 	public function getById(Request $request, Response $response, array $args): Response
 	{
-		$food = $this->foodDAO->getById(intval($args['id']));        
+		$food = $this->foodDAO->getById(intval($args['id']));
 		if ($food) {
 			$response->getBody()->write(Util::encodeData($food, "food"));
 			return $response->withHeader('Content-Type', 'application/json');
@@ -86,7 +86,7 @@ class FoodController
 
 	/**
 	 * @param Request $request
-	 * @param Response $response	 
+	 * @param Response $response
 	 * @return Response
 	 */
 	public function getSuppliedOrAltered(Request $request, Response $response): Response
@@ -105,7 +105,7 @@ class FoodController
 
 	/**
 	 * @param Request $request
-	 * @param Response $response	 
+	 * @param Response $response
 	 * @return Response
 	 */
 	public function getSold(Request $request, Response $response): Response

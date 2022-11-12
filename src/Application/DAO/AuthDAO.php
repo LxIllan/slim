@@ -33,8 +33,8 @@ class AuthDAO
 		$query = <<<SQL
 			SELECT id, branch_id, hash, root
 			FROM $this->table
-			WHERE email LIKE '$email' 
-				AND email = '$email' 
+			WHERE email LIKE '$email'
+				AND email = '$email'
 				AND is_deleted = 0
 		SQL;
 

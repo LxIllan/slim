@@ -28,7 +28,7 @@ class ProductController
 	 * @return Response
 	 */
 	public function create(Request $request, Response $response): Response
-	{		
+	{
 		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
 		$body['branch_id'] = $jwt['branch_id'];
@@ -45,7 +45,7 @@ class ProductController
 	 */
 	public function getById(Request $request, Response $response, array $args): Response
 	{
-		$product = $this->productDAO->getById(intval($args['id']));        
+		$product = $this->productDAO->getById(intval($args['id']));
 		if ($product) {
 			$response->getBody()->write(Util::encodeData($product, "product"));
 			return $response->withHeader('Content-Type', 'application/json');
@@ -69,7 +69,7 @@ class ProductController
 
 	/**
 	 * @param Request $request
-	 * @param Response $response	 
+	 * @param Response $response
 	 * @return Response
 	 */
 	public function getSuppliedOrAlteredOrUsed(Request $request, Response $response): Response

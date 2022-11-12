@@ -9,6 +9,7 @@ use App\Application\DAO\TicketDAO;
 use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+
 class TicketController
 {
 	/**
@@ -44,7 +45,7 @@ class TicketController
 	 */
 	public function getById(Request $request, Response $response, array $args): Response
 	{
-		$ticket = $this->ticketDAO->getById(intval($args['id']));        
+		$ticket = $this->ticketDAO->getById(intval($args['id']));
 		if ($ticket) {
 			$response->getBody()->write(Util::encodeData($ticket, "ticket"));
 			return $response->withHeader('Content-Type', 'application/json');

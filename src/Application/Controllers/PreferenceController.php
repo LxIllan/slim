@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\DAO\PreferenceDAO;
 use App\Application\Helpers\Util;
+use App\Application\DAO\PreferenceDAO;
+use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpNotFoundException;
 
 class PreferenceController
 {
@@ -28,14 +28,14 @@ class PreferenceController
 	 * @return Response
 	 */
 	public function create(Request $request, Response $response): Response
-	{		
+	{
 		$jwt = $request->getAttribute("token");
-		$body = $request->getParsedBody();        
+		$body = $request->getParsedBody();
 		$body["branch_id"] = $jwt["branch_id"];
 		$branch = $this->preferenceDAO->create($body);
 		$response->getBody()->write(Util::encodeData($branch, "preference", 201));
 		return $response->withHeader('Content-Type', 'application/json');
-	}	
+	}
 
 	/**
 	 * @param Request $request

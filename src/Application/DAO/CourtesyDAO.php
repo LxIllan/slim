@@ -52,7 +52,7 @@ class CourtesyDAO
 				AND courtesy.is_deleted = '$isDeleted'
 			ORDER BY courtesy.date DESC
 		SQL;
-		
+
 		$std = new StdClass();
 		$result = $this->connection->select($query);
 		$std->length = $result->num_rows;
@@ -93,7 +93,7 @@ class CourtesyDAO
 			"is_deleted" => 1,
 			"deleted_at" => date('Y-m-d H:i:s')
 		];
-		
+
 		return $this->connection->update(
 			Util::prepareUpdateQuery($id, $dataToUpdate, $this->table)
 		);

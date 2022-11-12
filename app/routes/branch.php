@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Slim\App;
 use App\Application\Controllers\BranchController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-use Slim\App;
 
 return function (App $app) {
 	$app->group('/branches', function (Group $group) {
@@ -18,7 +18,7 @@ return function (App $app) {
 		 * @api /branches
 		 * @method GET
 		 */
-		$group->get('', BranchController::class . ':getAll');		
+		$group->get('', BranchController::class . ':getAll');
 
 		/**
 		 * @api /branches/{id}
@@ -36,6 +36,6 @@ return function (App $app) {
 		 * @api /branches/{id}
 		 * @method DELETE
 		 */
-		$group->delete('/{id}', BranchController::class . ':delete');		
-	});	
+		$group->delete('/{id}', BranchController::class . ':delete');
+	});
 };

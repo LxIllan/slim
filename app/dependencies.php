@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Application\Settings\SettingsInterface;
-use DI\ContainerBuilder;
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use DI\ContainerBuilder;
+use Psr\Log\LoggerInterface;
+use Monolog\Handler\StreamHandler;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
+use App\Application\Settings\SettingsInterface;
 // use mysqli;
 
 return function (ContainerBuilder $containerBuilder) {
@@ -18,8 +18,8 @@ return function (ContainerBuilder $containerBuilder) {
 
 			$loggerSettings = $settings->get('logger');
 			file_put_contents(__DIR__ . "/../logs/system.log", date("[D, d M Y H:i:s]") . " " .
-			'loggerSettings-> ' . json_encode($loggerSettings) . " " .
-			"file:" . __DIR__ . '/' . basename(__FILE__) . "\r\n", FILE_APPEND);
+				'loggerSettings-> ' . json_encode($loggerSettings) . " " .
+				"file:" . __DIR__ . '/' . basename(__FILE__) . "\r\n", FILE_APPEND);
 			$logger = new Logger($loggerSettings['name']);
 
 			$processor = new UidProcessor();

@@ -43,13 +43,13 @@ class UserController
 		$body["hash"] = password_hash($password, PASSWORD_DEFAULT);
 
 		$uploadedFiles = $request->getUploadedFiles();
-		
+
 		if (!empty($uploadedFiles)) {
 			$uploadedFile = $uploadedFiles['image'];
 			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
 				$photoPath = Util::moveUploadedFile('user', $uploadedFile);
 			}
-		} 
+		}
 		if (!isset($photoPath)) {
 			$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
 			$photoPath .= "/public/images/user/default.jpg";
@@ -87,7 +87,7 @@ class UserController
 	 */
 	public function getById(Request $request, Response $response, array $args): Response
 	{
-		$user = $this->userDAO->getById(intval($args['id']));        
+		$user = $this->userDAO->getById(intval($args['id']));
 		if ($user) {
 			unset($user->hash);
 			$response->getBody()->write(Util::encodeData($user, "user"));
@@ -131,7 +131,7 @@ class UserController
 		unset($body['image']);
 
 		$user = $this->userDAO->edit(intval($args['id']), $body);
-		
+
 		if ($user) {
 			unset($user->hash);
 			$response->getBody()->write(Util::encodeData($user, "user"));
@@ -154,7 +154,7 @@ class UserController
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 
-	
+
 	/**
 	 * @param Request $request
 	 * @param Response $response

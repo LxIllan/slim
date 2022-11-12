@@ -42,5 +42,5 @@ class PreferenceDAO extends DAO
 			$preferences[] = $this->getById(intval($row['id']));
 		}
 		return $preferences;
-	}	
+	}
 }

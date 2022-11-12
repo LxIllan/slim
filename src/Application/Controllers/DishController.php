@@ -9,6 +9,7 @@ use App\Application\Helpers\Util;
 use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+
 class DishController
 {
 	/**
@@ -44,7 +45,7 @@ class DishController
 	 */
 	public function getById(Request $request, Response $response, array $args): Response
 	{
-		$dish = $this->dishDAO->getById(intval($args['id']));        
+		$dish = $this->dishDAO->getById(intval($args['id']));
 		if ($dish) {
 			$response->getBody()->write(Util::encodeData($dish, "dish"));
 			return $response->withHeader('Content-Type', 'application/json');
@@ -82,7 +83,7 @@ class DishController
 
 	/**
 	 * @param Request $request
-	 * @param Response $response	 
+	 * @param Response $response
 	 * @return Response
 	 */
 	public function getSold(Request $request, Response $response): Response

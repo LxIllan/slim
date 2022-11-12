@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Application\Controllers\DishController;
 use Slim\App;
+use App\Application\Controllers\DishController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
-return function (App $app) {	
+return function (App $app) {
 	$app->group('/dishes', function (Group $group) {
 		/**
 		 * @api /dishes

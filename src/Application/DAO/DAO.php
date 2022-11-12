@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
-use App\Application\Helpers\Connection;
-use App\Application\Helpers\Util;
 use StdClass;
+use App\Application\Helpers\Util;
+use App\Application\Helpers\Connection;
 
 class DAO
 {
@@ -47,7 +47,7 @@ class DAO
 		return $this->connection
 			->select("SELECT $columns FROM $this->table WHERE id = $id")
 			->fetch_object('App\Application\Model\\' . ucfirst($this->table));
-	}    
+	}
 
 	/**
 	 * @param int $id

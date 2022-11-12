@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Slim\App;
 use App\Application\Controllers\CategoryController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-use Slim\App;
 
 return function (App $app) {
 	$app->group('/categories', function (Group $group) {
@@ -13,7 +13,7 @@ return function (App $app) {
 		 * @method POST
 		 */
 		$group->post('', CategoryController::class . ':create');
-		
+
 		/**
 		 * @api /categories
 		 * @method GET

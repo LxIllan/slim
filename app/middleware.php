@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Application\Middleware\SessionMiddleware;
-use App\Application\Middleware\JsonBodyParserMiddleware;
+use Slim\App;
+use Tuupola\Middleware\JwtAuthentication;
 use App\Application\Middleware\CorsMiddleware;
+use App\Application\Middleware\SessionMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Tuupola\Middleware\JwtAuthentication;
-use Slim\App;
+use App\Application\Middleware\JsonBodyParserMiddleware;
 
 return function (App $app) {
 	$app->add(SessionMiddleware::class);

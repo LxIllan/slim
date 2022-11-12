@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\DAO;
 
-use App\Application\Helpers\Util;
-use App\Application\Model\Dish;
 use Exception;
+use App\Application\Model\Dish;
+use App\Application\Helpers\Util;
 
 class DishDAO extends DAO
 {
@@ -18,7 +18,7 @@ class DishDAO extends DAO
 	public function __construct()
 	{
 		parent::__construct();
-	}	
+	}
 
 	/**
 	 * @param int $foodId
@@ -46,7 +46,7 @@ class DishDAO extends DAO
 		while ($row = $result->fetch_assoc()) {
 			$dishes[] = $this->getById(intval($row['dish_id']));
 		}
-		usort($dishes, fn($a, $b) => strcmp($a->name, $b->name));
+		usort($dishes, fn ($a, $b) => strcmp($a->name, $b->name));
 		return $dishes;
 	}
 
@@ -60,10 +60,10 @@ class DishDAO extends DAO
 	{
 		$dishes = [];
 		$query = <<<SQL
-			SELECT id 
-			FROM dish 
-			WHERE category_id = $categoryId 
-				AND branch_id = $branchId 
+			SELECT id
+			FROM dish
+			WHERE category_id = $categoryId
+				AND branch_id = $branchId
 				AND sell_individually = true
 				ORDER BY name
 		SQL;
@@ -105,7 +105,7 @@ class DishDAO extends DAO
 			$dishes[] = $this->getById(intval($row['id']));
 		}
 		return $dishes;
-	}	
+	}
 
 	/**
 	 * @param int $comboId
@@ -145,8 +145,8 @@ class DishDAO extends DAO
 	public function deleteDishFromCombo(int $comboId, int $dishId): array
 	{
 		$query = <<<SQL
-			DELETE FROM dishes_in_combo 
-			WHERE combo_id = $comboId 
+			DELETE FROM dishes_in_combo
+			WHERE combo_id = $comboId
 			AND dish_id = $dishId
 			LIMIT 1
 		SQL;
@@ -170,9 +170,9 @@ class DishDAO extends DAO
 			FROM dishes_in_ticket
 			INNER JOIN dish ON dish.id = dishes_in_ticket.dish_id
 			WHERE dishes_in_ticket.ticket_id IN (
-				SELECT id 
-				FROM ticket 
-				WHERE branch_id = $branchId 
+				SELECT id
+				FROM ticket
+				WHERE branch_id = $branchId
 				AND DATE(date) BETWEEN '$from' AND '$to'
 			)
 			GROUP BY dishes_in_ticket.dish_id
@@ -181,7 +181,7 @@ class DishDAO extends DAO
 		$result = $this->connection->select($query);
 		$dishesSold = $result->fetch_all(MYSQLI_ASSOC);
 		$result->free();
-		usort($dishesSold, fn($a, $b) => strcmp($a["name"], $b["name"]));
+		usort($dishesSold, fn ($a, $b) => strcmp($a["name"], $b["name"]));
 		return $dishesSold;
 	}
 }

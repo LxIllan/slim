@@ -8,6 +8,7 @@ use StdClass;
 use Exception;
 use App\Application\Model\Food;
 use App\Application\Helpers\Util;
+
 class FoodDAO extends DAO
 {
 	/**
@@ -82,7 +83,7 @@ class FoodDAO extends DAO
 			FROM $table
 			INNER JOIN food ON food.id = $table.food_id
 			INNER JOIN user ON user.id = $table.user_id
-			WHERE food.branch_id = $branchId 
+			WHERE food.branch_id = $branchId
 				AND DATE($table.date) BETWEEN '$from' AND '$to'
 				AND $table.is_deleted = '$isDeleted'
 			ORDER BY $table.date DESC
@@ -94,7 +95,7 @@ class FoodDAO extends DAO
 		$std->items = $result->fetch_all(MYSQLI_ASSOC);
 		$result->free();
 		return $std;
-	}	
+	}
 
 	/**
 	 * @param int $branchId
@@ -151,20 +152,20 @@ class FoodDAO extends DAO
 	{
 		$table = "${table}_food";
 		$suppliedFood = $this->connection->select("SELECT * FROM $table WHERE id = $id")->fetch_object();
-		
+
 		if (is_null($suppliedFood)) {
 			throw new Exception("Register not found.");
 		}
-		
+
 		if ($suppliedFood->is_deleted) {
 			throw new Exception("This register has already been canceled.");
 		}
-		
+
 		$food = $this->getById(intval($suppliedFood->food_id));
 
 		$suppliedFood->qty = floatval($suppliedFood->qty) * -1;
 		$newQty = $food->qty + $suppliedFood->qty;
-		
+
 		$dataToUpdate = [
 			"qty" => $newQty
 		];
@@ -221,7 +222,7 @@ class FoodDAO extends DAO
 		$foodSold = [];
 		$dishDAO = new \App\Application\DAO\DishDAO();
 		$soldDishes = $dishDAO->getSold($branchId, $from, $to);
-		
+
 		foreach ($soldDishes as $soldDish) {
 			$dish = $dishDAO->getById(intval($soldDish['dish_id']), ['name', 'is_combo', 'serving', 'food_id']);
 			$dish->qty = $soldDish['qty'];

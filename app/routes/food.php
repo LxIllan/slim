@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Slim\App;
 use App\Application\Controllers\FoodController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-use Slim\App;
 
 return function (App $app) {
 	$app->group('/foods', function (Group $group) {
@@ -29,7 +29,7 @@ return function (App $app) {
 		/**
 		 * @api /foods/supplied
 		 * @method GET
-		 */	
+		 */
 		$group->get('/supplied', FoodController::class . ':getSuppliedOrAltered');
 
 		/**
@@ -57,9 +57,9 @@ return function (App $app) {
 		$group->delete('/{id}', FoodController::class . ':delete');
 
 		/**
-		* @api /foods/{id}/dishes
-		* @method GET
-		*/
+		 * @api /foods/{id}/dishes
+		 * @method GET
+		 */
 		$group->get('/{id}/dishes', \App\Application\Controllers\DishController::class . ':getDishesByFood');
 
 		/**
@@ -83,7 +83,7 @@ return function (App $app) {
 		/**
 		 * @api /foods/supplied/{id}
 		 * @method DELETE
-		 */	
+		 */
 		$group->delete('/supplied/{id}', FoodController::class . ':cancelSuppliedOrAltered');
 	});
 };

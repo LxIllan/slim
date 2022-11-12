@@ -83,7 +83,7 @@ return function (App $app) {
 		/**
 		 * @api /products/supplied/{id}
 		 * @method DELETE
-		 */	
+		 */
 		$group->delete('/supplied/{id}', ProductController::class . ':cancelSuppliedOrAlteredOrUsed');
 
 		/**

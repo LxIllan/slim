@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Application\Controllers\DishController;
 use Slim\App;
+use App\Application\Controllers\DishController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {

@@ -36,11 +36,11 @@ class TicketDAO
 		$ticket = $this->connection
 			->select("SELECT * FROM $this->table WHERE id = $id")
 			->fetch_object('App\Application\Model\Ticket');
-		
+
 		if (is_null($ticket)) {
 			throw new Exception("Ticket not found.");
 		}
-		
+
 		$query = <<<SQL
 			SELECT dish.id, dish.name, dishes_in_ticket.qty, dishes_in_ticket.price
 			FROM dishes_in_ticket
@@ -66,7 +66,7 @@ class TicketDAO
 		$this->connection->update("UPDATE branch SET ticket_number = ($num_ticket + 1) WHERE id = $branchId");
 		return intval($num_ticket);
 	}
-	
+
 	/**
 	 * @param int $branchId
 	 * @param string $from
@@ -139,7 +139,7 @@ class TicketDAO
 			"is_deleted" => 1,
 			"deleted_at" => date('Y-m-d H:i:s')
 		];
-		
+
 		return $this->connection->update(
 			Util::prepareUpdateQuery($id, $dataToUpdate, $this->table)
 		);

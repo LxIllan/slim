@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Application\Controllers\AuthController;
-use App\Application\Helpers\Util;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 use Slim\App;
+use App\Application\Helpers\Util;
+use App\Application\Controllers\AuthController;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 return function (App $app) {
 	$app->post('/login', AuthController::class . ':authenticate');
@@ -29,15 +29,15 @@ return function (App $app) {
 
 	/**
 	 * @api /branches/photo
-	 * @method POST	 
+	 * @method POST
 	 */
 	$app->post('/branches/photo', function (Request $request, Response $response) {
 		$folder = 'user';
-		
+
 		$body = $request->getParsedBody();
 		$id = 1;
-		
-		
+
+
 		Util::log('body', $body);
 
 		$uploadedFiles = $request->getUploadedFiles();
@@ -49,7 +49,7 @@ return function (App $app) {
 				$photoPath = Util::moveUploadedFile($folder, $uploadedFile);
 			}
 		}
-		Util::log('file', $photoPath);		
+		Util::log('file', $photoPath);
 		$response->getBody()->write(Util::encodeData($photoPath, "photo_path"));
 		return $response->withHeader('Content-Type', 'application/json');
 	});

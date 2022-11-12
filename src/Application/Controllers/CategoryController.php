@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Application\Controllers;
 
 use Exception;
-use App\Application\DAO\CategoryDAO;
 use App\Application\Helpers\Util;
+use App\Application\DAO\CategoryDAO;
+use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpNotFoundException;
 
 class CategoryController
 {
@@ -34,7 +34,7 @@ class CategoryController
 		$category = $this->categoryDAO->create($body);
 		$response->getBody()->write(Util::encodeData($category, "category", 201));
 		return $response->withHeader('Content-Type', 'application/json');
-	}	
+	}
 
 	/**
 	 * @param Request $request
@@ -47,11 +47,11 @@ class CategoryController
 		$category = $this->categoryDAO->getById(intval($args['id']));
 		if ($category) {
 			$response->getBody()->write(Util::encodeData($category, "category"));
-		return $response->withHeader('Content-Type', 'application/json');
+			return $response->withHeader('Content-Type', 'application/json');
 		} else {
 			throw new HttpNotFoundException($request);
 		}
-	}	
+	}
 
 	/**
 	 * @param Request $request
@@ -79,7 +79,7 @@ class CategoryController
 	 * @return Response
 	 */
 	public function edit(Request $request, Response $response, array $args): Response
-	{		
+	{
 		$body = $request->getParsedBody();
 		$category = $this->categoryDAO->edit(intval($args['id']), $body);
 		if ($category) {

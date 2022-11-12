@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
+use Slim\App;
 use App\Application\Controllers\ExpenseController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-use Slim\App;
-
-
 
 return function (App $app) {
 	$app->group('/expenses', function (Group $group) {

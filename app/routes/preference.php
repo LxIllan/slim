@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
+use Slim\App;
 use App\Application\Controllers\PreferenceController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-use Slim\App;
 
-return function (App $app) {	
+return function (App $app) {
 	$app->group('/preferences', function (Group $group) {
 		/**
 		 * @api /preferences
 		 * @method POST
 		 */
 		$group->post('', PreferenceController::class . ':create');
-		
+
 		/**
 		 * @api /preferences
 		 * @method GET

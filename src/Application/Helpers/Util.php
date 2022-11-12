@@ -44,7 +44,7 @@ class Util
 		$query = rtrim($query, ",");
 		$query .= ")";
 		return $query;
-	}	
+	}
 
 	/**
 	 * @param int $id
@@ -74,8 +74,8 @@ class Util
 	public static function moveUploadedFile(string $folder, UploadedFile $uploadedFile)
 	{
 		$directory = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' .
-			DIRECTORY_SEPARATOR.  'images' . DIRECTORY_SEPARATOR . $folder;
-		
+			DIRECTORY_SEPARATOR .  'images' . DIRECTORY_SEPARATOR . $folder;
+
 		if (!file_exists($directory)) {
 			mkdir($directory, 0777, true);
 		}
@@ -204,7 +204,7 @@ class Util
 	// {
 	// 	$connection = new \App\Application\Helpers\Connection();
 	// 	$std = new StdClass();
-		
+
 	// 	$result = $connection->select($query);
 	// 	$std->length = $result->num_rows;
 	// 	$std->items = $result->fetch_all(MYSQLI_ASSOC);
@@ -261,8 +261,10 @@ class Util
 	public static function log(string $message, mixed $data = null): void
 	{
 		$file = __DIR__ . "/../../../logs/system.log";
-		file_put_contents($file, date("[D M d H:i:s]") . " " .
-			"$message -> " . json_encode($data) . "\r\n",
+		file_put_contents(
+			$file,
+			date("[D M d H:i:s]") . " " .
+				"$message -> " . json_encode($data) . "\r\n",
 			FILE_APPEND | LOCK_EX
 		);
 	}
