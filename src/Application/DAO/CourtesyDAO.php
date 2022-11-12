@@ -27,6 +27,57 @@ class CourtesyDAO
 	}
 
 	/**
+	 * @param array $items
+	 * @param string $reason
+	 * @param int $userId
+	 * @param int $branchId
+	 * @return array
+	 */
+	public function create(array $items, string $reason, int $userId, int $branchId): array
+	{
+		$dishDAO = new DishDAO();
+		$result = [];
+		foreach ($items as $item) {
+			$dishToSell = $this->dishDAO->getById($item['dish_id'], ['is_combo', 'serving', 'food_id', 'price']);
+			$result = $this->registerCourtesy(intval($dishToSell->id), intval($item['qty']), floatval($dishToSell->price), $reason, $userId, $branchId);
+			if ($dishToSell->is_combo) {
+				$dishDAO->extractDishesFromCombo(intval($dishToSell->id), intval($item['qty']), 'subtractQtyFood');
+			} else {
+				$serving = $dishToSell->serving * $item['qty'];
+				$dishDAO->subtractQtyFood(intval($dishToSell->food_id), $serving);
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * @param int $dishId
+	 * @param int $qty
+	 * @param float $price
+	 * @param string $reason
+	 * @param int $userId
+	 * @param int $branchId
+	 * @return array
+	 */
+	private function registerCourtesy(int $dishId, int $qty, float $price, string $reason, int $userId, int $branchId): array
+	{
+		$dataToInsert = [
+			"dish_id" => $dishId,
+			"qty" => $qty,
+			"price" => $price * $qty,
+			"reason" => $reason,
+			"user_id" => $userId,
+			"branch_id" => $branchId
+		];
+
+		if ($this->connection->insert(Util::prepareInsertQuery($dataToInsert, 'courtesy'))) {
+			return $dataToInsert;
+		} else {
+			throw new Exception('Error to register courtesy.');
+		}
+	}
+
+	/**
 	 * @param int $branchId
 	 * @param string $from
 	 * @param string $to
@@ -84,9 +135,9 @@ class CourtesyDAO
 		$dish = $dishDAO->getById(intval($courtesy->dish_id), ['is_combo', 'serving', 'food_id']);
 
 		if ($dish->is_combo) {
-			$this->extractDishesFromCombo(intval($dish->id), intval($courtesy->qty));
+			$dishDAO->extractDishesFromCombo(intval($dish->id), intval($courtesy->qty), 'addQtyFood');
 		} else {
-			$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $courtesy->qty));
+			$dishDAO->addQtyFood(intval($dish->food_id), floatval($dish->serving * $courtesy->qty));
 		}
 
 		$dataToUpdate = [
@@ -96,39 +147,6 @@ class CourtesyDAO
 
 		return $this->connection->update(
 			Util::prepareUpdateQuery($id, $dataToUpdate, $this->table)
-		);
-	}
-
-	/**
-	 * @param int $comboId
-	 * @param int $qty
-	 * @return void
-	 */
-	public function extractDishesFromCombo(int $comboId, int $qty): void
-	{
-		$dishes = $this->dishDAO->getDishesByCombo($comboId);
-		foreach ($dishes as $dish) {
-			if ($dish->is_combo) {
-				$this->extractDishesFromCombo(intval($dish->id), $qty);
-			} else {
-				$this->addQtyFood(intval($dish->food_id), floatval($dish->serving * $qty));
-			}
-		}
-	}
-
-	/**
-	 * @param int $foodId
-	 * @param float $qty
-	 * @return bool
-	 * @throws Exception
-	 */
-	private function addQtyFood(int $foodId, float $qty): bool
-	{
-		$foodDAO = new FoodDAO();
-		$food = $foodDAO->getById($foodId, ['qty']);
-		$newQty = $food->qty + $qty;
-		return $this->connection->update(
-			Util::prepareUpdateQuery($foodId, ["qty" => $newQty], 'food')
 		);
 	}
 }

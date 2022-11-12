@@ -201,7 +201,6 @@ class DishDAO extends DAO
 			} else {
 				$serving = $dish->serving * $qty;
 				call_user_func($function, intval($dish->food_id), $serving);
-				// $this->subtractFood(intval($dish->food_id), $serving);
 			}
 		}
 	}
