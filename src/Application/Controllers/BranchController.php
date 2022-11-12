@@ -31,7 +31,7 @@ class BranchController
 	public function create(Request $request, Response $response): Response
 	{
 		$jwt = $request->getAttribute("token");
-		$body = $request->getParsedBody();        
+		$body = $request->getParsedBody();
 		$body["branch_id"] = $jwt["branch_id"];
 		$branch = $this->branchDAO->create($body);
 		$response->getBody()->write(Util::encodeData($branch, "branch", 201));
@@ -49,7 +49,7 @@ class BranchController
 		$branch = $this->branchDAO->getById(intval($args['id']));
 		if ($branch) {
 			$response->getBody()->write(Util::encodeData($branch, "branch"));
-		return $response->withHeader('Content-Type', 'application/json');
+			return $response->withHeader('Content-Type', 'application/json');
 		} else {
 			throw new HttpNotFoundException($request);
 		}
@@ -87,7 +87,7 @@ class BranchController
 			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
 				$photoPath = Util::moveUploadedFile('branch', $uploadedFile);
 			}
-		} 
+		}
 		if (!isset($photoPath)) {
 			$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
 			$photoPath .= "/public/images/branch/default.jpg";
