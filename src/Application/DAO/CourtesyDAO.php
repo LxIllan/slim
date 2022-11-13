@@ -94,7 +94,7 @@ class CourtesyDAO
 
 		$query = <<<SQL
 			SELECT courtesy.id, courtesy.date, dish.name, courtesy.qty, courtesy.price, courtesy.reason,
-				CONCAT(user.name, ' ' , user.last_name) AS cashier
+				CONCAT(user.name, ' ' , user.last_name) AS user
 			FROM courtesy
 			INNER JOIN dish ON courtesy.dish_id = dish.id
 			INNER JOIN user ON courtesy.user_id = user.id

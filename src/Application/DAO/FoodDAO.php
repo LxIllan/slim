@@ -80,7 +80,7 @@ class FoodDAO extends DAO
 
 		$query = <<<SQL
 			SELECT $table.id, $table.date, food.name, $table.qty, $reason
-				$table.new_qty, $table.cost, CONCAT(user.name, ' ', user.last_name) AS cashier
+				$table.new_qty, $table.cost, CONCAT(user.name, ' ', user.last_name) AS user
 			FROM $table
 			INNER JOIN food ON food.id = $table.food_id
 			INNER JOIN user ON user.id = $table.user_id

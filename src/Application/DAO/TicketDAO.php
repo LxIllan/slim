@@ -152,8 +152,8 @@ class TicketDAO
 		$tickets->total = 0;
 
 		$query = <<<SQL
-			SELECT ticket.id, ticket.ticket_number, ticket.total, 
-				ticket.date, CONCAT(user.name, ' ' ,user.last_name) AS cashier
+			SELECT ticket.id, ticket.ticket_number, ticket.total,
+				ticket.date, CONCAT(user.name, ' ' ,user.last_name) AS user
 			FROM ticket
 			JOIN user ON ticket.user_id = user.id
 			WHERE ticket.branch_id = $branchId

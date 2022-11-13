@@ -55,7 +55,7 @@ class ProductDAO extends DAO
 
 		$query = <<<SQL
 			SELECT $table.id, $table.date, product.name, $table.qty, $reason
-			$newQty $cost CONCAT(user.name, ' ', user.last_name) AS cashier
+			$newQty $cost CONCAT(user.name, ' ', user.last_name) AS user
 			FROM $table
 			INNER JOIN product ON product.id = $table.product_id
 			INNER JOIN user ON user.id = $table.user_id

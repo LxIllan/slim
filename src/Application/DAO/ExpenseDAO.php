@@ -36,8 +36,8 @@ class ExpenseDAO extends DAO
 		}
 
 		$query = <<<SQL
-			SELECT expense.id, expense.date, expense.amount, expense.reason, 
-				CONCAT(user.name, ' ' ,user.last_name) AS cashier
+			SELECT expense.id, expense.date, expense.amount, expense.reason,
+				CONCAT(user.name, ' ' ,user.last_name) AS user
 			FROM expense
 			JOIN user ON expense.user_id = user.id
 			WHERE expense.branch_id = $branchId
