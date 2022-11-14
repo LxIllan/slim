@@ -15,10 +15,10 @@ return function (App $app) {
 		$group->post('', ExpenseController::class . ':create');
 
 		/**
-		 * @api /expenses/history
+		 * @api /expenses
 		 * @method GET
 		 */
-		$group->get('/history', ExpenseController::class . ':getAll');
+		$group->get('', ExpenseController::class . ':getAll');
 
 		/**
 		 * @api /expenses/{id}
