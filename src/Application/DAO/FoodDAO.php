@@ -57,7 +57,7 @@ class FoodDAO extends DAO
 	{
 		$food = [];
 		$result = $this->connection
-			->select("SELECT id FROM $this->table WHERE branch_id = $branchId AND is_deleted = 0 ORDER BY name");
+			->select("SELECT id FROM $this->table WHERE branch_id = $branchId ORDER BY name");
 		while ($row = $result->fetch_array()) {
 			$food[] = $this->getById(intval($row['id']));
 		}
