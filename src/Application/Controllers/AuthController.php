@@ -30,18 +30,18 @@ class AuthController
 	public function authenticate(Request $request, Response $response): Response
 	{
 		$body = $request->getParsedBody();
-		if (!Util::validateEmail($body['email'])) {
+		if (!Util::isEmailValid($body['email'])) {
 			throw new Exception('Invalid email');
 		}
 
 		$token = $this->authDAO->authenticate($body['email'], $body['password']);
 
-		if ($token) {
-			$response->getBody()->write(Util::encodeData($token, "jwt"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($token)) {
 			throw new Exception('Invalid credentials');
 		}
+
+		$response->getBody()->write(Util::encodeData($token, "jwt"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**

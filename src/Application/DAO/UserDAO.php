@@ -61,6 +61,6 @@ class UserDAO extends DAO
 	public function existEmail(string $email): int
 	{
 		$row = $this->connection->select("SELECT id, email FROM user WHERE email = '$email'")->fetch_assoc();
-		return (isset($row) && Util::validateEmail($row['email'])) ? intval($row['id']) : 0;
+		return (isset($row) && Util::isEmailValid($row['email'])) ? intval($row['id']) : 0;
 	}
 }

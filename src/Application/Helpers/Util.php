@@ -85,7 +85,8 @@ class Util
 		$filename = sprintf('%s.%s', $basename, $extension);
 		$uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 
-		$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+		$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'
+			? "https" : "http") . "://$_SERVER[HTTP_HOST]";
 		$photoPath .= "/public/images/$folder/$filename";
 		return $photoPath;
 	}
@@ -170,7 +171,7 @@ class Util
 	 * @param string $email
 	 * @return bool
 	 */
-	public static function validateEmail(string $email): bool
+	public static function isEmailValid(string $email): bool
 	{
 		return is_string(filter_var($email, FILTER_VALIDATE_EMAIL));
 	}
