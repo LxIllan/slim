@@ -19,6 +19,22 @@ class BranchDAO extends DAO
 	}
 
 	/**
+	 * @param int $id
+	 * @return bool
+	 */
+	public function exists(int $id): bool
+	{
+		$query = <<<SQL
+			SELECT id
+			FROM $this->table
+			WHERE id = $id
+		SQL;
+
+		$result = $this->connection->select($query);
+		return $result->num_rows == 1;
+	}
+
+	/**
 	 * @return Branch[]
 	 */
 	public function getAll(): array

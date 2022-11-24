@@ -11,6 +11,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 return function (App $app) {
 	$app->post('/login', AuthController::class . ':authenticate');
 
+	$app->put('/branches/switch', AuthController::class . ':switchBranch');
+
 	$app->get('/logout', function (Request $request, Response $response) {
 		$response->getBody()->write(json_encode('log out'));
 		return $response->withHeader('Content-Type', 'application/json');

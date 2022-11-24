@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Controllers;
 
 use Exception;
-use ReallySimpleJWT\Token;
 use App\Application\DAO\AuthDAO;
 use App\Application\Helpers\Util;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -34,21 +33,28 @@ class AuthController
 		if (!Util::validateEmail($body['email'])) {
 			throw new Exception('Invalid email');
 		}
-		$user = $this->authDAO->authenticate($body['email'], $body['password']);
-		if ($user) {
-			$payload = [
-				'iat' => time(),
-				'exp' => time() + 99999999,
-				'user_id' => intval($user['id']),
-				'branch_id' => intval($user['branch_id']),
-				'root' => boolval($user['root'])
-			];
-			$secret = $_ENV["JWT_SECRET"];
-			$token = Token::customPayload($payload, $secret);
+
+		$token = $this->authDAO->authenticate($body['email'], $body['password']);
+
+		if ($token) {
 			$response->getBody()->write(Util::encodeData($token, "jwt"));
+			return $response->withHeader('Content-Type', 'application/json');
 		} else {
 			throw new Exception('Invalid credentials');
 		}
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response
+	 */
+	public function switchBranch(Request $request, Response $response): Response
+	{
+		$jwt = $request->getAttribute("token");
+		$body = $request->getParsedBody();
+		$token = $this->authDAO->switchBranch($jwt, intval($body['branch_id']));
+		$response->getBody()->write(Util::encodeData($token, "jwt"));
 		return $response->withHeader('Content-Type', 'application/json');
 	}
 }
