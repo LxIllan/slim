@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Slim\App;
 use App\Application\Controllers\UserController;
+use App\Application\Middleware\AdminMiddleware;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
@@ -22,18 +23,6 @@ return function (App $app) {
 
 		/**
 		 * @api /users/{id}
-		 * @method GET
-		 */
-		$group->get('/{id}', UserController::class . ':getById');
-
-		/**
-		 * @api /users/{id}
-		 * @method POST
-		 */
-		$group->post('/{id}', UserController::class . ':edit');
-
-		/**
-		 * @api /users/{id}
 		 * @method DELETE
 		 */
 		$group->delete('/{id}', UserController::class . ':delete');
@@ -43,5 +32,17 @@ return function (App $app) {
 		 * @method PUT
 		 */
 		$group->put('/{id}/reset-password', UserController::class . ':resetPassword');
-	});
+	})->add(new AdminMiddleware());
+
+	/**
+	 * @api /users/{id}
+	 * @method GET
+	 */
+	$app->get('/{id}', UserController::class . ':getById');
+
+	/**
+	 * @api /users/{id}
+	 * @method POST
+	 */
+	$app->post('/{id}', UserController::class . ':edit');
 };

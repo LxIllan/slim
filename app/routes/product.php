@@ -10,12 +10,6 @@ return function (App $app) {
 	$app->group('/products', function (Group $group) {
 		/**
 		 * @api /products
-		 * @method GET
-		 */
-		$group->get('', ProductController::class . ':getAll');
-
-		/**
-		 * @api /products
 		 * @method POST
 		 */
 		$group->post('', ProductController::class . ':create');
@@ -69,12 +63,6 @@ return function (App $app) {
 		$group->put('/{id}/supply', ProductController::class . ':supply');
 
 		/**
-		 * @api /products/{id}/use
-		 * @method PUT
-		 */
-		$group->put('/{id}/use', ProductController::class . ':use');
-
-		/**
 		 * @api /products/altered/{id}
 		 * @method DELETE
 		 */
@@ -92,4 +80,15 @@ return function (App $app) {
 		 */
 		$group->delete('/used/{id}', ProductController::class . ':cancelSuppliedOrAlteredOrUsed');
 	});
+	/**
+	 * @api /products
+	 * @method GET
+	 */
+	$app->get('/products', ProductController::class . ':getAll');
+
+	/**
+	 * @api /products/{id}/use
+	 * @method PUT
+	 */
+	$app->put('/products/{id}/use', ProductController::class . ':use');
 };

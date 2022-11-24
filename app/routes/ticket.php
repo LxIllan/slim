@@ -3,17 +3,12 @@
 declare(strict_types=1);
 
 use Slim\App;
+use App\Application\Middleware\AdminMiddleware;
 use App\Application\Controllers\TicketController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
 	$app->group('/tickets', function (Group $group) {
-		/**
-		 * @api /tickets
-		 * @method POST
-		 */
-		$group->post('', TicketController::class . ':create');
-
 		/**
 		 * @api /tickets
 		 * @method GET
@@ -31,5 +26,10 @@ return function (App $app) {
 		 * @method DELETE
 		 */
 		$group->delete('/{id}', TicketController::class . ':cancel');
-	});
+	})->add(new AdminMiddleware());
+	/**
+	 * @api /tickets
+	 * @method POST
+	 */
+	$app->post('/tickets', TicketController::class . ':create');
 };

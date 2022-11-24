@@ -7,7 +7,6 @@ namespace App\Application\Controllers;
 use App\Application\Helpers\Util;
 use App\Application\DAO\BranchDAO;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Exception\HttpForbiddenException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -63,9 +62,6 @@ class BranchController
 	public function getAll(Request $request, Response $response): Response
 	{
 		$jwt = $request->getAttribute("token");
-		if (!Util::isAdmin($jwt)) {
-			throw new HttpForbiddenException($request);
-		}
 		$branches = $this->branchDAO->getAll();
 		$response->getBody()->write(Util::encodeData($branches, "branches"));
 		return $response->withHeader('Content-Type', 'application/json');
@@ -111,10 +107,6 @@ class BranchController
 	 */
 	public function delete(Request $request, Response $response, array $args): Response
 	{
-		$jwt = $request->getAttribute("token");
-		if (!Util::isAdmin($jwt)) {
-			throw new HttpForbiddenException($request);
-		}
 		$wasDeleted = $this->branchDAO->delete(intval($args['id']));
 		$response->getBody()->write(Util::encodeData($wasDeleted, "response"));
 		return $response->withHeader('Content-Type', 'application/json');

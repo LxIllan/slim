@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Slim\App;
 use App\Application\Controllers\DishController;
+use App\Application\Middleware\AdminMiddleware;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
@@ -37,5 +38,5 @@ return function (App $app) {
 		 * @method DELETE
 		 */
 		$group->delete('/{id}', DishController::class . ':delete');
-	});
+	})->add(new AdminMiddleware());
 };

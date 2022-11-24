@@ -3,17 +3,12 @@
 declare(strict_types=1);
 
 use Slim\App;
+use App\Application\Middleware\AdminMiddleware;
 use App\Application\Controllers\ExpenseController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
 	$app->group('/expenses', function (Group $group) {
-		/**
-		 * @api /expenses
-		 * @method POST
-		 */
-		$group->post('', ExpenseController::class . ':create');
-
 		/**
 		 * @api /expenses
 		 * @method GET
@@ -37,5 +32,10 @@ return function (App $app) {
 		 * @method DELETE
 		 */
 		$group->delete('/{id}', ExpenseController::class . ':delete');
-	});
+	})->add(new AdminMiddleware());
+	/**
+	 * @api /expenses
+	 * @method POST
+	 */
+	$app->post('/expenses', ExpenseController::class . ':create');
 };

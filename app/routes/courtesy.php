@@ -3,19 +3,14 @@
 declare(strict_types=1);
 
 use Slim\App;
+use App\Application\Middleware\AdminMiddleware;
 use App\Application\Controllers\CourtesyController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
 	$app->group('/courtesies', function (Group $group) {
 		/**
-		 * @api /courtesy
-		 * @method POST
-		 */
-		$group->post('', CourtesyController::class . ':create');
-
-		/**
-		 * @api /tickets
+		 * @api /courtesies
 		 * @method GET
 		 */
 		$group->get('', CourtesyController::class . ':getAll');
@@ -25,5 +20,10 @@ return function (App $app) {
 		 * @method DELETE
 		 */
 		$group->delete('/{id}', CourtesyController::class . ':cancel');
-	});
+	})->add(new AdminMiddleware());
+	/**
+	 * @api /courtesies
+	 * @method POST
+	 */
+	$app->post('/courtesies', CourtesyController::class . ':create');
 };

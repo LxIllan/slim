@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Slim\App;
+use App\Application\Middleware\AdminMiddleware;
 use App\Application\Controllers\BranchController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
@@ -15,12 +16,6 @@ return function (App $app) {
 		$group->post('', BranchController::class . ':create');
 
 		/**
-		 * @api /branches
-		 * @method GET
-		 */
-		$group->get('', BranchController::class . ':getAll');
-
-		/**
 		 * @api /branches/{id}
 		 * @method GET
 		 */
@@ -30,12 +25,17 @@ return function (App $app) {
 		 * @api /branches/{id}
 		 * @method POST
 		 */
-		$group->post('/{id}', BranchController::class . ':edit');
+		$group->post('/{id}', BranchController::class . ':edit')->add(new AdminMiddleware());;
 
 		/**
 		 * @api /branches/{id}
 		 * @method DELETE
 		 */
-		$group->delete('/{id}', BranchController::class . ':delete');
+		$group->delete('/{id}', BranchController::class . ':delete')->add(new AdminMiddleware());;
 	});
+	/**
+	 * @api /branches
+	 * @method GET
+	 */
+	$app->get('/branches', BranchController::class . ':getAll')->add(new AdminMiddleware());
 };

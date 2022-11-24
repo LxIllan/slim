@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Slim\App;
+use App\Application\Middleware\AdminMiddleware;
 use App\Application\Controllers\PreferenceController;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
@@ -37,5 +38,5 @@ return function (App $app) {
 		 * @method DELETE
 		 */
 		$group->delete('/{id}', PreferenceController::class . ':delete');
-	});
+	})->add(new AdminMiddleware());
 };

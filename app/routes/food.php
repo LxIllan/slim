@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Slim\App;
 use App\Application\Controllers\FoodController;
+use App\Application\Middleware\AdminMiddleware;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
@@ -85,5 +86,5 @@ return function (App $app) {
 		 * @method DELETE
 		 */
 		$group->delete('/supplied/{id}', FoodController::class . ':cancelSuppliedOrAltered');
-	});
+	})->add(new AdminMiddleware());
 };

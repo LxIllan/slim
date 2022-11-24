@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Slim\App;
 use App\Application\Helpers\Util;
+use App\Application\Middleware\AdminMiddleware;
 use App\Application\Controllers\AuthController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -11,7 +12,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 return function (App $app) {
 	$app->post('/login', AuthController::class . ':authenticate');
 
-	$app->put('/branches/switch', AuthController::class . ':switchBranch');
+	$app->put('/branches/switch', AuthController::class . ':switchBranch')->add(new AdminMiddleware());
 
 	$app->get('/logout', function (Request $request, Response $response) {
 		$response->getBody()->write(json_encode('log out'));
