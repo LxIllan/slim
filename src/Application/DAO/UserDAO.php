@@ -30,7 +30,7 @@ class UserDAO extends DAO
 		$query = <<<SQL
 			SELECT id
 			FROM user
-			WHERE branch_id = $branchId
+			WHERE branch_id = $branchId OR root = 1
 				AND is_deleted = '$getDeleted'
 		SQL;
 
