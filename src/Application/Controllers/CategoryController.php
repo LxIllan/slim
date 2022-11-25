@@ -45,12 +45,11 @@ class CategoryController
 	public function getById(Request $request, Response $response, array $args): Response
 	{
 		$category = $this->categoryDAO->getById(intval($args['id']));
-		if ($category) {
-			$response->getBody()->write(Util::encodeData($category, "category"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($category)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($category, "category"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
@@ -82,12 +81,11 @@ class CategoryController
 	{
 		$body = $request->getParsedBody();
 		$category = $this->categoryDAO->edit(intval($args['id']), $body);
-		if ($category) {
-			$response->getBody()->write(Util::encodeData($category, "category"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($category)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($category, "category"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**

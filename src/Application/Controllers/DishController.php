@@ -46,12 +46,11 @@ class DishController
 	public function getById(Request $request, Response $response, array $args): Response
 	{
 		$dish = $this->dishDAO->getById(intval($args['id']));
-		if ($dish) {
-			$response->getBody()->write(Util::encodeData($dish, "dish"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($dish)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($dish, "dish"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
@@ -107,12 +106,11 @@ class DishController
 	{
 		$body = $request->getParsedBody();
 		$dish = $this->dishDAO->edit(intval($args['id']), $body);
-		if ($dish) {
-			$response->getBody()->write(Util::encodeData($dish, "dish"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($dish)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($dish, "dish"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**

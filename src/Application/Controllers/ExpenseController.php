@@ -47,12 +47,11 @@ class ExpenseController
 	public function getById(Request $request, Response $response, array $args): Response
 	{
 		$expense = $this->expenseDAO->getById(intval($args['id']));
-		if ($expense) {
-			$response->getBody()->write(Util::encodeData($expense, "expense"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($expense)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($expense, "expense"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
@@ -83,12 +82,11 @@ class ExpenseController
 	{
 		$body = $request->getParsedBody();
 		$expense = $this->expenseDAO->edit(intval($args['id']), $body);
-		if ($expense) {
-			$response->getBody()->write(Util::encodeData($expense, "expense"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($expense)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($expense, "expense"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**

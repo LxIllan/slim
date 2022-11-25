@@ -29,9 +29,7 @@ class BranchController
 	 */
 	public function create(Request $request, Response $response): Response
 	{
-		$jwt = $request->getAttribute("token");
 		$body = $request->getParsedBody();
-		$body["branch_id"] = $jwt["branch_id"];
 		$branch = $this->branchDAO->create($body);
 		$response->getBody()->write(Util::encodeData($branch, "branch", 201));
 		return $response->withHeader('Content-Type', 'application/json');
@@ -46,12 +44,11 @@ class BranchController
 	public function getById(Request $request, Response $response, array $args): Response
 	{
 		$branch = $this->branchDAO->getById(intval($args['id']));
-		if ($branch) {
-			$response->getBody()->write(Util::encodeData($branch, "branch"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($branch)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($branch, "branch"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
@@ -61,7 +58,6 @@ class BranchController
 	 */
 	public function getAll(Request $request, Response $response): Response
 	{
-		$jwt = $request->getAttribute("token");
 		$branches = $this->branchDAO->getAll();
 		$response->getBody()->write(Util::encodeData($branches, "branches"));
 		return $response->withHeader('Content-Type', 'application/json');
@@ -78,26 +74,28 @@ class BranchController
 		$body = $request->getParsedBody();
 
 		$uploadedFiles = $request->getUploadedFiles();
+
 		if (!empty($uploadedFiles)) {
 			$uploadedFile = $uploadedFiles['image'];
 			if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
 				$photoPath = Util::moveUploadedFile('branch', $uploadedFile);
 			}
 		}
+
 		if (!isset($photoPath)) {
 			$photoPath = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
 			$photoPath .= "/public/images/branch/default.jpg";
 		}
+
 		unset($body['image']);
 		$body["logo"] = $photoPath;
 
 		$branch = $this->branchDAO->edit(intval($args['id']), $body);
-		if ($branch) {
-			$response->getBody()->write(Util::encodeData($branch, "branch"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($branch)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($branch, "branch"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**

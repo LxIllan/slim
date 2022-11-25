@@ -35,7 +35,7 @@ class FoodController
 		$body['branch_id'] = $jwt['branch_id'];
 
 		$food = $this->foodDAO->create($body);
-		if ($food == null) {
+		if (is_null($food)) {
 			throw new Exception("Error creating food.");
 		}
 
@@ -63,12 +63,11 @@ class FoodController
 	public function getById(Request $request, Response $response, array $args): Response
 	{
 		$food = $this->foodDAO->getById(intval($args['id']));
-		if ($food) {
-			$response->getBody()->write(Util::encodeData($food, "food"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($food)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($food, "food"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
@@ -129,12 +128,11 @@ class FoodController
 	{
 		$body = $request->getParsedBody();
 		$food = $this->foodDAO->edit(intval($args['id']), $body);
-		if ($food) {
-			$response->getBody()->write(Util::encodeData($food, "food"));
-			return $response->withHeader('Content-Type', 'application/json');
-		} else {
+		if (is_null($food)) {
 			throw new HttpNotFoundException($request);
 		}
+		$response->getBody()->write(Util::encodeData($food, "food"));
+		return $response->withHeader('Content-Type', 'application/json');
 	}
 
 	/**
